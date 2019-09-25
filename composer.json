@@ -1,0 +1,27 @@
+{
+    "name": "fize/framework",
+    "description": "Fize，一个轻巧、自由、灵活的MVC框架。",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "FizeChan",
+            "email": "chenfengzhan@qq.com"
+        }
+    ],
+    "require": {
+		"php": ">=7.0.0",
+        "fize/io": "*@dev",
+        "fize/cache": "*@dev",
+        "fize/db": "*@dev",
+        "fize/security": "*@dev",
+        "fize/log": "*@dev",
+        "fize/session": "*@dev",
+        "fize/view": "*@dev"
+    },
+	"autoload": {
+        "psr-4": {
+            "fize\\framework\\": "src",
+            "app\\": "app"
+        }
+    }
+}
