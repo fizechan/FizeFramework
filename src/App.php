@@ -11,9 +11,9 @@ class App
 {
 
     /**
-     * @var array 环境变量
+     * @var array 环境配置
      */
-    protected static $env;
+    protected static $config;
 
     /**
      * @var string 当前分组
@@ -21,7 +21,7 @@ class App
     protected static $module;
 
     /**
-     * @var string 当前控制器(全限定名)
+     * @var string 当前控制器
      */
     protected static $controller;
 
@@ -32,22 +32,22 @@ class App
 
     /**
      * 在此执行所有流程
-     * @param array $env 环境配置
+     * @param array $config 环境配置
      */
-    public function __construct(array $env = [])
+    public function __construct(array $config = [])
     {
-        $this->init($env);
+        $this->init($config);
         $this->config();
         $this->run();
     }
 
     /**
      * 初始化
-     * @param array $env 参数
+     * @param array $config 参数
      */
-    protected function init($env)
+    protected function init($config)
     {
-        $default_env = [
+        $default_config = [
             'root_path'      => null,  //根目录
             'app_dir'        => 'app',  //应用文件夹
             'config_dir'     => 'config',  //配置文件夹
@@ -56,27 +56,27 @@ class App
             'default_module' => 'index',  //开启分组时的默认分组
             'route_key'      => '_r',  //路由GET参数名
         ];
-        $env = array_merge($default_env, $env);
+        $config = array_merge($default_config, $config);
 
-        if (is_null($env['root_path'])) {
+        if (is_null($config['root_path'])) {
             $root_path = dirname(dirname(dirname(dirname(__FILE__))));  //使用composer放置在vendor文件夹中的相对位置
-            $env['root_path'] = $root_path;
+            $config['root_path'] = $root_path;
         }
 
-        if ($env['module'] === false) {  //不使用分组
+        if ($config['module'] === false) {  //不使用分组
             self::$module = null;
         }
-        if ($env['module'] === true) {  //自动判断分组
-            $route = Request::get($env['route_key']);
+        if ($config['module'] === true) {  //自动判断分组
+            $route = Request::get($config['route_key']);
             if($route) {
                 $routes = explode('/', $route);
                 self::$module = $routes[0];
             } else {
-                self::$module = $env['default_module'];
+                self::$module = $config['default_module'];
             }
         }
 
-        self::$env = $env;
+        self::$config = $config;
     }
 
     /**
@@ -84,8 +84,8 @@ class App
      */
     protected function config()
     {
-        new Url(self::$env['route_key']);
-        new Config(self::$env['module']);
+        new Url(self::$config['route_key']);
+        new Config(self::$config['module']);
 
         $cache_config = Config::get('cache');
         new Cache($cache_config['driver'], $cache_config['config']);
@@ -98,6 +98,9 @@ class App
 
         $log_config = Config::get('log');
         new Log($log_config['driver'], $log_config['config']);
+
+        $request_config = Config::get('request');
+        new Request($request_config);
 
         $session_config = Config::get('session');
         new Session($session_config);
@@ -113,10 +116,10 @@ class App
     {
         $config_controller = Config::get('controller');
 
-        $route = Request::get(self::$env['route_key']);
+        $route = Request::get(self::$config['route_key']);
         if($route) {
             $routes = explode('/', $route);
-            if(self::$env['module'] === true) {  //自动判断
+            if(self::$config['module'] === true) {  //自动判断
                 array_shift($routes);
             }
             if(count($routes) == 0) {
@@ -137,12 +140,7 @@ class App
 
         View::path(self::$controller . "/" . self::$action);
 
-//        var_dump(self::$module);
-//        var_dump(self::$controller);
-//        var_dump(self::$action);
-//        die();
-
-        $class_path = '\\' . self::$env['app_dir'];
+        $class_path = '\\' . self::$config['app_dir'];
         if(self::$module) {
             $class_path .= '\\' . self::$module;
         }
@@ -163,7 +161,18 @@ class App
 
         $controller = new $class();
         $response = $controller->$action();
-        //todo 善后工作
+
+        if($response) {
+            if($response instanceof Response) {
+                $response->send();
+            } elseif (is_string($response)) {
+                $response = Response::html($response);
+                $response->send();
+            } elseif (is_array($response)) {
+                $response = Response::json($response);
+                $response->send();
+            }
+        }
     }
 
     /**
@@ -174,9 +183,9 @@ class App
     public static function env($key = null)
     {
         if ($key) {
-            return self::$env[$key];
+            return self::$config[$key];
         }
-        return self::$env;
+        return self::$config;
     }
 
     /**
@@ -185,7 +194,7 @@ class App
      */
     public static function rootPath()
     {
-        return self::$env['root_path'];
+        return self::$config['root_path'];
     }
 
     /**
@@ -194,7 +203,7 @@ class App
      */
     public static function appPath()
     {
-        return self::$env['root_path'] . '/' . self::$env['app_dir'];
+        return self::$config['root_path'] . '/' . self::$config['app_dir'];
     }
 
     /**
@@ -203,7 +212,7 @@ class App
      */
     public static function configPath()
     {
-        return self::$env['root_path'] . '/' . self::$env['config_dir'];
+        return self::$config['root_path'] . '/' . self::$config['config_dir'];
     }
 
     /**
@@ -212,7 +221,7 @@ class App
      */
     public static function runtimePath()
     {
-        return self::$env['root_path'] . '/' . self::$env['runtime_dir'];
+        return self::$config['root_path'] . '/' . self::$config['runtime_dir'];
     }
 
     /**
