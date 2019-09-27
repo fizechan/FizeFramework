@@ -14,17 +14,12 @@ class Db extends FizeDb
 
     /**
      * 构造为静态方法做准备
-     * @param string $type 类型
-     * @param string $mode 模式
      * @param array $config 配置
      */
-    public function __construct($type, $mode, array $config)
+    public function __construct(array $config)
     {
-        $options = [
-            'type'   => $type,
-            'mode'   => $mode,
-            'option' => $config
-        ];
-        self::init($options);
+        if($config['type']) {
+            self::init($config);
+        }
     }
 }

@@ -96,7 +96,7 @@ class App
         new Cookie($cookie_config);
 
         $db_config = Config::get('db');
-        new Db($db_config['type'], $db_config['mode'], $db_config['config']);
+        new Db($db_config);
 
         $log_config = Config::get('log');
         new Log($log_config);
