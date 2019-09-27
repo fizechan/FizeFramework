@@ -25,12 +25,11 @@ class View
 
     /**
      * 在构造方法中设置静态属性
-     * @param string $driver 使用的实际接口名称
      * @param array $config 配置项
      */
-    public function __construct($driver, array $config = [])
+    public function __construct(array $config = [])
     {
-        self::$view = FizeView::getInstance($driver, $config);
+        self::$view = FizeView::getInstance($config['handler'], $config['config']);
     }
 
     /**

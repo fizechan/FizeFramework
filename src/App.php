@@ -84,11 +84,13 @@ class App
      */
     protected function config()
     {
-        new Url(self::$config['route_key']);
         new Config(self::$config['module']);
 
+        $url_config = Config::get('url');
+        new Url($url_config);
+
         $cache_config = Config::get('cache');
-        new Cache($cache_config['driver'], $cache_config['config']);
+        new Cache($cache_config);
 
         $cookie_config = Config::get('cookie');
         new Cookie($cookie_config);
@@ -97,7 +99,7 @@ class App
         new Db($db_config['type'], $db_config['mode'], $db_config['config']);
 
         $log_config = Config::get('log');
-        new Log($log_config['driver'], $log_config['config']);
+        new Log($log_config);
 
         $request_config = Config::get('request');
         new Request($request_config);
@@ -106,7 +108,7 @@ class App
         new Session($session_config);
 
         $config_view = Config::get('view');
-        new View($config_view['driver'], $config_view['config']);
+        new View($config_view);
     }
 
     /**
