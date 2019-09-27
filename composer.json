@@ -19,13 +19,11 @@
         "fize/view": "*@dev"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.0.0",
-        "twig/twig": ">=2.11.0"
+        "phpunit/phpunit": "^8.0.0"
     },
 	"autoload": {
         "psr-4": {
-            "fize\\framework\\": "src",
-            "app\\": "app"
+            "fize\\framework\\": "src"
         }
     }
 }
