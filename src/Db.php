@@ -18,7 +18,7 @@ class Db extends FizeDb
      */
     public function __construct(array $config)
     {
-        if($config['type']) {
+        if(isset($config['type']) && $config['type']) {
             self::init($config);
         }
     }
