@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpIncludeInspection */
+<?php
+/** @noinspection PhpIncludeInspection */
 
 
 namespace fize\framework;
@@ -11,6 +12,10 @@ use fize\io\File;
  */
 class Config
 {
+    /**
+     * @var string 配置目录
+     */
+    protected static $dir;
 
     /**
      * @var string 当前模块
@@ -24,10 +29,12 @@ class Config
 
     /**
      * 初始化
+     * @param string $dir 配置目录
      * @param string $module 指定要附加配置的模块名
      */
-    public function __construct($module = null)
+    public function __construct($dir, $module = null)
     {
+        self::$dir = $dir;
         self::$module = $module;
     }
 
@@ -88,12 +95,12 @@ class Config
         //框架默认配置
         $cfg_files[] = __DIR__ . '/config/' . $file_name;
         //应用默认配置
-        $cfg_files[] = App::configPath() . '/' . $file_name;
+        $cfg_files[] = self::$dir . '/' . $file_name;
         //公共模块配置
-        $cfg_files[] = App::configPath() . '/common/' . $file_name;
+        $cfg_files[] = self::$dir . '/common/' . $file_name;
         //当前模块配置
         if (self::$module) {
-            $cfg_files[] = App::configPath() . '/' . self::$module . '/' . $file_name;
+            $cfg_files[] = self::$dir . '/' . self::$module . '/' . $file_name;
         }
 
         $config = [];

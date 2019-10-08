@@ -38,7 +38,6 @@ class App
     {
         $this->init($config);
         $this->config();
-        $this->run();
     }
 
     /**
@@ -65,8 +64,7 @@ class App
 
         if ($config['module'] === false) {  //不使用分组
             self::$module = null;
-        }
-        if ($config['module'] === true) {  //自动判断分组
+        } elseif ($config['module'] === true) {  //自动判断分组
             $route = Request::get($config['route_key']);
             if($route) {
                 $routes = explode('/', $route);
@@ -74,6 +72,8 @@ class App
             } else {
                 self::$module = $config['default_module'];
             }
+        } else {
+            self::$module = $config['module'];
         }
 
         self::$config = $config;
@@ -84,7 +84,7 @@ class App
      */
     protected function config()
     {
-        new Config(self::$config['module']);
+        new Config(self::configPath(), self::$config['module']);
 
         $url_config = Config::get('url');
         new Url($url_config);
@@ -113,8 +113,9 @@ class App
 
     /**
      * 执行逻辑
+     * @todo 定位控制器应放在单独的方法中调用
      */
-    protected function run()
+    public function run()
     {
         $config_controller = Config::get('controller');
 

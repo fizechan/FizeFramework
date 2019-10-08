@@ -3,7 +3,10 @@
 
 namespace fize\framework;
 
-
+/**
+ * URL管理类，包括路由解析，URL生成等功能
+ * @package fize\framework
+ */
 class Url
 {
 
@@ -22,22 +25,12 @@ class Url
 
     }
 
-    public static function rule()
+    public static function parse($url)
     {
 
     }
 
-    public static function build()
-    {
-
-    }
-
-    public static function url()
-    {
-
-    }
-
-    public static function to()
+    public static function create($url, array $params = [])
     {
 
     }
