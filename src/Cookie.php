@@ -11,8 +11,7 @@ class Cookie
 {
 
     /**
-     * 当前配置
-     * @var array
+     * @var array 当前配置
      */
     protected static $config;
 
