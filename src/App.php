@@ -79,7 +79,7 @@ class App
         $config = array_merge($default_config, $config);
 
         if (is_null($config['root_path'])) {
-            $root_path = dirname(dirname(dirname(dirname(__FILE__))));  //使用composer放置在vendor文件夹中的相对位置
+            $root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));  //使用composer放置在vendor文件夹中的相对位置
             $config['root_path'] = $root_path;
         }
 
