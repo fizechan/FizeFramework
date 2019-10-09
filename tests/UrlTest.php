@@ -28,7 +28,7 @@ class UrlTest extends TestCase
     {
         //完整匹配
         $org_url1 = Url::parse('news/title110');
-        self::assertEquals($org_url1, 'index/news/details?id=110');
+        self::assertEquals($org_url1, 'index/news/details');
         $id = Request::get('id', 0);
         self::assertEquals($id, 110);
 

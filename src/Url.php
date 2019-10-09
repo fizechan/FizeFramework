@@ -43,7 +43,7 @@ class Url
     }
 
     /**
-     * 解析URL获得实际URL
+     * 解析URL获得实际URL路由
      * @param string $url 待解析URL
      * @return string
      */
@@ -71,11 +71,11 @@ class Url
                         $_GET[$key] = $value;
                     }
                 }
-
-                return $target;
+                return $turl['path'];
             }
         }
-        return $url;
+        $turl = parse_url($url);
+        return $turl['path'];
     }
 
     /**
