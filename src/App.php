@@ -3,6 +3,8 @@
 
 namespace fize\framework;
 
+use fize\io\Directory;
+
 /**
  * 应用入口
  * @package fize\framework
@@ -53,7 +55,7 @@ class App
     protected static function getRoute()
     {
         $route = Request::server('PATH_INFO');
-        if($route) {
+        if ($route) {
             $route = substr($route, 1);  //删除第一个字符'/'
         } else {
             $route = Request::get(self::$config['route_key']);
@@ -68,13 +70,15 @@ class App
     protected function init(array $config)
     {
         $default_config = [
-            'root_path'      => null,  //根目录
-            'app_dir'        => 'app',  //应用文件夹
-            'config_dir'     => 'config',  //配置文件夹
-            'runtime_dir'    => 'runtime',  //运行时文件夹
-            'module'         => true,  //true表示开启分组并自动判断，false表示关闭分组，字符串表示指定分组
-            'default_module' => 'index',  //开启分组时的默认分组
-            'route_key'      => '_r',  //兼容模式路由GET参数名
+            'root_path'          => null,  //根目录
+            'app_dir'            => 'app',  //应用文件夹
+            'config_dir'         => 'config',  //配置文件夹
+            'runtime_dir'        => 'runtime',  //运行时文件夹
+            'app_controller_dir' => 'controller',  //控制器文件夹
+            'app_view_dir'       => 'view',  //视图文件夹
+            'module'             => true,  //true表示开启分组并自动判断，false表示关闭分组，字符串表示指定分组
+            'default_module'     => 'index',  //开启分组时的默认分组
+            'route_key'          => '_r',  //兼容模式路由GET参数名
         ];
         $config = array_merge($default_config, $config);
 
@@ -87,7 +91,7 @@ class App
             self::$module = null;
         } elseif ($config['module'] === true) {  //自动判断分组
             $route = self::getRoute();
-            if($route) {
+            if ($route) {
                 $routes = explode('/', $route);
                 self::$module = $routes[0];
             } else {
@@ -128,8 +132,11 @@ class App
         $session_config = Config::get('session');
         new Session($session_config);
 
-        $config_view = Config::get('view');
-        new View($config_view);
+        $path_dir = self::$module ? self::appPath() . '/' . self::$module . '/' . self::$config['app_view_dir'] : App::appPath() . '/' . self::$config['app_view_dir'];
+        if(Directory::isDir($path_dir)) {
+            $config_view = Config::get('view');
+            new View($config_view);
+        }
     }
 
     /**
@@ -139,12 +146,12 @@ class App
     {
         $config_controller = Config::get('controller');
         $route = self::getRoute();
-        if($route) {
+        if ($route) {
             $routes = explode('/', $route);
-            if(self::$config['module'] === true) {  //自动判断
+            if (self::$config['module'] === true) {  //自动判断
                 array_shift($routes);  //第一个即为模块名
             }
-            if(count($routes) == 0) {
+            if (count($routes) == 0) {
                 self::$controller = $config_controller['default_controller'];
                 self::$action = $config_controller['default_action'];
             } elseif (count($routes) == 1) {
@@ -160,18 +167,18 @@ class App
             self::$action = $config_controller['default_action'];
         }
         $class_path = '\\' . self::$config['app_dir'];
-        if(self::$module) {
+        if (self::$module) {
             $class_path .= '\\' . self::$module;
         }
-        $class_path .= '\\controller\\' . self::$controller;
+        $class_path .= '\\' . self::$config['app_controller_dir'] . '\\' . self::$controller;
         $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path . $config_controller['controller_postfix']);
-        if(!class_exists($class)) {
+        if (!class_exists($class)) {
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path);
-            if(!class_exists($class)) {
+            if (!class_exists($class)) {
                 die('404-1');  //todo 出错的统一处理
             }
         }
-        if(!method_exists($class, self::$action)){
+        if (!method_exists($class, self::$action)) {
             die('404-2');  //todo 出错的统一处理
         }
         self::$class = $class;
@@ -189,8 +196,8 @@ class App
         $controller = new $class();
         $response = $controller->$action();
 
-        if($response) {
-            if($response instanceof Response) {
+        if ($response) {
+            if ($response instanceof Response) {
                 $response->send();
             } elseif (is_string($response)) {
                 $response = Response::html($response);
