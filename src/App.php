@@ -105,7 +105,7 @@ class App
      */
     protected function config()
     {
-        new Config(self::configPath(), self::$config['module']);
+        new Config(self::configPath(), self::$module);
 
         $url_config = Config::get('url');
         new Url($url_config);

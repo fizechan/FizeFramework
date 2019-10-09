@@ -6,15 +6,10 @@ use fize\framework\Config;
 class ConfigTest extends TestCase
 {
 
-    public function __construct($name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-
-        new Config(__DIR__ . '/config', 'index');
-    }
-
     public function testGet()
     {
+        new Config(__DIR__ . '/config', 'index');
+
         $cfg_app = Config::get('app');
         var_dump($cfg_app);
         self::assertIsArray($cfg_app);
@@ -29,5 +24,13 @@ class ConfigTest extends TestCase
         self::assertEquals($cfg_app['test2']['test22']['test223'], '2-223(2)');
         self::assertEquals($cfg_app['test2']['test23'], '2-21(2)');
         self::assertEquals($cfg_app['test2']['test24'], '2-24(2)');
+
+        new Config(__DIR__ . '/config', 'admin');
+
+        $cfg_app = Config::get('app');
+        var_dump($cfg_app);
+
+        $cfg_url = Config::get('url');
+        var_dump($cfg_url);
     }
 }
