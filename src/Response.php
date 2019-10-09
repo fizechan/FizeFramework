@@ -202,7 +202,7 @@ class Response
 
     /**
      * HTML响应
-     * @param mixed $html HTML内容
+     * @param string $html HTML内容
      * @param string $charset 输出编码
      * @return Response
      */
@@ -216,7 +216,7 @@ class Response
 
     /**
      * XML响应
-     * @param mixed $xml XML内容
+     * @param string $xml XML内容
      * @param string $charset 输出编码
      * @return Response
      */
@@ -230,14 +230,12 @@ class Response
 
     /**
      * 跳转
-     * @param string $url
+     * @param string $url 跳转URL
      * @param int $delay 延迟时间，以秒为单位
      * @return Response
      */
     public static function redirect($url, $delay = null)
     {
-        //todo $url为内部链接时要进行URL改装
-
         $response = new Response();
         if (is_null($delay)) {
             $response->header('Location', $url);
