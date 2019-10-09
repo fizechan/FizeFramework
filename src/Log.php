@@ -39,7 +39,7 @@ class Log
      * 在构造方法中设置静态属性
      * @param array $config 配置项
      */
-    public function __construct(array $config = [])
+    public function __construct(array $config)
     {
         self::$log = FizeLog::getInstance($config['handler'], $config['config']);
     }
