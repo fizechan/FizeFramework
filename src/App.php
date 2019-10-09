@@ -31,6 +31,11 @@ class App
     protected static $action;
 
     /**
+     * @var string 当前控制器类全限定名
+     */
+    protected static $class;
+
+    /**
      * 在此执行所有流程
      * @param array $config 环境配置
      */
@@ -38,13 +43,14 @@ class App
     {
         $this->init($config);
         $this->config();
+        $this->check();
     }
 
     /**
      * 初始化
      * @param array $config 参数
      */
-    protected function init($config)
+    protected function init(array $config)
     {
         $default_config = [
             'root_path'      => null,  //根目录
@@ -112,18 +118,20 @@ class App
     }
 
     /**
-     * 执行逻辑
-     * @todo 定位控制器应放在单独的方法中调用
+     * 进行检测并确定各参数值
      */
-    public function run()
+    protected function check()
     {
         $config_controller = Config::get('controller');
+        $route = Request::server('PATH_INFO');
+        if(is_null($route)) {
+            $route = Request::get(self::$config['route_key']);
+        }
 
-        $route = Request::get(self::$config['route_key']);
         if($route) {
             $routes = explode('/', $route);
             if(self::$config['module'] === true) {  //自动判断
-                array_shift($routes);
+                array_shift($routes);  //第一个即为模块名
             }
             if(count($routes) == 0) {
                 self::$controller = $config_controller['default_controller'];
@@ -140,15 +148,11 @@ class App
             self::$controller = $config_controller['default_controller'];
             self::$action = $config_controller['default_action'];
         }
-
-        View::path(self::$controller . "/" . self::$action);
-
         $class_path = '\\' . self::$config['app_dir'];
         if(self::$module) {
             $class_path .= '\\' . self::$module;
         }
         $class_path .= '\\controller\\' . self::$controller;
-
         $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path . $config_controller['controller_postfix']);
         if(!class_exists($class)) {
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path);
@@ -156,12 +160,21 @@ class App
                 die('404');  //todo 出错的统一处理
             }
         }
-
-        $action = self::$action;
-        if(!method_exists($class, $action)){
+        if(!method_exists($class, self::$action)){
             die('404');  //todo 出错的统一处理
         }
+        self::$class = $class;
+    }
 
+    /**
+     * 执行逻辑
+     */
+    public function run()
+    {
+        View::path(self::$controller . "/" . self::$action);
+
+        $class = self::$class;
+        $action = self::$action;
         $controller = new $class();
         $response = $controller->$action();
 
