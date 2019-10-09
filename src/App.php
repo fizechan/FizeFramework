@@ -54,11 +54,15 @@ class App
      */
     protected static function getRoute()
     {
-        $route = Request::server('PATH_INFO');
-        if ($route) {
-            $route = substr($route, 1);  //删除第一个字符'/'
-        } else {
+        if(isset($_GET[self::$config['route_key']]) && !is_null($_GET[self::$config['route_key']])) {
             $route = Request::get(self::$config['route_key']);
+        } else {
+            $route = Request::server('PATH_INFO');
+            if ($route) {
+                $route = substr($route, 1);  //删除第一个字符'/'
+            } else {
+                $route = '';
+            }
         }
         return $route;
     }
@@ -87,6 +91,8 @@ class App
             $config['root_path'] = $root_path;
         }
 
+        self::$config = $config;
+
         if ($config['module'] === false) {  //不使用分组
             self::$module = null;
         } elseif ($config['module'] === true) {  //自动判断分组
@@ -100,8 +106,6 @@ class App
         } else {
             self::$module = $config['module'];
         }
-
-        self::$config = $config;
     }
 
     /**

@@ -62,7 +62,6 @@ class AppTest extends TestCase
     {
         $_GET['_r'] = 'index/test';  //伪装路由
         $this->app->run();
-
         self::assertTrue(true);
     }
 
@@ -87,8 +86,15 @@ class AppTest extends TestCase
     public function testAction()
     {
         $_GET['_r'] = 'index/test2';  //伪装路由
-        $this->app->run();  //执行
+
+        $config = [
+            'root_path' => __DIR__,
+            'module'    => 'test'
+        ];
+        new App($config);
+
         $action = App::action();
+        var_dump($action);
         self::assertEquals($action, 'test2');
     }
 
@@ -107,7 +113,13 @@ class AppTest extends TestCase
     public function testController()
     {
         $_GET['_r'] = 'index/test2';  //伪装路由
-        $this->app->run();  //执行
+
+        $config = [
+            'root_path' => __DIR__,
+            'module'    => 'test'
+        ];
+        new App($config);
+
         $controller = App::controller();
         self::assertEquals($controller, 'Index');
     }
