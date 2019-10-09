@@ -3,6 +3,7 @@
 
 
 use fize\framework\App;
+use fize\framework\Request;
 use PHPUnit\Framework\TestCase;
 
 class AppTest extends TestCase
@@ -30,6 +31,20 @@ class AppTest extends TestCase
             'module'    => 'test'
         ];
         $this->app = new App($config);
+    }
+
+    public function testRoute()
+    {
+        $PATH_INFO = '/admin/index/index';
+        $route = $PATH_INFO;
+        if($route) {
+            $route = substr($route, 1);  //删除第一个字符'/'
+        } else {
+            $route = Request::get('_r');
+        }
+        var_dump($route);
+
+        self::assertEquals($route, 'admin/index/index');
     }
 
     public function testEnv()

@@ -47,6 +47,21 @@ class App
     }
 
     /**
+     * 获取实际路由地址
+     * @return string
+     */
+    protected static function getRoute()
+    {
+        $route = Request::server('PATH_INFO');
+        if($route) {
+            $route = substr($route, 1);  //删除第一个字符'/'
+        } else {
+            $route = Request::get(self::$config['route_key']);
+        }
+        return $route;
+    }
+
+    /**
      * 初始化
      * @param array $config 参数
      */
@@ -59,7 +74,7 @@ class App
             'runtime_dir'    => 'runtime',  //运行时文件夹
             'module'         => true,  //true表示开启分组并自动判断，false表示关闭分组，字符串表示指定分组
             'default_module' => 'index',  //开启分组时的默认分组
-            'route_key'      => '_r',  //路由GET参数名
+            'route_key'      => '_r',  //兼容模式路由GET参数名
         ];
         $config = array_merge($default_config, $config);
 
@@ -71,7 +86,7 @@ class App
         if ($config['module'] === false) {  //不使用分组
             self::$module = null;
         } elseif ($config['module'] === true) {  //自动判断分组
-            $route = Request::get($config['route_key']);
+            $route = self::getRoute();
             if($route) {
                 $routes = explode('/', $route);
                 self::$module = $routes[0];
@@ -123,13 +138,7 @@ class App
     protected function check()
     {
         $config_controller = Config::get('controller');
-        $route = Request::server('PATH_INFO');
-        if($route) {
-            $route = substr($route, 1);  //删除第一个字符'/'
-        } else {
-            $route = Request::get(self::$config['route_key']);
-        }
-
+        $route = self::getRoute();
         if($route) {
             $routes = explode('/', $route);
             if(self::$config['module'] === true) {  //自动判断
@@ -159,11 +168,11 @@ class App
         if(!class_exists($class)) {
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path);
             if(!class_exists($class)) {
-                die('404');  //todo 出错的统一处理
+                die('404-1');  //todo 出错的统一处理
             }
         }
         if(!method_exists($class, self::$action)){
-            die('404');  //todo 出错的统一处理
+            die('404-2');  //todo 出错的统一处理
         }
         self::$class = $class;
     }
