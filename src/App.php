@@ -124,7 +124,9 @@ class App
     {
         $config_controller = Config::get('controller');
         $route = Request::server('PATH_INFO');
-        if(is_null($route)) {
+        if($route) {
+            $route = substr($route, 1);  //删除第一个字符'/'
+        } else {
             $route = Request::get(self::$config['route_key']);
         }
 
