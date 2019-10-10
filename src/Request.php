@@ -60,12 +60,14 @@ class Request
      * 初始化静态属性
      * @param array $config 配置
      */
-    public function __construct(array $config)
+    public function __construct(array $config =[])
     {
         $default_config = [
-            'var_method' => '_method',  //请求方式伪装字段
-            'var_ajax'   => '_ajax',  //AJAX伪装字段
-            'var_pjax'   => '_pjax',  //PJAX伪装字段
+            'var_method'       => '_method',  //请求方式伪装字段
+            'var_ajax'         => '_ajax',  //AJAX伪装字段
+            'var_pjax'         => '_pjax',  //PJAX伪装字段
+            'https_agent_name' => '',  //HTTPS代理标识
+            'accept_type'      => '',  //指定接受类型
         ];
         $config = array_merge($default_config, $config);
         self::$config = $config;
