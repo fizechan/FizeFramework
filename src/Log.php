@@ -9,7 +9,6 @@ use fize\log\LogHandler;
 /**
  * 日志类
  * 遵循PSR3规范，并将其以静态方法实现便于调用
- * @package fize\framework
  */
 class Log
 {

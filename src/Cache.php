@@ -8,7 +8,6 @@ use fize\cache\CacheHandler;
 
 /**
  * 缓存类
- * @package fize\framework
  */
 class Cache
 {

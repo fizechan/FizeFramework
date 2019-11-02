@@ -9,7 +9,6 @@ use fize\io\File;
 /**
  * 配置类
  * @todo 使用数组递归合并读取不易于维护，且容易产生异议，考虑使用简单替换
- * @package fize\framework
  */
 class Config
 {

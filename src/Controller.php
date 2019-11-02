@@ -6,7 +6,6 @@ namespace fize\framework;
 /**
  * 控制器
  * @todo 目前暂未使用
- * @package fize\framework
  */
 class Controller
 {

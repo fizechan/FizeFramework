@@ -2,3 +2,4 @@
 /.idea
 /composer.lock
 /tests/runtime
+/.phpunit.result.cache

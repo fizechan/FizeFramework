@@ -7,7 +7,6 @@ use fize\io\Directory;
 
 /**
  * 应用入口
- * @package fize\framework
  */
 class App
 {

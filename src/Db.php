@@ -7,7 +7,6 @@ use fize\db\Db as FizeDb;
 
 /**
  * 数据库
- * @package fize\framework
  */
 class Db extends FizeDb
 {

@@ -6,8 +6,8 @@ namespace fize\framework;
 use fize\misc\Preg;
 
 /**
- * URL管理类，包括路由解析，URL生成等功能
- * @package fize\framework
+ * URL管理类
+ * 功能包括路由解析，URL生成
  */
 class Url
 {

@@ -8,7 +8,6 @@ use fize\view\ViewHandler;
 
 /**
  * 视图类
- * @package fize\framework
  */
 class View
 {
