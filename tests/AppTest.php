@@ -61,7 +61,12 @@ class AppTest extends TestCase
     public function testRun()
     {
         $_GET['_r'] = 'index/test';  //伪装路由
-        $this->app->run();
+        $config = [
+            'root_path' => __DIR__,
+            'module'    => 'test'
+        ];
+        $app = new App($config);
+        $app->run();
         self::assertTrue(true);
     }
 

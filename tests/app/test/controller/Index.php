@@ -19,7 +19,7 @@ class Index extends Controller
 
     public function test()
     {
-        echo 'Hello FizeFramework';
+        echo 'Hello FizeFramework1';
     }
 
     public function test2()

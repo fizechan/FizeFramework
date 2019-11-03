@@ -4,6 +4,8 @@
 namespace fize\framework;
 
 use fize\io\Directory;
+use Throwable;
+use fize\framework\exception\ResponseException;
 
 /**
  * 应用入口
@@ -37,13 +39,14 @@ class App
     protected static $class;
 
     /**
-     * 在此执行所有流程
+     * 在此执行所有准备流程
      * @param array $config 环境配置
      */
     public function __construct(array $config = [])
     {
         $this->init($config);
         $this->config();
+        $this->handler();
         $this->check();
     }
 
@@ -142,6 +145,35 @@ class App
             $config_view = Config::get('view');
             new View($config_view);
         }
+    }
+
+    /**
+     * 接管异常处理
+     */
+    protected function handler()
+    {
+        //系统错误处理
+        set_error_handler(function($errno, $errstr, $errfile = null, $errline = 0, array $errcontext = []){
+            echo "errno : {$errno}<br/>\r\n";
+            echo "errstr : {$errstr}<br/>\r\n";
+            echo "errfile : {$errfile}<br/>\r\n";
+            echo "errline : {$errline}<br/>\r\n";
+            echo "errcontext : <br/>\r\n";
+            var_dump($errcontext);
+            //die();
+            //return false;  //return false将显示$php_errormsg
+        },  E_ALL);
+
+        //系统异常处理
+        set_exception_handler(function (Throwable $exception){
+            if($exception instanceof ResponseException) {
+                $response = $exception->getResponse();
+                $response->send();
+            } else {
+                var_dump($exception);
+                echo "Uncaught exception: " , $exception->getMessage(), "\n";
+            }
+        });
     }
 
     /**
