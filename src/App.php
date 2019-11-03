@@ -160,6 +160,7 @@ class App
             echo "errline : {$errline}<br/>\r\n";
             echo "errcontext : <br/>\r\n";
             var_dump($errcontext);
+            echo "<br/>\r\n";
             //die();
             //return false;  //return false将显示$php_errormsg
         },  E_ALL);
@@ -171,7 +172,7 @@ class App
                 $response->send();
             } else {
                 var_dump($exception);
-                echo "Uncaught exception: " , $exception->getMessage(), "\n";
+                echo "Uncaught exception: " , $exception->getMessage(), "\r\n";
             }
         });
     }
