@@ -6,6 +6,14 @@ namespace fize\framework;
 use fize\io\Directory;
 use Throwable;
 use fize\framework\exception\ResponseException;
+use fize\cache\Cache;
+use fize\web\Request;
+use fize\web\Cookie;
+use fize\web\Session;
+use fize\web\Response;
+use fize\db\Db;
+use fize\log\Log;
+use fize\view\View;
 
 /**
  * 应用入口

@@ -4,6 +4,9 @@
 namespace fize\framework;
 
 use fize\framework\exception\ResponseException;
+use fize\web\Response;
+use fize\web\Request;
+use fize\view\View;
 
 /**
  * 控制器
