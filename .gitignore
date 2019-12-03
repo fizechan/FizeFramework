@@ -1,6 +1,5 @@
-/vendor/
 /.idea
+/temp/
+/vendor/
 /composer.lock
-/tests/runtime
 /.phpunit.result.cache
-/temp
