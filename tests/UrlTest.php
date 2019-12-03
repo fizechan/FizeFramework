@@ -3,7 +3,7 @@
 
 use fize\framework\Url;
 use fize\framework\Config;
-use fize\framework\Request;
+use fize\web\Request;
 use PHPUnit\Framework\TestCase;
 
 class UrlTest extends TestCase
@@ -13,7 +13,7 @@ class UrlTest extends TestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        new Config(__DIR__ . '/config', 'index');
+        new Config(dirname(__DIR__) . '/temp/config', 'index');
 
         $url_config = Config::get('url');
         new Url($url_config);

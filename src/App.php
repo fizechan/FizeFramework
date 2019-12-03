@@ -129,29 +129,33 @@ class App
         new Url($url_config);
 
         $cache_config = Config::get('cache');
-        new Cache($cache_config);
+        //@todo Cahce 使用 Db 处理器时的默认配置
+        new Cache($cache_config['handler'], $cache_config['config']);
 
         $cookie_config = Config::get('cookie');
         new Cookie($cookie_config);
 
         $db_config = Config::get('db');
         if($db_config) {
-            new Db($db_config);
+            $db_mode = isset($db_config['mode']) ? $db_config['mode'] : null;
+            new Db($db_config['type'], $db_config['config'], $db_mode);
         }
 
         $log_config = Config::get('log');
-        new Log($log_config);
+        //@todo Log 使用 Db 处理器时的默认配置
+        new Log($log_config['handler'], $log_config['config']);
 
         $request_config = Config::get('request');
         new Request($request_config);
 
         $session_config = Config::get('session');
+        //@todo Session 使用 Db 处理器时的默认配置
         new Session($session_config);
 
         $path_dir = self::$module ? self::appPath() . '/' . self::$module . '/' . self::$config['app_view_dir'] : App::appPath() . '/' . self::$config['app_view_dir'];
         if(Directory::isDir($path_dir)) {
             $config_view = Config::get('view');
-            new View($config_view);
+            new View($config_view['handler'], $config_view['config']);
         }
     }
 
@@ -305,7 +309,9 @@ class App
     }
 
     /**
-     * 获取当前模块名，未启用模块时返回null
+     * 获取当前模块名
+     *
+     * 未启用模块时返回null
      * @return string
      */
     public static function module()

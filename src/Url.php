@@ -7,6 +7,7 @@ use fize\misc\Preg;
 
 /**
  * URL管理类
+ *
  * 功能包括路由解析，URL生成
  */
 class Url

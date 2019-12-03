@@ -8,7 +8,7 @@ class ConfigTest extends TestCase
 
     public function testGet()
     {
-        new Config(__DIR__ . '/config', 'index');
+        new Config(dirname(__DIR__) . '/temp/config', 'index');
 
         $cfg_app = Config::get('app');
         var_dump($cfg_app);
@@ -25,7 +25,7 @@ class ConfigTest extends TestCase
         self::assertEquals($cfg_app['test2']['test23'], '2-21(2)');
         self::assertEquals($cfg_app['test2']['test24'], '2-24(2)');
 
-        new Config(__DIR__ . '/config', 'admin');
+        new Config(dirname(__DIR__) . '/temp/config', 'admin');
 
         $cfg_app = Config::get('app');
         var_dump($cfg_app);

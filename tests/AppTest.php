@@ -1,9 +1,8 @@
 <?php
-/** @noinspection PhpIncludeInspection */
 
 
 use fize\framework\App;
-use fize\framework\Request;
+use fize\web\Request;
 use PHPUnit\Framework\TestCase;
 
 class AppTest extends TestCase
@@ -14,37 +13,44 @@ class AppTest extends TestCase
      */
     protected $app;
 
+    /**
+     * 注册自动加载用于测试中加载控制器
+     * @param null $name
+     * @param array $data
+     * @param string $dataName
+     * @noinspection PhpIncludeInspection
+     */
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
 
-        //注册自动加载用于测试中加载控制器
-        spl_autoload_register(function ($class_name) {
-            $file_def = __DIR__ . str_replace('\\', DIRECTORY_SEPARATOR, "/{$class_name}.php");
+        $config = [
+            'root_path' => dirname(__DIR__) . '/temp',
+            'module'    => 'test'
+        ];
+
+        spl_autoload_register(function ($class_name) use ($config) {
+            $file_def = $config['root_path'] . str_replace('\\', DIRECTORY_SEPARATOR, "/{$class_name}.php");
             if (is_file($file_def)) {
                 require_once $file_def;
             }
         });
 
-        $config = [
-            'root_path' => __DIR__,
-            'module'    => 'test'
-        ];
         $this->app = new App($config);
     }
 
     public function testRoute()
     {
-        $PATH_INFO = '/admin/index/index';
+        $PATH_INFO = '/index/index';
         $route = $PATH_INFO;
-        if($route) {
+        if ($route) {
             $route = substr($route, 1);  //删除第一个字符'/'
         } else {
             $route = Request::get('_r');
         }
         var_dump($route);
 
-        self::assertEquals($route, 'admin/index/index');
+        self::assertEquals($route, 'index/index');
     }
 
     public function testEnv()
@@ -55,14 +61,14 @@ class AppTest extends TestCase
 
         $root_path = App::env('root_path');
         var_dump($root_path);
-        self::assertEquals($root_path, __DIR__);
+        self::assertEquals($root_path, dirname(__DIR__) . '/temp');
     }
 
     public function testRun()
     {
         $_GET['_r'] = 'index/test';  //伪装路由
         $config = [
-            'root_path' => __DIR__,
+            'root_path' => dirname(__DIR__) . '/temp',
             'module'    => 'test'
         ];
         $app = new App($config);
@@ -73,13 +79,13 @@ class AppTest extends TestCase
     public function testRootPath()
     {
         $root_path = App::rootPath();
-        self::assertEquals($root_path, __DIR__);
+        self::assertEquals($root_path, dirname(__DIR__) . '/temp');
     }
 
     public function testRuntimePath()
     {
         $runtime_path = App::runtimePath();
-        self::assertEquals($runtime_path, __DIR__ . '/runtime');
+        self::assertEquals($runtime_path, dirname(__DIR__) . '/temp/runtime');
     }
 
     public function testModule()
@@ -93,7 +99,7 @@ class AppTest extends TestCase
         $_GET['_r'] = 'index/test2';  //伪装路由
 
         $config = [
-            'root_path' => __DIR__,
+            'root_path' => dirname(__DIR__) . '/temp',
             'module'    => 'test'
         ];
         new App($config);
@@ -106,13 +112,13 @@ class AppTest extends TestCase
     public function testAppPath()
     {
         $app_path = App::appPath();
-        self::assertEquals($app_path, __DIR__ . '/app');
+        self::assertEquals($app_path, dirname(__DIR__) . '/temp/app');
     }
 
     public function testConfigPath()
     {
         $config_path = App::configPath();
-        self::assertEquals($config_path, __DIR__ . '/config');
+        self::assertEquals($config_path, dirname(__DIR__) . '/temp/config');
     }
 
     public function testController()
@@ -120,7 +126,7 @@ class AppTest extends TestCase
         $_GET['_r'] = 'index/test2';  //伪装路由
 
         $config = [
-            'root_path' => __DIR__,
+            'root_path' => dirname(__DIR__) . '/temp',
             'module'    => 'test'
         ];
         new App($config);
