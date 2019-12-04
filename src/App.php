@@ -3,9 +3,13 @@
 
 namespace fize\framework;
 
-use fize\io\Directory;
 use Throwable;
 use fize\framework\exception\ResponseException;
+use fize\framework\exception\NotFoundException;
+use fize\framework\exception\ModuleNotFoundException;
+use fize\framework\exception\ControllerNotFoundException;
+use fize\framework\exception\ActionNotFoundException;
+use fize\io\Directory;
 use fize\cache\Cache;
 use fize\web\Request;
 use fize\web\Cookie;
@@ -14,6 +18,7 @@ use fize\web\Response;
 use fize\db\Db;
 use fize\log\Log;
 use fize\view\View;
+
 
 /**
  * 应用入口
@@ -64,7 +69,7 @@ class App
      */
     protected static function getRoute()
     {
-        if(isset($_GET[self::$config['route_key']]) && !is_null($_GET[self::$config['route_key']])) {
+        if (isset($_GET[self::$config['route_key']]) && !is_null($_GET[self::$config['route_key']])) {
             $route = Request::get(self::$config['route_key']);
         } else {
             $route = Request::server('PATH_INFO');
@@ -135,37 +140,37 @@ class App
         new Request($request_config);
 
         $db_config = Config::get('db');
-        if($db_config) {
+        if ($db_config) {
             $db_mode = isset($db_config['mode']) ? $db_config['mode'] : null;
             new Db($db_config['type'], $db_config['config'], $db_mode);
         }
 
         $cache_config = Config::get('cache');
-        if($cache_config['handler'] == 'DataBase') {  // Cahce 使用 Db 处理器时的默认配置
-            if(!isset($cache_config['config']['db']) && empty($cache_config['config']['db'])) {
+        if ($cache_config['handler'] == 'DataBase') {  // Cahce 使用 Db 处理器时的默认配置
+            if (!isset($cache_config['config']['db']) && empty($cache_config['config']['db'])) {
                 $cache_config['config']['db'] = $db_config;
             }
         }
         new Cache($cache_config['handler'], $cache_config['config']);
 
         $log_config = Config::get('log');  // Log 使用 Db 处理器时的默认配置
-        if($log_config['handler'] == 'DataBase') {  // Cahce 使用 Db 处理器时的默认配置
-            if(!isset($log_config['config']['db']) && empty($log_config['config']['db'])) {
+        if ($log_config['handler'] == 'DataBase') {  // Cahce 使用 Db 处理器时的默认配置
+            if (!isset($log_config['config']['db']) && empty($log_config['config']['db'])) {
                 $log_config['config']['db'] = $db_config;
             }
         }
         new Log($log_config['handler'], $log_config['config']);
 
         $session_config = Config::get('session');
-        if($session_config['save_handler']['type'] == 'DataBase') {  // Session 使用 Db 处理器时的默认配置
-            if(!isset($session_config['save_handler']['config']['db']) && empty($session_config['save_handler']['config']['db'])) {
+        if ($session_config['save_handler']['type'] == 'DataBase') {  // Session 使用 Db 处理器时的默认配置
+            if (!isset($session_config['save_handler']['config']['db']) && empty($session_config['save_handler']['config']['db'])) {
                 $session_config['save_handler']['config']['db'] = $db_config;
             }
         }
         new Session($session_config);
 
         $path_dir = self::$module ? self::appPath() . '/' . self::$module . '/' . self::$config['app_view_dir'] : App::appPath() . '/' . self::$config['app_view_dir'];
-        if(Directory::isDir($path_dir)) {
+        if (Directory::isDir($path_dir)) {
             $config_view = Config::get('view');
             new View($config_view['handler'], $config_view['config']);
         }
@@ -177,30 +182,46 @@ class App
     protected function handler()
     {
         //系统错误处理
-        set_error_handler(function($errno, $errstr, $errfile = null, $errline = 0, array $errcontext = []){
-            echo "errno : {$errno}<br/>\r\n";
-            echo "errstr : {$errstr}<br/>\r\n";
-            echo "errfile : {$errfile}<br/>\r\n";
-            echo "errline : {$errline}<br/>\r\n";
-            echo "errcontext : <br/>\r\n";
-            var_dump($errcontext);
-            echo "<br/>\r\n";
-            //die();
-            //return false;  //return false将显示$php_errormsg
-        },  E_ALL);
+        set_error_handler(function ($errno, $errstr, $errfile = null, $errline = 0, array $errcontext = []) {
+            Log::error("[{$errno}]$errstr : {$errfile} Line: {$errline}");
+            $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
+            $view->assign('errno', $errno);
+            $view->assign('errstr', $errstr);
+            $view->assign('errfile', $errfile);
+            $view->assign('errline', $errline);
+            $view->assign('errcontext', $errcontext);
+            $response = Response::html($view->render('error_handler'));
+            $response->code(500);
+            throw new ResponseException($response);
+        }, E_ALL);
 
         //系统异常处理
-        set_exception_handler(function (Throwable $exception){
-            if($exception instanceof ResponseException) {
+        set_exception_handler(function (Throwable $exception) {
+            if ($exception instanceof ResponseException) {
                 $response = $exception->getResponse();
                 $response->send();
+            } elseif ($exception instanceof NotFoundException) {
+                Log::notice("[404]Not Found : {$exception->url()}");
+                $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
+                $view->assign('exception', $exception);
+                $response = Response::html($view->render('404'));
+                $response->code(404);
+                $response->send();
             } else {
-                var_dump($exception);
-                echo "Uncaught exception: " , $exception->getMessage(), "\r\n";
+                Log::error("[{$exception->getCode()}]{$exception->getMessage()} : {$exception->getFile()} Line: {$exception->getLine()}");
+                $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
+                $view->assign('exception', $exception);
+                $response = Response::html($view->render('exception_handler'));
+                $response->code(500);
+                $response->send();
             }
         });
 
         //接管结束任务
+        register_shutdown_function(function () {
+            // @todo 收尾工作
+            Log::info('结束');
+        });
     }
 
     /**
@@ -232,6 +253,9 @@ class App
         }
         $class_path = '\\' . self::$config['app_dir'];
         if (self::$module) {
+            if (!Directory::isDir(self::appPath() . '/' . self::$module)) {
+                throw new ModuleNotFoundException(self::$module);
+            }
             $class_path .= '\\' . self::$module;
         }
         $class_path .= '\\' . self::$config['app_controller_dir'] . '\\' . self::$controller;
@@ -239,11 +263,11 @@ class App
         if (!class_exists($class)) {
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path);
             if (!class_exists($class)) {
-                die('404-1');  //todo 出错的统一处理
+                throw new ControllerNotFoundException(self::$module, self::$controller);
             }
         }
         if (!method_exists($class, self::$action)) {
-            die('404-2');  //todo 出错的统一处理
+            throw new ActionNotFoundException(self::$module, self::$controller, self::$action);
         }
         self::$class = $class;
     }

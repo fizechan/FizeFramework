@@ -46,8 +46,8 @@ class Controller
             $response = Response::json($json);
         } else {
             $config_view = Config::get('view');
-            if($config_view['dispatch_success_tmpl']) {
-                View::path($config_view['dispatch_success_tmpl']);
+            if($config_view['tpl_success']) {
+                View::path($config_view['tpl_success']);
                 View::assign('message', $message);
                 View::assign('url', $url);
                 View::assign('code', $code);
@@ -78,8 +78,8 @@ class Controller
             $response = Response::json($json);
         } else {
             $config_view = Config::get('view');
-            if($config_view['dispatch_success_tmpl']) {
-                View::path($config_view['dispatch_error_tmpl']);
+            if($config_view['tpl_error']) {
+                View::path($config_view['tpl_error']);
                 View::assign('message', $message);
                 View::assign('code', $code);
                 $response = Response::html(View::render());

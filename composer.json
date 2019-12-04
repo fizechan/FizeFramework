@@ -16,7 +16,7 @@
         "fize/cache": "~2.3",
         "fize/log": "~2.2",
         "fize/view": "~1.2",
-        "fize/web": "~1.2"
+        "fize/web": "~1.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0.0",
