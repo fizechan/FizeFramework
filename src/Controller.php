@@ -53,20 +53,11 @@ class Controller
                 View::assign('code', $code);
                 $response = Response::html(View::render());
             } else {
-                $html = <<<HTML
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-<title>{$message}</title>
-</head>
-<body>
-    <h1>success!</h1>
-    <h2>{$message}</h2>
-</body>
-</html>
-HTML;
-                $response = Response::html($html);
+                $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
+                $view->assign('message', $message);
+                $view->assign('url', $url);
+                $view->assign('code', $code);
+                $response = Response::html($view->render('success'));
             }
         }
         throw new ResponseException($response);
@@ -93,21 +84,10 @@ HTML;
                 View::assign('code', $code);
                 $response = Response::html(View::render());
             } else {
-                $html = <<<HTML
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-<title>{$message}</title>
-</head>
-<body>
-    <h1>success!</h1>
-    <h2>{$message}</h2>
-    <h2>{$code}</h2>
-</body>
-</html>
-HTML;
-                $response = Response::html($html);
+                $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
+                $view->assign('message', $message);
+                $view->assign('code', $code);
+                $response = Response::html($view->render('error'));
             }
         }
         throw new ResponseException($response);
