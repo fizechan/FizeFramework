@@ -128,12 +128,11 @@ class App
         $url_config = Config::get('url');
         new Url($url_config);
 
-        $cache_config = Config::get('cache');
-        //@todo Cahce 使用 Db 处理器时的默认配置
-        new Cache($cache_config['handler'], $cache_config['config']);
-
         $cookie_config = Config::get('cookie');
         new Cookie($cookie_config);
+
+        $request_config = Config::get('request');
+        new Request($request_config);
 
         $db_config = Config::get('db');
         if($db_config) {
@@ -141,15 +140,28 @@ class App
             new Db($db_config['type'], $db_config['config'], $db_mode);
         }
 
-        $log_config = Config::get('log');
-        //@todo Log 使用 Db 处理器时的默认配置
+        $cache_config = Config::get('cache');
+        if($cache_config['handler'] == 'DataBase') {  // Cahce 使用 Db 处理器时的默认配置
+            if(!isset($cache_config['config']['db']) && empty($cache_config['config']['db'])) {
+                $cache_config['config']['db'] = $db_config;
+            }
+        }
+        new Cache($cache_config['handler'], $cache_config['config']);
+
+        $log_config = Config::get('log');  // Log 使用 Db 处理器时的默认配置
+        if($log_config['handler'] == 'DataBase') {  // Cahce 使用 Db 处理器时的默认配置
+            if(!isset($log_config['config']['db']) && empty($log_config['config']['db'])) {
+                $log_config['config']['db'] = $db_config;
+            }
+        }
         new Log($log_config['handler'], $log_config['config']);
 
-        $request_config = Config::get('request');
-        new Request($request_config);
-
         $session_config = Config::get('session');
-        //@todo Session 使用 Db 处理器时的默认配置
+        if($session_config['save_handler']['type'] == 'DataBase') {  // Session 使用 Db 处理器时的默认配置
+            if(!isset($session_config['save_handler']['config']['db']) && empty($session_config['save_handler']['config']['db'])) {
+                $session_config['save_handler']['config']['db'] = $db_config;
+            }
+        }
         new Session($session_config);
 
         $path_dir = self::$module ? self::appPath() . '/' . self::$module . '/' . self::$config['app_view_dir'] : App::appPath() . '/' . self::$config['app_view_dir'];
@@ -187,6 +199,8 @@ class App
                 echo "Uncaught exception: " , $exception->getMessage(), "\r\n";
             }
         });
+
+        //接管结束任务
     }
 
     /**
