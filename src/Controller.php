@@ -7,12 +7,17 @@ use fize\framework\exception\ResponseException;
 use fize\web\Response;
 use fize\web\Request;
 use fize\view\View;
+use fize\security\Validator;
 
 /**
  * 控制器
  */
-class Controller
+abstract class Controller
 {
+
+    public function __construct()
+    {
+    }
 
     /**
      * 返回JSON结果
@@ -104,5 +109,41 @@ class Controller
         $url = Url::create($url, $params);
         $response = Response::redirect($url, $delay);
         throw new ResponseException($response);
+    }
+
+    /**
+     * 验证数据
+     * @param array $data 数据
+     */
+    protected function validate($data)
+    {
+        $config_validator = Config::get('validator');
+
+        $path = '\\' . App::env('app_dir') . '\\' . App::module() . '\\' . $config_validator['dir_name'] . '\\' .App::controller();
+        $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['validator_postfix']);
+        if (!class_exists($class)) {
+            $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);
+        }
+        if (!class_exists($class)) {
+            $path = '\\' . App::env('app_dir') . '\\common\\' . $config_validator['dir_name'] . '\\' .App::controller();
+            $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['validator_postfix']);
+            if (!class_exists($class)) {
+                $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);
+            }
+        }
+
+        if (class_exists($class)) {
+            /**
+             * @var Validator $validator
+             */
+            $validator = new $class();
+            if($validator->hasScene(App::action())) {
+                $validator->scene(App::action());
+            }
+            $result = $validator->check($data);
+            if( $result !== true) {
+                $this->error($result);
+            }
+        }
     }
 }

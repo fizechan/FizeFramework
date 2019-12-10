@@ -11,6 +11,7 @@
     "require": {
 		"php": ">=7.0.0",
         "fize/misc": "~0.1",
+        "fize/security": "~1.3",
         "fize/io": "~3.3",
         "fize/db": "~2.5",
         "fize/cache": "~2.3",
