@@ -10,6 +10,7 @@ use fize\framework\exception\ModuleNotFoundException;
 use fize\framework\exception\ControllerNotFoundException;
 use fize\framework\exception\ActionNotFoundException;
 use fize\io\Directory;
+use fize\io\Ob;
 use fize\cache\Cache;
 use fize\web\Request;
 use fize\web\Cookie;
@@ -57,6 +58,7 @@ class App
      */
     public function __construct(array $config = [])
     {
+        Ob::start();
         $this->init($config);
         $this->config();
         $this->handler();
@@ -183,6 +185,7 @@ class App
     {
         //系统错误处理
         set_error_handler(function ($errno, $errstr, $errfile = null, $errline = 0, array $errcontext = []) {
+            Ob::clean();
             Log::error("[{$errno}]$errstr : {$errfile} Line: {$errline}");
             $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
             $view->assign('errno', $errno);
@@ -192,7 +195,8 @@ class App
             $view->assign('errcontext', $errcontext);
             $response = Response::html($view->render('error_handler'));
             $response->code(500);
-            throw new ResponseException($response);
+            $response->send();
+            die();
         }, E_ALL);
 
         //系统异常处理
@@ -295,6 +299,7 @@ class App
                 $response->send();
             }
         }
+        Ob::endFlush();
     }
 
     /**
