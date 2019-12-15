@@ -30,7 +30,7 @@ class App
     /**
      * @var array 环境配置
      */
-    protected static $config;
+    protected static $env;
 
     /**
      * @var string 当前分组
@@ -54,12 +54,11 @@ class App
 
     /**
      * 在此执行所有准备流程
-     * @param array $config 环境配置
+     * @param array $env 环境配置
      */
-    public function __construct(array $config = [])
+    public function __construct(array $env = [])
     {
-        Ob::start();
-        $this->init($config);
+        $this->init($env);
         $this->config();
         $this->handler();
         $this->check();
@@ -71,14 +70,22 @@ class App
      */
     protected static function getRoute()
     {
-        if (isset($_GET[self::$config['route_key']]) && !is_null($_GET[self::$config['route_key']])) {
-            $route = Request::get(self::$config['route_key']);
-        } else {
-            $route = Request::server('PATH_INFO');
-            if ($route) {
-                $route = substr($route, 1);  //删除第一个字符'/'
+        static $route = null;
+        if (is_null($route)) {
+            if (isset($_GET[self::$env['route_key']]) && !is_null($_GET[self::$env['route_key']])) {
+                $route = Request::get(self::$env['route_key']);
             } else {
-                $route = '';
+                $route = Request::server('PATH_INFO');
+                if ($route) {
+                    //删除第一个字符'/'
+                    $route = substr($route, 1);
+                    //删除最后一个字符'/'
+                    if (substr($route, -1) == '/') {
+                        $route = substr($route, 0, -1);
+                    }
+                } else {
+                    $route = '';
+                }
             }
         }
         return $route;
@@ -86,11 +93,12 @@ class App
 
     /**
      * 初始化
-     * @param array $config 参数
+     * @param array $env 参数
      */
-    protected function init(array $config)
+    protected function init(array $env)
     {
-        $default_config = [
+        Ob::start();
+        $default_env = [
             'root_path'          => null,  //根目录
             'app_dir'            => 'app',  //应用文件夹
             'config_dir'         => 'config',  //配置文件夹
@@ -101,28 +109,17 @@ class App
             'default_module'     => 'index',  //开启分组时的默认分组
             'route_key'          => '_r',  //兼容模式路由GET参数名
         ];
-        $config = array_merge($default_config, $config);
+        $env = array_merge($default_env, $env);
 
-        if (is_null($config['root_path'])) {
+        if (is_null($env['root_path'])) {
             $root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));  //使用composer放置在vendor文件夹中的相对位置
-            $config['root_path'] = $root_path;
+            $env['root_path'] = $root_path;
         }
 
-        self::$config = $config;
+        self::$env = $env;
 
-        if ($config['module'] === false) {  //不使用分组
-            self::$module = null;
-        } elseif ($config['module'] === true) {  //自动判断分组
-            $route = self::getRoute();
-            if ($route) {
-                $routes = explode('/', $route);
-                self::$module = $routes[0];
-            } else {
-                self::$module = $config['default_module'];
-            }
-        } else {
-            self::$module = $config['module'];
-        }
+        //由于需要读取分组参数所以 module 必须先确认
+        $this->checkModule();
     }
 
     /**
@@ -171,7 +168,7 @@ class App
         }
         new Session($session_config);
 
-        $path_dir = self::$module ? self::appPath() . '/' . self::$module . '/' . self::$config['app_view_dir'] : App::appPath() . '/' . self::$config['app_view_dir'];
+        $path_dir = self::$module ? self::appPath() . '/' . self::$module . '/' . self::$env['app_view_dir'] : App::appPath() . '/' . self::$env['app_view_dir'];
         if (Directory::isDir($path_dir)) {
             $config_view = Config::get('view');
             new View($config_view['handler'], $config_view['config']);
@@ -224,8 +221,58 @@ class App
         //接管结束任务
         register_shutdown_function(function () {
             // @todo 收尾工作
-            Log::info('结束');
         });
+    }
+
+    /**
+     * 检测并确定模块
+     */
+    protected function checkModule()
+    {
+        if (self::$env['module'] === false) {  //不使用分组
+            self::$module = null;
+        } elseif (self::$env['module'] === true) {  //自动判断分组
+            $route = self::getRoute();
+            if ($route) {
+                $routes = explode('/', $route);
+                self::$module = $routes[0];
+            } else {
+                self::$module = self::$env['default_module'];
+            }
+        } else {
+            self::$module = self::$env['module'];
+        }
+        if (self::$module && !Directory::isDir(self::appPath() . '/' . self::$module)) {
+            throw new ModuleNotFoundException(self::$module);
+        }
+    }
+
+    /**
+     * 检测控制器是否可用
+     * @param string $controller 控制器名
+     * @param bool $throw 如果控制器不存在是否抛出错误
+     * @return bool
+     */
+    protected function checkController($controller, $throw = false)
+    {
+        $config_controller = Config::get('controller');
+        $class_path = '\\' . self::$env['app_dir'];
+        if (self::$module) {
+            $class_path .= '\\' . self::$module;
+        }
+        $class_path .= '\\' . self::$env['app_controller_dir'] . '\\' . $controller;
+        $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path . $config_controller['controller_postfix']);
+        if (!class_exists($class)) {
+            $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path);
+            if (!class_exists($class)) {
+                if($throw) {
+                    throw new ControllerNotFoundException(self::$module, $controller);
+                }
+                return false;
+            }
+        }
+        self::$class = $class;
+        return true;
     }
 
     /**
@@ -235,45 +282,39 @@ class App
     {
         $config_controller = Config::get('controller');
         $route = self::getRoute();
+
         if ($route) {
             $routes = explode('/', $route);
-            if (self::$config['module'] === true) {  //自动判断
+            if (self::$env['module'] === true) {  //自动判断
                 array_shift($routes);  //第一个即为模块名
             }
-            if (count($routes) == 0) {
+
+            if (count($routes) == 0) {  //默认
                 self::$controller = $config_controller['default_controller'];
                 self::$action = $config_controller['default_action'];
-            } elseif (count($routes) == 1) {
+            } elseif (count($routes) == 1) {  //单个即为控制器
                 self::$controller = ucfirst($routes[0]);
                 self::$action = $config_controller['default_action'];
             } else {
-                self::$action = array_pop($routes);
-                $routes[count($routes) - 1] = ucfirst($routes[count($routes) - 1]);
-                self::$controller = implode('/', $routes);
+                //最后一个是操作
+                $t_routes = $routes;
+                self::$action = array_pop($t_routes);
+                $t_routes[count($t_routes) - 1] = ucfirst($t_routes[count($t_routes) - 1]);
+                self::$controller = implode('\\', $t_routes);
+                if (!self::checkController(self::$controller)) {  //整个URL都是控制器
+                    self::$controller = implode('\\', $routes);
+                    self::$action = $config_controller['default_action'];
+                }
             }
         } else {
             self::$controller = $config_controller['default_controller'];
             self::$action = $config_controller['default_action'];
         }
-        $class_path = '\\' . self::$config['app_dir'];
-        if (self::$module) {
-            if (!Directory::isDir(self::appPath() . '/' . self::$module)) {
-                throw new ModuleNotFoundException(self::$module);
-            }
-            $class_path .= '\\' . self::$module;
-        }
-        $class_path .= '\\' . self::$config['app_controller_dir'] . '\\' . self::$controller;
-        $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path . $config_controller['controller_postfix']);
-        if (!class_exists($class)) {
-            $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path);
-            if (!class_exists($class)) {
-                throw new ControllerNotFoundException(self::$module, self::$controller);
-            }
-        }
-        if (!method_exists($class, self::$action)) {
+
+        self::checkController(self::$controller, true);
+        if (!method_exists(self::$class, self::$action)) {
             throw new ActionNotFoundException(self::$module, self::$controller, self::$action);
         }
-        self::$class = $class;
     }
 
     /**
@@ -310,9 +351,9 @@ class App
     public static function env($key = null)
     {
         if ($key) {
-            return self::$config[$key];
+            return self::$env[$key];
         }
-        return self::$config;
+        return self::$env;
     }
 
     /**
@@ -321,7 +362,7 @@ class App
      */
     public static function rootPath()
     {
-        return self::$config['root_path'];
+        return self::$env['root_path'];
     }
 
     /**
@@ -330,7 +371,7 @@ class App
      */
     public static function appPath()
     {
-        return self::$config['root_path'] . '/' . self::$config['app_dir'];
+        return self::$env['root_path'] . '/' . self::$env['app_dir'];
     }
 
     /**
@@ -339,7 +380,7 @@ class App
      */
     public static function configPath()
     {
-        return self::$config['root_path'] . '/' . self::$config['config_dir'];
+        return self::$env['root_path'] . '/' . self::$env['config_dir'];
     }
 
     /**
@@ -348,13 +389,13 @@ class App
      */
     public static function runtimePath()
     {
-        return self::$config['root_path'] . '/' . self::$config['runtime_dir'];
+        return self::$env['root_path'] . '/' . self::$env['runtime_dir'];
     }
 
     /**
      * 获取当前模块名
      *
-     * 未启用模块时返回null
+     * 未启用模块时返回 null
      * @return string
      */
     public static function module()
