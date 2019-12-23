@@ -15,10 +15,6 @@ use fize\security\Validator;
 abstract class Controller
 {
 
-    public function __construct()
-    {
-    }
-
     /**
      * 返回JSON结果
      * @param array $data data字段
@@ -115,7 +111,7 @@ abstract class Controller
      * 验证数据
      * @param array $data 数据
      */
-    protected function validate($data)
+    protected function validate($data = null)
     {
         $config_validator = Config::get('validator');
 
