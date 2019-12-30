@@ -4,11 +4,13 @@
 namespace fize\framework;
 
 use Throwable;
+use ReflectionClass;
 use fize\framework\exception\ResponseException;
 use fize\framework\exception\NotFoundException;
 use fize\framework\exception\ModuleNotFoundException;
 use fize\framework\exception\ControllerNotFoundException;
 use fize\framework\exception\ActionNotFoundException;
+use fize\framework\exception\ParameterNotSetException;
 use fize\io\Directory;
 use fize\io\Ob;
 use fize\cache\Cache;
@@ -202,7 +204,7 @@ class App
                 $response = $exception->getResponse();
                 $response->send();
             } elseif ($exception instanceof NotFoundException) {
-                Log::notice("[404]Not Found : {$exception->url()}");
+                Log::notice("[404]Not Found[{$exception->getMessage()}] : {$exception->url()}");
                 $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
                 $view->assign('exception', $exception);
                 $response = Response::html($view->render('404'));
@@ -327,8 +329,22 @@ class App
         $class = self::$class;
         $action = self::$action;
         $controller = new $class();
-        $response = $controller->$action();
 
+        $ref_class = new ReflectionClass($class);
+        $ref_method = $ref_class->getMethod($action);
+        $parameters = [];
+        foreach ($ref_method->getParameters() as $parameter) {
+            $name = $parameter->getName();
+            $value = Request::get($name);
+            if($parameter->isOptional()) {
+                $value = is_null($value) ? $parameter->getDefaultValue() : $value;
+            } elseif (is_null($value)) {
+                throw new ParameterNotSetException($class, $action, $name);
+            }
+            $parameters[] = $value;
+        }
+
+        $response = call_user_func_array([$controller, $action], $parameters);
         if ($response) {
             if ($response instanceof Response) {
                 $response->send();

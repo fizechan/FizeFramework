@@ -58,4 +58,9 @@ class Index extends Controller
         ];
         return Response::json($rows);
     }
+
+    public function param($id)
+    {
+        echo "传入的id是{$id}";
+    }
 }
