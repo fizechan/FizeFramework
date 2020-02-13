@@ -23,7 +23,7 @@ class ResponseException extends RuntimeException
     public function __construct(Response $response)
     {
         $this->response = $response;
-        parent::__construct('ResponseException', $response->code());
+        parent::__construct('ResponseException', $response->getStatusCode());
     }
 
     /**

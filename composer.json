@@ -11,13 +11,13 @@
     "require": {
 		"php": ">=7.0.0",
         "fize/misc": "~0.1",
-        "fize/security": "~1.3",
-        "fize/io": "~3.3",
+        "fize/security": "~1.4",
+        "fize/io": "~3.5",
         "fize/db": "~2.5",
-        "fize/cache": "~2.3",
-        "fize/log": "~2.2",
+        "fize/cache": "~3.0",
+        "fize/log": "~3.0",
         "fize/view": "~1.2",
-        "fize/web": "~1.3"
+        "fize/web": "~2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0.0",

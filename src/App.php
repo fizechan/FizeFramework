@@ -5,12 +5,6 @@ namespace fize\framework;
 
 use Throwable;
 use ReflectionClass;
-use fize\framework\exception\ResponseException;
-use fize\framework\exception\NotFoundException;
-use fize\framework\exception\ModuleNotFoundException;
-use fize\framework\exception\ControllerNotFoundException;
-use fize\framework\exception\ActionNotFoundException;
-use fize\framework\exception\ParameterNotSetException;
 use fize\io\Directory;
 use fize\io\Ob;
 use fize\cache\Cache;
@@ -21,6 +15,12 @@ use fize\web\Response;
 use fize\db\Db;
 use fize\log\Log;
 use fize\view\View;
+use fize\framework\exception\ResponseException;
+use fize\framework\exception\NotFoundException;
+use fize\framework\exception\ModuleNotFoundException;
+use fize\framework\exception\ControllerNotFoundException;
+use fize\framework\exception\ActionNotFoundException;
+use fize\framework\exception\ParameterNotSetException;
 
 
 /**
@@ -193,8 +193,7 @@ class App
             $view->assign('errline', $errline);
             $view->assign('errcontext', $errcontext);
             $response = Response::html($view->render('error_handler'));
-            $response->code(500);
-            $response->send();
+            $response->withStatus(500)->send();
             die();
         }, E_ALL);
 
@@ -208,15 +207,13 @@ class App
                 $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
                 $view->assign('exception', $exception);
                 $response = Response::html($view->render('404'));
-                $response->code(404);
-                $response->send();
+                $response->withStatus(404)->send();
             } else {
                 Log::error("[{$exception->getCode()}]{$exception->getMessage()} : {$exception->getFile()} Line: {$exception->getLine()}");
                 $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
                 $view->assign('exception', $exception);
                 $response = Response::html($view->render('exception_handler'));
-                $response->code(500);
-                $response->send();
+                $response->withStatus(500)->send();
             }
         });
 
