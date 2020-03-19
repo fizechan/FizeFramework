@@ -93,7 +93,7 @@ class TestApp extends TestCase
     public function testModule()
     {
         $module = App::module();
-        self::assertEquals($module, 'test');
+        self::assertEquals('test', $module);
     }
 
     public function testAction()
@@ -108,7 +108,7 @@ class TestApp extends TestCase
 
         $action = App::action();
         var_dump($action);
-        self::assertEquals($action, 'test2');
+        self::assertEquals('test2', $action);
     }
 
     public function testAppPath()
@@ -134,6 +134,6 @@ class TestApp extends TestCase
         new App($config);
 
         $controller = App::controller();
-        self::assertEquals($controller, 'Index');
+        self::assertEquals('Index', $controller);
     }
 }
