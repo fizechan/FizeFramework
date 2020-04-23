@@ -1,5 +1,4 @@
 <?php
-/** @noinspection PhpIncludeInspection */
 
 
 namespace fize\framework;
@@ -29,7 +28,7 @@ class Config
 
     /**
      * 初始化
-     * @param string $dir 配置目录
+     * @param string $dir    配置目录
      * @param string $module 指定要附加配置的模块名
      */
     public function __construct($dir, $module = null)
@@ -40,8 +39,8 @@ class Config
 
     /**
      * 从配置数组中获取配置
-     * @param array $config 配置数组
-     * @param string $key 键名，层级以.分隔
+     * @param array  $config 配置数组
+     * @param string $key    键名，层级以.分隔
      * @return mixed
      */
     protected static function getByKey(array $config, $key)
@@ -77,9 +76,10 @@ class Config
 
     /**
      * 获取配置
-     * @param string $key 键名，层级以.分隔
-     * @param mixed $default 如未找到该配置时返回的默认值
+     * @param string $key     键名，层级以.分隔
+     * @param mixed  $default 如未找到该配置时返回的默认值
      * @return mixed
+     * @noinspection PhpIncludeInspection
      */
     public static function get($key, $default = null)
     {

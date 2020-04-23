@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * 请求设置
+ */
 return [
     'var_method'       => '_method',  //请求方式伪装字段
     'var_ajax'         => '_ajax',  //AJAX伪装字段

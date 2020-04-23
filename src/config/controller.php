@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * 控制器设置
+ */
 return [
     'default_controller' => 'Index',  //默认控制器
     'default_action'     => 'index',  //默认操作

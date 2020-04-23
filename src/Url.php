@@ -52,11 +52,11 @@ class Url
     {
         $rules = self::$config['rules'];
         foreach ($rules as $pattern => $target) {
-            if(Preg::match("#^{$pattern}$#", $url, $matches)) {  //命中路由规则
+            if (Preg::match("#^{$pattern}$#", $url, $matches)) {  //命中路由规则
                 //改装$target成url
                 if ($matches) {
                     foreach ($matches as $key => $value) {
-                        if($key === 0) {
+                        if ($key === 0) {
                             continue;
                         }
                         $target = str_replace("<{$key}>", $value, $target);
@@ -66,7 +66,7 @@ class Url
 
                 //解析GET参数，并注入到 $_GET 中去
                 $turl = parse_url($target);
-                if(isset($turl['query'])) {
+                if (isset($turl['query'])) {
                     $gets = self::convertQuery($turl['query']);
                     foreach ($gets as $key => $value) {
                         $_GET[$key] = $value;
@@ -81,22 +81,22 @@ class Url
 
     /**
      * 给URL附加参数并返回新的URL
-     * @param string $url URL
-     * @param array $params 要附加的参数
+     * @param string $url    URL
+     * @param array  $params 要附加的参数
      * @return string 返回新的URL
      */
     private static function appendQuery($url, array $params)
     {
         $query = '';
         foreach ($params as $key => $value) {
-            if(!$query) {
+            if (!$query) {
                 $query = urlencode($key) . "=" . urlencode($value);
             } else {
                 $query .= "&" . urlencode($key) . "=" . urlencode($value);
             }
         }
-        if($query) {
-            if(strstr($url, '?') === false) {
+        if ($query) {
+            if (strstr($url, '?') === false) {
                 $url .= "?" . $query;
             } else {
                 $url .= "&" . $query;
@@ -107,8 +107,8 @@ class Url
 
     /**
      * 构造URL
-     * @param string $url 原URL
-     * @param array $params 附加参数
+     * @param string $url    原URL
+     * @param array  $params 附加参数
      * @return string
      */
     public static function create($url, array $params = [])
@@ -119,13 +119,13 @@ class Url
 
         $turl = parse_url($full_url);
         $full_params = [];
-        if(isset($turl['query'])) {
+        if (isset($turl['query'])) {
             $full_params = self::convertQuery($turl['query']);
         }
 
         $test_urls = [$full_url, $url];
         foreach ($test_urls as $test_url) {
-            if($pattern = array_search($test_url, self::$config['rules'])) {  //命中路由规则
+            if ($pattern = array_search($test_url, self::$config['rules'])) {  //命中路由规则
                 //改装$pattern成url
                 $finial_url = $pattern;
 
@@ -135,8 +135,8 @@ class Url
                 //匹配捕获组并替换
                 while (true) {
                     if (Preg::match('#\(\?\<(?<name>[^\>]*)\>[^\)]*\)#', $finial_url, $matches)) {
-                        if(isset($matches['name'])) {
-                            if(isset($full_params[$matches['name']])) {
+                        if (isset($matches['name'])) {
+                            if (isset($full_params[$matches['name']])) {
                                 $finial_url = str_replace($matches[0], $full_params[$matches['name']], $finial_url);
                             } else {
                                 $finial_url = str_replace($matches[0], '', $finial_url);  //未传入该参数则为空

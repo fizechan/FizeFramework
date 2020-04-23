@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * SESSION设置
+ */
 return [
     'cache_expire'      => null,
     'cache_limiter'     => null,

@@ -1,32 +1,32 @@
 {
-    "name": "fize/framework",
-    "description": "Fize，一个轻巧、自由、灵活的MVC框架。",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "FizeChan",
-            "email": "chenfengzhan@qq.com"
-        }
-    ],
-    "require": {
-		"php": ">=7.0.0",
-        "fize/misc": "~0.1",
-        "fize/security": "~1.4",
-        "fize/io": "~3.5",
-        "fize/db": "~2.5",
-        "fize/cache": "~3.0",
-        "fize/log": "~3.0",
-        "fize/view": "~1.2",
-        "fize/web": "~2.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^8.0.0",
-        "guzzlehttp/guzzle": "~6.3",
-        "twig/twig": "*"
-    },
-	"autoload": {
-        "psr-4": {
-            "fize\\framework\\": "src"
-        }
+  "name": "fize/framework",
+  "description": "Fize，一个轻巧、自由、灵活的MVC框架。",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "FizeChan",
+      "email": "chenfengzhan@qq.com"
     }
+  ],
+  "require": {
+    "php": ">=7.0.0",
+    "fize/cache": "~3.1",
+    "fize/db": "~2.5",
+    "fize/io": "~3.7",
+    "fize/log": "~3.0",
+    "fize/misc": "~0.1",
+    "fize/security": "~1.4",
+    "fize/view": "~2.0",
+    "fize/web": "~2.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~9.1",
+    "guzzlehttp/guzzle": "~6.3",
+    "twig/twig": "~3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "fize\\framework\\": "src"
+    }
+  }
 }

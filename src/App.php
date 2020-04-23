@@ -1,27 +1,25 @@
 <?php
 
-
 namespace fize\framework;
 
-use Throwable;
 use ReflectionClass;
+use Throwable;
+use fize\cache\Cache;
+use fize\db\Db;
 use fize\io\Directory;
 use fize\io\Ob;
-use fize\cache\Cache;
+use fize\log\Log;
+use fize\view\View;
 use fize\web\Request;
 use fize\web\Cookie;
 use fize\web\Session;
 use fize\web\Response;
-use fize\db\Db;
-use fize\log\Log;
-use fize\view\View;
 use fize\framework\exception\ResponseException;
 use fize\framework\exception\NotFoundException;
 use fize\framework\exception\ModuleNotFoundException;
 use fize\framework\exception\ControllerNotFoundException;
 use fize\framework\exception\ActionNotFoundException;
 use fize\framework\exception\ParameterNotSetException;
-
 
 /**
  * 应用入口
@@ -249,7 +247,7 @@ class App
     /**
      * 检测控制器是否可用
      * @param string $controller 控制器名
-     * @param bool $throw 如果控制器不存在是否抛出错误
+     * @param bool   $throw      如果控制器不存在是否抛出错误
      * @return bool
      */
     protected function checkController($controller, $throw = false)
@@ -264,7 +262,7 @@ class App
         if (!class_exists($class)) {
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path);
             if (!class_exists($class)) {
-                if($throw) {
+                if ($throw) {
                     throw new ControllerNotFoundException(self::$module, $controller);
                 }
                 return false;
@@ -333,7 +331,7 @@ class App
         foreach ($ref_method->getParameters() as $parameter) {
             $name = $parameter->getName();
             $value = Request::get($name);
-            if($parameter->isOptional()) {
+            if ($parameter->isOptional()) {
                 $value = is_null($value) ? $parameter->getDefaultValue() : $value;
             } elseif (is_null($value)) {
                 throw new ParameterNotSetException($class, $action, $name);

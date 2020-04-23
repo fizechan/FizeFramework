@@ -3,11 +3,12 @@
 
 namespace fize\framework;
 
-use fize\framework\exception\ResponseException;
+use fize\security\Validator;
+use fize\view\View;
 use fize\web\Response;
 use fize\web\Request;
-use fize\view\View;
-use fize\security\Validator;
+
+use fize\framework\exception\ResponseException;
 
 /**
  * 控制器
@@ -17,9 +18,9 @@ abstract class Controller
 
     /**
      * 返回JSON结果
-     * @param array $data data字段
+     * @param array  $data    data字段
      * @param string $message message字段
-     * @param int $code code字段
+     * @param int    $code    code字段
      */
     protected function result(array $data, $message = null, $code = 0)
     {
@@ -34,8 +35,8 @@ abstract class Controller
     /**
      * 成功操作
      * @param string $message 提示信息
-     * @param string $url 回跳URL
-     * @param int $code code字段
+     * @param string $url     回跳URL
+     * @param int    $code    code字段
      */
     protected function success($message, $url = null, $code = 0)
     {
@@ -47,7 +48,7 @@ abstract class Controller
             $response = Response::json($json);
         } else {
             $config_view = Config::get('view');
-            if($config_view['tpl_success']) {
+            if ($config_view['tpl_success']) {
                 View::path($config_view['tpl_success']);
                 View::assign('message', $message);
                 View::assign('url', $url);
@@ -67,7 +68,7 @@ abstract class Controller
     /**
      * 失败操作
      * @param string $message message字段
-     * @param int $code code字段
+     * @param int    $code    code字段
      */
     protected function error($message, $code = 0)
     {
@@ -79,7 +80,7 @@ abstract class Controller
             $response = Response::json($json);
         } else {
             $config_view = Config::get('view');
-            if($config_view['tpl_error']) {
+            if ($config_view['tpl_error']) {
                 View::path($config_view['tpl_error']);
                 View::assign('message', $message);
                 View::assign('code', $code);
@@ -96,9 +97,9 @@ abstract class Controller
 
     /**
      * 跳转
-     * @param string $url 内部URL
-     * @param array $params 附加的URL参数
-     * @param int $delay 延迟时间，以秒为单位
+     * @param string $url    内部URL
+     * @param array  $params 附加的URL参数
+     * @param int    $delay  延迟时间，以秒为单位
      */
     protected function redirect($url, array $params = [], $delay = null)
     {
@@ -115,13 +116,13 @@ abstract class Controller
     {
         $config_validator = Config::get('validator');
 
-        $path = '\\' . App::env('app_dir') . '\\' . App::module() . '\\' . $config_validator['dir_name'] . '\\' .App::controller();
+        $path = '\\' . App::env('app_dir') . '\\' . App::module() . '\\' . $config_validator['dir_name'] . '\\' . App::controller();
         $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['validator_postfix']);
         if (!class_exists($class)) {
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);
         }
         if (!class_exists($class)) {
-            $path = '\\' . App::env('app_dir') . '\\common\\' . $config_validator['dir_name'] . '\\' .App::controller();
+            $path = '\\' . App::env('app_dir') . '\\common\\' . $config_validator['dir_name'] . '\\' . App::controller();
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['validator_postfix']);
             if (!class_exists($class)) {
                 $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);
@@ -133,11 +134,11 @@ abstract class Controller
              * @var Validator $validator
              */
             $validator = new $class();
-            if($validator->hasScene(App::action())) {
+            if ($validator->hasScene(App::action())) {
                 $validator->scene(App::action());
             }
             $result = $validator->check($data);
-            if( $result !== true) {
+            if ($result !== true) {
                 $this->error($result);
             }
         }

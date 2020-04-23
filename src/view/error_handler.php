@@ -1,5 +1,4 @@
 <?php
-/** @noinspection PhpUndefinedVariableInspection */
 if (!function_exists('parse_padding')) {
     function parse_padding($source)
     {

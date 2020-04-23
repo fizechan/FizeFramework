@@ -2,6 +2,9 @@
 
 use fize\framework\App;
 
+/**
+ * 日志设置
+ */
 return [
     'handler' => 'File',
     'config'  => [
