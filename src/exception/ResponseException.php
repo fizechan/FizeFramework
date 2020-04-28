@@ -1,6 +1,5 @@
 <?php
 
-
 namespace fize\framework\exception;
 
 use RuntimeException;

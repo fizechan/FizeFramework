@@ -10,19 +10,19 @@
   ],
   "require": {
     "php": ">=7.0.0",
-    "fize/cache": "~3.1",
-    "fize/db": "~2.5",
-    "fize/io": "~3.7",
-    "fize/log": "~3.0",
-    "fize/misc": "~0.1",
-    "fize/security": "~1.4",
-    "fize/view": "~2.0",
-    "fize/web": "~2.0"
+    "fize/cache": "~3.1.0",
+    "fize/db": "~2.6.0",
+    "fize/io": "~3.7.0",
+    "fize/log": "~3.1.0",
+    "fize/misc": "~0.1.0",
+    "fize/security": "~1.4.0",
+    "fize/view": "~2.1.0",
+    "fize/web": "~2.0.0"
   },
   "require-dev": {
     "phpunit/phpunit": "~9.1",
-    "guzzlehttp/guzzle": "~6.3",
-    "twig/twig": "~3.0"
+    "guzzlehttp/guzzle": "~6.5.0",
+    "twig/twig": "~3.0.0"
   },
   "autoload": {
     "psr-4": {

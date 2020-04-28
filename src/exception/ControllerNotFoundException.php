@@ -1,8 +1,6 @@
 <?php
 
-
 namespace fize\framework\exception;
-
 
 /**
  * 控制器不存在
@@ -21,7 +19,7 @@ class ControllerNotFoundException extends NotFoundException
 
     /**
      * 初始化
-     * @param string $module 模块
+     * @param string $module     模块
      * @param string $controller 控制器
      */
     public function __construct($module, $controller)

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace fize\framework\exception;
-
 
 /**
  * 方法不存在
@@ -21,7 +19,7 @@ class MethodNotFoundException extends NotFoundException
 
     /**
      * 初始化
-     * @param string $class 类完全限定名
+     * @param string $class  类完全限定名
      * @param string $method 方法名
      */
     public function __construct($class, $method)

@@ -10,16 +10,17 @@ use fize\io\Directory;
 use fize\io\Ob;
 use fize\log\Log;
 use fize\view\View;
-use fize\web\Request;
+use fize\view\ViewFactory;
 use fize\web\Cookie;
-use fize\web\Session;
+use fize\web\Request;
 use fize\web\Response;
-use fize\framework\exception\ResponseException;
-use fize\framework\exception\NotFoundException;
-use fize\framework\exception\ModuleNotFoundException;
-use fize\framework\exception\ControllerNotFoundException;
+use fize\web\Session;
 use fize\framework\exception\ActionNotFoundException;
+use fize\framework\exception\ControllerNotFoundException;
+use fize\framework\exception\ModuleNotFoundException;
+use fize\framework\exception\NotFoundException;
 use fize\framework\exception\ParameterNotSetException;
+use fize\framework\exception\ResponseException;
 
 /**
  * 应用入口
@@ -76,10 +77,11 @@ class App
                 $route = Request::get(self::$env['route_key']);
             } else {
                 $route = Request::server('PATH_INFO');
+                $route = Url::parse($route);
                 if ($route) {
-                    //删除第一个字符'/'
+                    // 删除第一个字符'/'
                     $route = substr($route, 1);
-                    //删除最后一个字符'/'
+                    // 删除最后一个字符'/'
                     if (substr($route, -1) == '/') {
                         $route = substr($route, 0, -1);
                     }
@@ -99,26 +101,26 @@ class App
     {
         Ob::start();
         $default_env = [
-            'root_path'          => null,  //根目录
-            'app_dir'            => 'app',  //应用文件夹
-            'config_dir'         => 'config',  //配置文件夹
-            'runtime_dir'        => 'runtime',  //运行时文件夹
-            'app_controller_dir' => 'controller',  //控制器文件夹
-            'app_view_dir'       => 'view',  //视图文件夹
-            'module'             => true,  //true表示开启分组并自动判断，false表示关闭分组，字符串表示指定分组
-            'default_module'     => 'index',  //开启分组时的默认分组
-            'route_key'          => '_r',  //兼容模式路由GET参数名
+            'root_path'          => null,  // 根目录
+            'app_dir'            => 'app',  // 应用文件夹
+            'config_dir'         => 'config',  // 配置文件夹
+            'runtime_dir'        => 'runtime',  // 运行时文件夹
+            'app_controller_dir' => 'controller',  // 控制器文件夹
+            'app_view_dir'       => 'view',  // 视图文件夹
+            'module'             => true,  // true表示开启分组并自动判断，false表示关闭分组，字符串表示指定分组
+            'default_module'     => 'index',  // 开启分组时的默认分组
+            'route_key'          => '_r',  // 兼容模式路由GET参数名
         ];
         $env = array_merge($default_env, $env);
 
         if (is_null($env['root_path'])) {
-            $root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));  //使用composer放置在vendor文件夹中的相对位置
+            $root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));  // 使用composer放置在vendor文件夹中的相对位置
             $env['root_path'] = $root_path;
         }
 
         self::$env = $env;
 
-        //由于需要读取分组参数所以 module 必须先确认
+        // 由于需要读取分组参数所以 module 必须先确认
         $this->checkModule();
     }
 
@@ -184,7 +186,7 @@ class App
         set_error_handler(function ($errno, $errstr, $errfile = null, $errline = 0, array $errcontext = []) {
             Ob::clean();
             Log::error("[{$errno}]$errstr : {$errfile} Line: {$errline}");
-            $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
+            $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
             $view->assign('errno', $errno);
             $view->assign('errstr', $errstr);
             $view->assign('errfile', $errfile);
@@ -202,13 +204,13 @@ class App
                 $response->send();
             } elseif ($exception instanceof NotFoundException) {
                 Log::notice("[404]Not Found[{$exception->getMessage()}] : {$exception->url()}");
-                $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
+                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
                 $view->assign('exception', $exception);
                 $response = Response::html($view->render('404'));
                 $response->withStatus(404)->send();
             } else {
                 Log::error("[{$exception->getCode()}]{$exception->getMessage()} : {$exception->getFile()} Line: {$exception->getLine()}");
-                $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
+                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
                 $view->assign('exception', $exception);
                 $response = Response::html($view->render('exception_handler'));
                 $response->withStatus(500)->send();

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace fize\framework\exception;
-
 
 /**
  * 类不存在

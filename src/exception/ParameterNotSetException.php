@@ -1,8 +1,6 @@
 <?php
 
-
 namespace fize\framework\exception;
-
 
 /**
  * 参数未设置
@@ -26,8 +24,8 @@ class ParameterNotSetException extends NotSetException
 
     /**
      * 初始化
-     * @param string $class 类完全限定名
-     * @param string $method 方法名
+     * @param string $class     类完全限定名
+     * @param string $method    方法名
      * @param string $parameter 参数名
      */
     public function __construct($class, $method, $parameter)

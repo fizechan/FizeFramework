@@ -1,13 +1,12 @@
 <?php
 
-
 namespace fize\framework;
 
 use fize\security\Validator;
 use fize\view\View;
+use fize\view\ViewFactory;
 use fize\web\Response;
 use fize\web\Request;
-
 use fize\framework\exception\ResponseException;
 
 /**
@@ -55,7 +54,7 @@ abstract class Controller
                 View::assign('code', $code);
                 $response = Response::html(View::render());
             } else {
-                $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
+                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
                 $view->assign('message', $message);
                 $view->assign('url', $url);
                 $view->assign('code', $code);
@@ -86,7 +85,7 @@ abstract class Controller
                 View::assign('code', $code);
                 $response = Response::html(View::render());
             } else {
-                $view = View::getInstance('Php', ['view' => __DIR__ . '/view']);
+                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
                 $view->assign('message', $message);
                 $view->assign('code', $code);
                 $response = Response::html($view->render('error'));
@@ -116,14 +115,14 @@ abstract class Controller
     {
         $config_validator = Config::get('validator');
 
-        $path = '\\' . App::env('app_dir') . '\\' . App::module() . '\\' . $config_validator['dir_name'] . '\\' . App::controller();
-        $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['validator_postfix']);
+        $path = '\\' . App::env('app_dir') . '\\' . App::module() . '\\' . $config_validator['dir'] . '\\' . App::controller();
+        $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['postfix']);
         if (!class_exists($class)) {
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);
         }
         if (!class_exists($class)) {
-            $path = '\\' . App::env('app_dir') . '\\common\\' . $config_validator['dir_name'] . '\\' . App::controller();
-            $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['validator_postfix']);
+            $path = '\\' . App::env('app_dir') . '\\common\\' . $config_validator['dir'] . '\\' . App::controller();
+            $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['postfix']);
             if (!class_exists($class)) {
                 $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);
             }

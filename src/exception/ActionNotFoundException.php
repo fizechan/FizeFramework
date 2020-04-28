@@ -25,9 +25,9 @@ class ActionNotFoundException extends NotFoundException
 
     /**
      * 初始化
-     * @param string $module 模块
+     * @param string $module     模块
      * @param string $controller 控制器
-     * @param string $action 操作
+     * @param string $action     操作
      */
     public function __construct($module, $controller, $action)
     {

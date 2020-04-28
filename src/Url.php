@@ -1,6 +1,5 @@
 <?php
 
-
 namespace fize\framework;
 
 use fize\misc\Preg;
@@ -52,7 +51,7 @@ class Url
     {
         $rules = self::$config['rules'];
         foreach ($rules as $pattern => $target) {
-            if (Preg::match("#^{$pattern}$#", $url, $matches)) {  //命中路由规则
+            if (Preg::match("#^{$pattern}$#", $url, $matches)) {  // 命中路由规则
                 //改装$target成url
                 if ($matches) {
                     foreach ($matches as $key => $value) {
@@ -60,7 +59,7 @@ class Url
                             continue;
                         }
                         $target = str_replace("<{$key}>", $value, $target);
-                        $_GET[$key] = $value;
+                        $_GET[$key] = $value;  //@todo GET参数应根据最后URL来进行解析
                     }
                 }
 
@@ -139,7 +138,7 @@ class Url
                             if (isset($full_params[$matches['name']])) {
                                 $finial_url = str_replace($matches[0], $full_params[$matches['name']], $finial_url);
                             } else {
-                                $finial_url = str_replace($matches[0], '', $finial_url);  //未传入该参数则为空
+                                $finial_url = str_replace($matches[0], '', $finial_url);  // 未传入该参数则为空
                             }
                         }
                     } else {
