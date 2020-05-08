@@ -53,13 +53,16 @@ class Url
         foreach ($rules as $pattern => $target) {
             if (Preg::match("#^{$pattern}$#", $url, $matches)) {  // 命中路由规则
                 //改装$target成url
-                if ($matches) {
+                if ($matches) {  // 捕获匹配组
                     foreach ($matches as $key => $value) {
-                        if ($key === 0) {
+                        if ($key === 0) {  // 第一个匹配组为其本身
                             continue;
                         }
-                        $target = str_replace("<{$key}>", $value, $target);
-                        $_GET[$key] = $value;  //@todo GET参数应根据最后URL来进行解析
+                        if (strstr($target, "<{$key}>") === false) {  // 捕获组在URL中无定义则作为GET参数传递
+                            $_GET[$key] = $value;
+                        } else {  // 捕获组在URL中有定义则进行URL替换
+                            $target = str_replace("<{$key}>", $value, $target);
+                        }
                     }
                 }
 
