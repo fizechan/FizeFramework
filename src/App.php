@@ -5,12 +5,11 @@ namespace fize\framework;
 use ReflectionClass;
 use Throwable;
 use fize\cache\Cache;
-use fize\db\Db;
+use fize\database\Db;
 use fize\io\Directory;
 use fize\io\Ob;
 use fize\log\Log;
 use fize\view\View;
-use fize\view\ViewFactory;
 use fize\web\Cookie;
 use fize\web\Request;
 use fize\web\Response;
@@ -18,12 +17,13 @@ use fize\web\Session;
 use fize\framework\exception\ActionNotFoundException;
 use fize\framework\exception\ControllerNotFoundException;
 use fize\framework\exception\ModuleNotFoundException;
-use fize\framework\exception\NotFoundException;
 use fize\framework\exception\ParameterNotSetException;
-use fize\framework\exception\ResponseException;
+use fize\framework\handler\ErrorHandlerInterface;
+use fize\framework\handler\ExceptionHandlerInterface;
+use fize\framework\handler\ShutdownHandlerInterface;
 
 /**
- * 应用入口
+ * 应用
  */
 class App
 {
@@ -54,15 +54,29 @@ class App
     protected static $class;
 
     /**
-     * 在此执行所有准备流程
+     * @var float 程序启动时时间戳
+     */
+    protected static $microtimeStart;
+
+    /**
+     * 构造。在此执行所有准备流程
      * @param array $env 环境配置
      */
     public function __construct(array $env = [])
     {
-        $this->init($env);
-        $this->config();
-        $this->handler();
+        self::$microtimeStart = microtime(true);
+        Ob::start();
+        $this->EnvInit($env);
+        $this->registerComponent();
+        $this->setHandler();
         $this->check();
+    }
+
+    /**
+     * 析构
+     */
+    public function __destruct()
+    {
     }
 
     /**
@@ -94,12 +108,11 @@ class App
     }
 
     /**
-     * 初始化
+     * 环境初始化
      * @param array $env 参数
      */
-    protected function init(array $env)
+    protected function EnvInit(array $env)
     {
-        Ob::start();
         $default_env = [
             'root_path'          => null,  // 根目录
             'app_dir'            => 'app',  // 应用文件夹
@@ -110,6 +123,7 @@ class App
             'module'             => true,  // true表示开启分组并自动判断，false表示关闭分组，字符串表示指定分组
             'default_module'     => 'index',  // 开启分组时的默认分组
             'route_key'          => '_r',  // 兼容模式路由GET参数名
+            'debug'              => false,  // 是否调试模式
         ];
         $env = array_merge($default_env, $env);
 
@@ -120,27 +134,28 @@ class App
 
         self::$env = $env;
 
-        // 由于需要读取分组参数所以 module 必须先确认
-        $this->checkModule();
-    }
-
-    /**
-     * 载入配置
-     */
-    protected function config()
-    {
-        new Config(self::configPath(), self::$module);
-
+        // URL配置仅顶层有效
         $url_config = Config::get('url');
         new Url($url_config);
 
+        // 由于需要读取分组参数所以 module 必须先确认
+        $this->checkModule();
+
+        new Config(self::configPath(), self::$module);
+    }
+
+    /**
+     * 注册组件
+     */
+    protected function registerComponent()
+    {
         $cookie_config = Config::get('cookie');
         new Cookie($cookie_config);
 
         $request_config = Config::get('request');
         new Request($request_config);
 
-        $db_config = Config::get('db');
+        $db_config = Config::get('database');
         if ($db_config) {
             $db_mode = isset($db_config['mode']) ? $db_config['mode'] : null;
             new Db($db_config['type'], $db_config['config'], $db_mode);
@@ -148,24 +163,24 @@ class App
 
         $cache_config = Config::get('cache');
         if ($cache_config['handler'] == 'DataBase') {  // Cahce 使用 Db 处理器时的默认配置
-            if (!isset($cache_config['config']['db']) && empty($cache_config['config']['db'])) {
-                $cache_config['config']['db'] = $db_config;
+            if (!isset($cache_config['config']['database']) && empty($cache_config['config']['database'])) {
+                $cache_config['config']['database'] = $db_config;
             }
         }
         new Cache($cache_config['handler'], $cache_config['config']);
 
         $log_config = Config::get('log');  // Log 使用 Db 处理器时的默认配置
         if ($log_config['handler'] == 'DataBase') {  // Cahce 使用 Db 处理器时的默认配置
-            if (!isset($log_config['config']['db']) && empty($log_config['config']['db'])) {
-                $log_config['config']['db'] = $db_config;
+            if (!isset($log_config['config']['database']) && empty($log_config['config']['database'])) {
+                $log_config['config']['database'] = $db_config;
             }
         }
         new Log($log_config['handler'], $log_config['config']);
 
         $session_config = Config::get('session');
         if ($session_config['save_handler']['type'] == 'DataBase') {  // Session 使用 Db 处理器时的默认配置
-            if (!isset($session_config['save_handler']['config']['db']) && empty($session_config['save_handler']['config']['db'])) {
-                $session_config['save_handler']['config']['db'] = $db_config;
+            if (!isset($session_config['save_handler']['config']['database']) && empty($session_config['save_handler']['config']['database'])) {
+                $session_config['save_handler']['config']['database'] = $db_config;
             }
         }
         new Session($session_config);
@@ -180,46 +195,37 @@ class App
     /**
      * 接管异常处理
      */
-    protected function handler()
+    protected function setHandler()
     {
         //系统错误处理
-        set_error_handler(function ($errno, $errstr, $errfile = null, $errline = 0, array $errcontext = []) {
+        set_error_handler(function ($errno, $errstr, $errfile = null, $errline = 0) {
             Ob::clean();
-            Log::error("[{$errno}]$errstr : {$errfile} Line: {$errline}");
-            $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
-            $view->assign('errno', $errno);
-            $view->assign('errstr', $errstr);
-            $view->assign('errfile', $errfile);
-            $view->assign('errline', $errline);
-            $view->assign('errcontext', $errcontext);
-            $response = Response::html($view->render('error_handler'));
-            $response->withStatus(500)->send();
-            die();
+            $class = Config::get('handler.error');
+            /**
+             * @var ErrorHandlerInterface $handler
+             */
+            $handler = new $class();
+            return $handler->run($errno, $errstr, $errfile, $errline);
         }, E_ALL);
 
         //系统异常处理
         set_exception_handler(function (Throwable $exception) {
-            if ($exception instanceof ResponseException) {
-                $response = $exception->getResponse();
-                $response->send();
-            } elseif ($exception instanceof NotFoundException) {
-                Log::notice("[404]Not Found[{$exception->getMessage()}] : {$exception->url()}");
-                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
-                $view->assign('exception', $exception);
-                $response = Response::html($view->render('404'));
-                $response->withStatus(404)->send();
-            } else {
-                Log::error("[{$exception->getCode()}]{$exception->getMessage()} : {$exception->getFile()} Line: {$exception->getLine()}");
-                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
-                $view->assign('exception', $exception);
-                $response = Response::html($view->render('exception_handler'));
-                $response->withStatus(500)->send();
-            }
+            $class = Config::get('handler.exception');
+            /**
+             * @var ExceptionHandlerInterface $handler
+             */
+            $handler = new $class();
+            $handler->run($exception);
         });
 
         //接管结束任务
         register_shutdown_function(function () {
-            // @todo 收尾工作
+            $class = Config::get('handler.shutdown');
+            /**
+             * @var ShutdownHandlerInterface $handler
+             */
+            $handler = new $class();
+            $handler->run();
         });
     }
 
@@ -300,7 +306,7 @@ class App
                 self::$action = array_pop($t_routes);
                 $t_routes[count($t_routes) - 1] = ucfirst($t_routes[count($t_routes) - 1]);
                 self::$controller = implode('\\', $t_routes);
-                if (!self::checkController(self::$controller)) {  //整个URL都是控制器
+                if (!$this->checkController(self::$controller)) {  //整个URL都是控制器
                     self::$controller = implode('\\', $routes);
                     self::$action = $config_controller['default_action'];
                 }
@@ -310,7 +316,7 @@ class App
             self::$action = $config_controller['default_action'];
         }
 
-        self::checkController(self::$controller, true);
+        $this->checkController(self::$controller, true);
         if (!method_exists(self::$class, self::$action)) {
             throw new ActionNotFoundException(self::$module, self::$controller, self::$action);
         }
@@ -407,9 +413,7 @@ class App
 
     /**
      * 获取当前模块名
-     *
-     * 未启用模块时返回 null
-     * @return string
+     * @return string|null 未启用模块时返回 null
      */
     public static function module()
     {
@@ -432,5 +436,15 @@ class App
     public static function action()
     {
         return self::$action;
+    }
+
+    /**
+     * 获取当前程序执行所用时间
+     * @return float
+     */
+    public static function timeTaken()
+    {
+        $microtimeNow = microtime(true);
+        return $microtimeNow - self::$microtimeStart;
     }
 }

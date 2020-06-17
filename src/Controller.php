@@ -5,8 +5,8 @@ namespace fize\framework;
 use fize\security\Validator;
 use fize\view\View;
 use fize\view\ViewFactory;
-use fize\web\Response;
 use fize\web\Request;
+use fize\web\Response;
 use fize\framework\exception\ResponseException;
 
 /**
@@ -17,9 +17,9 @@ abstract class Controller
 
     /**
      * 返回JSON结果
-     * @param array  $data    data字段
-     * @param string $message message字段
-     * @param int    $code    code字段
+     * @param array  $data    数据
+     * @param string $message 错误信息
+     * @param int    $code    错误码
      */
     protected function result(array $data, $message = null, $code = 0)
     {
@@ -33,9 +33,9 @@ abstract class Controller
 
     /**
      * 成功操作
-     * @param string $message 提示信息
+     * @param string $message 错误信息
      * @param string $url     回跳URL
-     * @param int    $code    code字段
+     * @param int    $code    错误码
      */
     protected function success($message, $url = null, $code = 0)
     {
@@ -66,8 +66,8 @@ abstract class Controller
 
     /**
      * 失败操作
-     * @param string $message message字段
-     * @param int    $code    code字段
+     * @param string $message 错误信息
+     * @param int    $code    错误码
      */
     protected function error($message, $code = 0)
     {

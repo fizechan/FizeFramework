@@ -84,7 +84,7 @@ if (!function_exists('parse_args')) {
     <style>
         body {
             color: #333;
-            font: 16px Verdana, "Helvetica Neue", helvetica, Arial, 'Microsoft YaHei', sans-serif;
+            font: 16px Consolas, "Liberation Mono", Courier, Verdana, "微软雅黑", serif;
             margin: 0;
             padding: 0 20px 20px;
         }
@@ -142,7 +142,6 @@ if (!function_exists('parse_args')) {
             background-color: #f7f7f7;
             border: 0;
             border-radius: 3px;
-            font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
         }
 
         .echo pre > pre {
@@ -162,7 +161,6 @@ if (!function_exists('parse_args')) {
             font-size: 16px;
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;
-            font-family: Consolas, "Liberation Mono", Courier, Verdana, "微软雅黑";
         }
 
         .exception .code {
@@ -195,8 +193,7 @@ if (!function_exists('parse_args')) {
             min-width: 100%;
             box-sizing: border-box;
             font-size: 14px;
-            font-family: "Century Gothic", Consolas, "Liberation Mono", Courier, Verdana;
-            padding-left: <?php echo (isset($source) && !empty($source)) ? parse_padding($source) : 40;  ?>px;
+            padding-left: 40px;
         }
 
         .exception .source-code pre li {
@@ -211,7 +208,6 @@ if (!function_exists('parse_args')) {
             display: inline-block;
             border-left: 1px solid #fff;
             font-size: 14px;
-            font-family: Consolas, "Liberation Mono", Courier, Verdana, "微软雅黑";
         }
 
         .exception .trace {
@@ -220,7 +216,6 @@ if (!function_exists('parse_args')) {
             border-top: 0 none;
             line-height: 16px;
             font-size: 14px;
-            font-family: Consolas, "Liberation Mono", Courier, Verdana, "微软雅黑";
         }
 
         .exception .trace ol {
@@ -235,130 +230,33 @@ if (!function_exists('parse_args')) {
             border-bottom-left-radius: 4px;
             border-bottom-right-radius: 4px;
         }
-
-        .exception-var table {
-            width: 100%;
-            margin: 12px 0;
-            box-sizing: border-box;
-            table-layout: fixed;
-            word-wrap: break-word;
-        }
-
-        .exception-var table caption {
-            text-align: left;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 6px 0;
-        }
-
-        .exception-var table caption small {
-            font-weight: 300;
-            display: inline-block;
-            margin-left: 10px;
-            color: #ccc;
-        }
-
-        .exception-var table tbody {
-            font-size: 13px;
-            font-family: Consolas, "Liberation Mono", Courier, "微软雅黑";
-        }
-
-        .exception-var table td {
-            padding: 0 6px;
-            vertical-align: top;
-            word-break: break-all;
-        }
-
-        .exception-var table td:first-child {
-            width: 28%;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
-        .exception-var table td pre {
-            margin: 0;
-        }
-
-        .copyright {
-            margin-top: 24px;
-            padding: 12px 0;
-            border-top: 1px solid #eee;
-        }
-
-        pre.prettyprint .pln {
-            color: #000
-        }
-
-        pre.prettyprint .str {
-            color: #080
-        }
-
-        pre.prettyprint .kwd {
-            color: #008
-        }
-
-        pre.prettyprint .com {
-            color: #800
-        }
-
-        pre.prettyprint .typ {
-            color: #606
-        }
-
-        pre.prettyprint .lit {
-            color: #066
-        }
-
-        pre.prettyprint .pun, pre.prettyprint .opn, pre.prettyprint .clo {
-            color: #660
-        }
-
-        pre.prettyprint .tag {
-            color: #008
-        }
-
-        pre.prettyprint .atn {
-            color: #606
-        }
-
-        pre.prettyprint .atv {
-            color: #080
-        }
-
-        pre.prettyprint .dec, pre.prettyprint .var {
-            color: #606
-        }
-
-        pre.prettyprint .fun {
-            color: red
-        }
     </style>
 </head>
 <body>
-    <div class="exception">
-        <div class="message">
+<div class="exception">
+    <div class="message">
 
-            <div class="info">
-                <div>
-                    <h2>
-                        [<?php echo $errno; ?>]&nbsp;
-                        <?php echo sprintf('%s in %s', parse_class($errfile), parse_file($errfile, $errline)); ?></h2>
-                </div>
-                <div><h1><?php echo nl2br(htmlentities($errstr)); ?></h1></div>
+        <div class="info">
+            <div>
+                <h2>
+                    [<?php echo $errno; ?>]&nbsp;
+                    <?php echo sprintf('%s in %s', parse_class($errfile), parse_file($errfile, $errline)); ?></h2>
             </div>
-
+            <div><h1><?php echo nl2br(htmlentities($errstr)); ?></h1></div>
         </div>
 
+    </div>
 
-        <div class="trace">
-            <h2>Call Stack</h2>
-            <ol>
-                <?php
-                $traces = debug_backtrace();
-                unset($traces[0]);
-                unset($traces[1]);
-                foreach ($traces as $trace) {
-                    ?>
+
+    <div class="trace">
+        <h2>Call Stack</h2>
+        <ol>
+            <?php
+            $traces = debug_backtrace();
+            unset($traces[0]);
+            unset($traces[1]);
+            foreach ($traces as $trace) {
+                ?>
                 <li>
                     <?php
                     if ($trace['function']) {
@@ -376,9 +274,9 @@ if (!function_exists('parse_args')) {
                     }
                     ?>
                 </li>
-                <?php } ?>
-            </ol>
-        </div>
+            <?php } ?>
+        </ol>
     </div>
+</div>
 </body>
 </html>

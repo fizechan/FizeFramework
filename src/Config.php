@@ -6,8 +6,7 @@ namespace fize\framework;
 use fize\io\File;
 
 /**
- * 配置类
- * @todo 使用数组递归合并读取不易于维护，且容易产生异议，考虑使用简单替换
+ * 配置
  */
 class Config
 {
@@ -58,23 +57,6 @@ class Config
     }
 
     /**
-     * 数组递归合并,覆盖方式
-     * @param array $arr1 数组1
-     * @param array $arr2 数组2
-     * @return array
-     */
-    protected static function arrayCoverRecursive($arr1, $arr2)
-    {
-        $rs = $arr1;
-
-        foreach ($arr2 as $key => $val) {
-            $rs[$key] = isset($rs[$key]) ? $rs[$key] : [];
-            $rs[$key] = is_array($val) ? self::arrayCoverRecursive($rs[$key], $val) : $val;
-        }
-        return $rs;
-    }
-
-    /**
      * 获取配置
      * @param string $key     键名，层级以.分隔
      * @param mixed  $default 如未找到该配置时返回的默认值
@@ -107,19 +89,17 @@ class Config
         foreach ($cfg_files as $cfg_file) {
             if (File::exists($cfg_file)) {
                 $append = require_once $cfg_file;
-
-                //$config = array_merge($config, $append);
-                $config = self::arrayCoverRecursive($config, $append);
+                $config = array_merge($config, $append);
             }
         }
 
         self::$config[$keys[0]] = $config;
 
         $value = self::getByKey(self::$config, $key);
-        if (!is_null($value)) {
-            return $value;
+        if (is_null($value)) {
+            return $default;
         }
 
-        return $default;
+        return $value;
     }
 }
