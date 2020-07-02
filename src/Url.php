@@ -56,6 +56,9 @@ class Url
                         if ($key === 0) {  // 第一个匹配组为其本身
                             continue;
                         }
+                        if (is_int($key)) {  // 键名为数字时忽略
+                            continue;
+                        }
                         if (strstr($target, "<{$key}>") === false) {  // 捕获组在URL中无定义则作为GET参数传递
                             $_GET[$key] = $value;
                         } else {  // 捕获组在URL中有定义则进行URL替换

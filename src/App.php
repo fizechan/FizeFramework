@@ -91,17 +91,17 @@ class App
                 $route = Request::get(self::$env['route_key']);
             } else {
                 $route = Request::server('PATH_INFO');
-                $route = Url::parse($route);
-                if ($route) {
-                    // 删除第一个字符'/'
-                    $route = substr($route, 1);
-                    // 删除最后一个字符'/'
-                    if (substr($route, -1) == '/') {
-                        $route = substr($route, 0, -1);
-                    }
-                } else {
-                    $route = '';
+            }
+            $route = Url::parse($route);
+            if ($route) {
+                // 删除第一个字符'/'
+                $route = substr($route, 1);
+                // 删除最后一个字符'/'
+                if (substr($route, -1) == '/') {
+                    $route = substr($route, 0, -1);
                 }
+            } else {
+                $route = '';
             }
         }
         return $route;
@@ -135,6 +135,7 @@ class App
         self::$env = $env;
 
         // URL配置仅顶层有效
+        new Config(self::configPath());
         $url_config = Config::get('url');
         new Url($url_config);
 
