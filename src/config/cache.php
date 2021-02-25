@@ -1,6 +1,6 @@
 <?php
 
-use fize\framework\App;
+use fize\framework\Env;
 
 /**
  * 缓存设置
@@ -8,7 +8,7 @@ use fize\framework\App;
 return [
     'handler' => 'File',
     'config'  => [
-        'path'   => App::runtimePath() . '/cache',
+        'path'   => Env::runtimePath() . '/cache',
         'expire' => 0
     ]
 ];

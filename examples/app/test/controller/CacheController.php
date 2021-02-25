@@ -20,7 +20,7 @@ class CacheController
 
     public function set()
     {
-        Cache::remove('cache2');
+        Cache::delete('cache2');
         $cache2 = Cache::get('cache2');
         var_dump($cache2);
         Cache::set('cache2', 'value2');
@@ -30,7 +30,7 @@ class CacheController
 
     public function has()
     {
-        Cache::remove('cache2');
+        Cache::delete('cache2');
         $has2 = Cache::has('cache2');
         var_dump($has2);
 
@@ -55,7 +55,7 @@ class CacheController
         $has2 = Cache::has('cache2');
         var_dump($has2);
 
-        Cache::remove('cache2');
+        Cache::delete('cache2');
 
         $has2 = Cache::has('cache2');
         var_dump($has2);

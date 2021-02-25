@@ -29,11 +29,6 @@ class App
 {
 
     /**
-     * @var array 环境配置
-     */
-    protected static $env;
-
-    /**
      * @var string 当前分组
      */
     protected static $module;
@@ -59,14 +54,16 @@ class App
     protected static $microtimeStart;
 
     /**
-     * 构造。在此执行所有准备流程
+     * 构造。
+     *
+     * 在此执行所有准备流程。
      * @param array $env 环境配置
      */
     public function __construct(array $env = [])
     {
         self::$microtimeStart = microtime(true);
         Ob::start();
-        $this->EnvInit($env);
+        $this->init($env);
         $this->registerComponent();
         $this->setHandler();
         $this->check();
@@ -87,8 +84,9 @@ class App
     {
         static $route = null;
         if (is_null($route)) {
-            if (isset($_GET[self::$env['route_key']]) && !is_null($_GET[self::$env['route_key']])) {
-                $route = Request::get(self::$env['route_key']);
+            $route_key = Env::get('route_key');
+            if (isset($_GET[$route_key]) && !is_null($_GET[$route_key])) {
+                $route = Request::get($route_key);
             } else {
                 $route = Request::server('PATH_INFO');
             }
@@ -108,41 +106,22 @@ class App
     }
 
     /**
-     * 环境初始化
+     * 初始化
      * @param array $env 参数
      */
-    protected function EnvInit(array $env)
+    protected function init(array $env)
     {
-        $default_env = [
-            'root_path'          => null,  // 根目录
-            'app_dir'            => 'app',  // 应用文件夹
-            'config_dir'         => 'config',  // 配置文件夹
-            'runtime_dir'        => 'runtime',  // 运行时文件夹
-            'app_controller_dir' => 'controller',  // 控制器文件夹
-            'app_view_dir'       => 'view',  // 视图文件夹
-            'module'             => true,  // true表示开启分组并自动判断，false表示关闭分组，字符串表示指定分组
-            'default_module'     => 'index',  // 开启分组时的默认分组
-            'route_key'          => '_r',  // 兼容模式路由GET参数名
-            'debug'              => false,  // 是否调试模式
-        ];
-        $env = array_merge($default_env, $env);
-
-        if (is_null($env['root_path'])) {
-            $root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));  // 使用composer放置在vendor文件夹中的相对位置
-            $env['root_path'] = $root_path;
-        }
-
-        self::$env = $env;
+        new Env($env);
 
         // URL配置仅顶层有效
-        new Config(self::configPath());
+        new Config(Env::configPath());
         $url_config = Config::get('url');
         new Url($url_config);
 
         // 由于需要读取分组参数所以 module 必须先确认
         $this->checkModule();
 
-        new Config(self::configPath(), self::$module);
+        new Config(Env::configPath(), self::$module);
     }
 
     /**
@@ -158,7 +137,7 @@ class App
 
         $db_config = Config::get('database');
         if ($db_config) {
-            $db_mode = isset($db_config['mode']) ? $db_config['mode'] : null;
+            $db_mode = $db_config['mode'] ?? null;
             new Db($db_config['type'], $db_config['config'], $db_mode);
         }
 
@@ -186,7 +165,7 @@ class App
         }
         new Session($session_config);
 
-        $path_dir = self::$module ? self::appPath() . '/' . self::$module . '/' . self::$env['app_view_dir'] : App::appPath() . '/' . self::$env['app_view_dir'];
+        $path_dir = self::$module ? Env::appPath() . '/' . self::$module . '/' . Env::appViewDir() : Env::appPath() . '/' . Env::appViewDir();
         if (Directory::isDir($path_dir)) {
             $config_view = Config::get('view');
             new View($config_view['handler'], $config_view['config']);
@@ -235,20 +214,20 @@ class App
      */
     protected function checkModule()
     {
-        if (self::$env['module'] === false) {  //不使用分组
+        if (Env::get('module') === false) {  //不使用分组
             self::$module = null;
-        } elseif (self::$env['module'] === true) {  //自动判断分组
+        } elseif (Env::get('module') === true) {  //自动判断分组
             $route = self::getRoute();
             if ($route) {
                 $routes = explode('/', $route);
                 self::$module = $routes[0];
             } else {
-                self::$module = self::$env['default_module'];
+                self::$module = Env::get('default_module');
             }
         } else {
-            self::$module = self::$env['module'];
+            self::$module = Env::get('module');
         }
-        if (self::$module && !Directory::isDir(self::appPath() . '/' . self::$module)) {
+        if (self::$module && !Directory::isDir(Env::appPath() . '/' . self::$module)) {
             throw new ModuleNotFoundException(self::$module);
         }
     }
@@ -262,11 +241,11 @@ class App
     protected function checkController($controller, $throw = false)
     {
         $config_controller = Config::get('controller');
-        $class_path = '\\' . self::$env['app_dir'];
+        $class_path = '\\' . Env::appDir();
         if (self::$module) {
             $class_path .= '\\' . self::$module;
         }
-        $class_path .= '\\' . self::$env['app_controller_dir'] . '\\' . $controller;
+        $class_path .= '\\' . Env::appControllerDir() . '\\' . $controller;
         $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path . $config_controller['controller_postfix']);
         if (!class_exists($class)) {
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path);
@@ -291,7 +270,7 @@ class App
 
         if ($route) {
             $routes = explode('/', $route);
-            if (self::$env['module'] === true) {  //自动判断
+            if (Env::get('module') === true) {  //自动判断
                 array_shift($routes);  //第一个即为模块名
             }
 
@@ -364,55 +343,6 @@ class App
     }
 
     /**
-     * 获取底层框架配置
-     * @param string $key 如果指定该值，则返回该值指定的配置
-     * @return mixed
-     */
-    public static function env($key = null)
-    {
-        if ($key) {
-            return self::$env[$key];
-        }
-        return self::$env;
-    }
-
-    /**
-     * 获取根目录路径
-     * @return string
-     */
-    public static function rootPath()
-    {
-        return self::$env['root_path'];
-    }
-
-    /**
-     * 获取应用目录路径
-     * @return string
-     */
-    public static function appPath()
-    {
-        return self::$env['root_path'] . '/' . self::$env['app_dir'];
-    }
-
-    /**
-     * 获取配置目录路径
-     * @return string
-     */
-    public static function configPath()
-    {
-        return self::$env['root_path'] . '/' . self::$env['config_dir'];
-    }
-
-    /**
-     * 获取运行目录路径
-     * @return string
-     */
-    public static function runtimePath()
-    {
-        return self::$env['root_path'] . '/' . self::$env['runtime_dir'];
-    }
-
-    /**
      * 获取当前模块名
      * @return string|null 未启用模块时返回 null
      */
@@ -445,7 +375,7 @@ class App
      */
     public static function timeTaken()
     {
-        $microtimeNow = microtime(true);
-        return $microtimeNow - self::$microtimeStart;
+        $microtime_now = microtime(true);
+        return $microtime_now - self::$microtimeStart;
     }
 }

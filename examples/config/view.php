@@ -1,11 +1,12 @@
 <?php
 use fize\framework\App;
+use fize\framework\Env;
 
 return [
     'handler' => 'Twig',
     'config'  => [
-        'view'  => App::module() ? App::appPath() . '/' . App::module() . '/' . App::env('app_view_dir') : App::appPath() . '/' . App::env('app_view_dir'),
-        'cache' => App::runtimePath() . '/view',
+        'view'  => App::module() ? Env::appPath() . '/' . App::module() . '/' . Env::appViewDir() : Env::appPath() . '/' . Env::appViewDir(),
+        'cache' => Env::runtimePath() . '/view',
         'debug' => true
     ]
 ];

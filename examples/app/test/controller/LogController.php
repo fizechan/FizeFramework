@@ -3,6 +3,7 @@
 
 namespace app\test\controller;
 
+use Psr\Log\LogLevel;
 use fize\log\Log;
 
 
@@ -51,6 +52,6 @@ class LogController
 
     public function log()
     {
-        Log::log(Log::LEVEL_ERROR, '写点东西啦');
+        Log::log(LogLevel::ERROR, '写点东西啦');
     }
 }

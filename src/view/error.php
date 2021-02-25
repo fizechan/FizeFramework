@@ -1,4 +1,9 @@
-<!DOCTYPE html>
+<?php
+/**
+ * @var string $message 错误描述
+ * @var int    $code    错误码
+ */
+?><!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">

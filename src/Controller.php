@@ -115,13 +115,13 @@ abstract class Controller
     {
         $config_validator = Config::get('validator');
 
-        $path = '\\' . App::env('app_dir') . '\\' . App::module() . '\\' . $config_validator['dir'] . '\\' . App::controller();
+        $path = '\\' . Env::appDir() . '\\' . App::module() . '\\' . $config_validator['dir'] . '\\' . App::controller();
         $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['postfix']);
         if (!class_exists($class)) {
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);
         }
         if (!class_exists($class)) {
-            $path = '\\' . App::env('app_dir') . '\\common\\' . $config_validator['dir'] . '\\' . App::controller();
+            $path = '\\' . Env::appDir() . '\\common\\' . $config_validator['dir'] . '\\' . App::controller();
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['postfix']);
             if (!class_exists($class)) {
                 $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);

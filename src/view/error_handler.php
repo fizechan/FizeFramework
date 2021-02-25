@@ -1,4 +1,5 @@
 <?php
+
 if (!function_exists('parse_padding')) {
     function parse_padding($source)
     {
@@ -74,8 +75,14 @@ if (!function_exists('parse_args')) {
         return implode(', ', $result);
     }
 }
-?>
-<!DOCTYPE html>
+
+/**
+ * @var string $errfile 发生错误的文件
+ * @var int    $errline 发生的错误行数
+ * @var int    $errno   错误码
+ * @var string $errstr  错误信息
+ */
+?><!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
@@ -263,7 +270,7 @@ if (!function_exists('parse_args')) {
                         echo sprintf(
                             'at %s%s%s(%s)',
                             isset($trace['class']) ? parse_class($trace['class']) : '',
-                            isset($trace['type']) ? $trace['type'] : '',
+                            $trace['type'] ?? '',
                             $trace['function'],
                             isset($trace['args']) ? parse_args($trace['args']) : ''
                         );

@@ -1,11 +1,11 @@
 <?php
 
-use fize\framework\App;
+use fize\framework\Env;
 
 return [
     'handler' => 'File',
     'config'  => [
-        'path'   => App::runtimePath() . '/cache',
+        'path'   => Env::runtimePath() . '/cache',
         'expire' => 0
     ]
 ];

@@ -18,7 +18,6 @@ class TestApp extends TestCase
      * @param null $name
      * @param array $data
      * @param string $dataName
-     * @noinspection PhpIncludeInspection
      */
     public function __construct($name = null, array $data = [], $dataName = '')
     {
@@ -53,8 +52,8 @@ class TestApp extends TestCase
 
     public function testRoute()
     {
-        $PATH_INFO = '/index/index';
-        $route = $PATH_INFO;
+        $path_info = '/index/index';
+        $route = $path_info;
         if ($route) {
             $route = substr($route, 1);  //删除第一个字符'/'
         } else {
@@ -63,31 +62,6 @@ class TestApp extends TestCase
         var_dump($route);
 
         self::assertEquals('index/index', $route);
-    }
-
-    public function testEnv()
-    {
-        $env = App::env();
-        var_dump($env);
-        self::assertIsArray($env);
-
-        $root_path = App::env('root_path');
-        var_dump($root_path);
-        self::assertEquals($root_path, dirname(__DIR__) . '/temp');
-    }
-
-
-
-    public function testRootPath()
-    {
-        $root_path = App::rootPath();
-        self::assertEquals($root_path, dirname(__DIR__) . '/temp');
-    }
-
-    public function testRuntimePath()
-    {
-        $runtime_path = App::runtimePath();
-        self::assertEquals($runtime_path, dirname(__DIR__) . '/temp/runtime');
     }
 
     public function testModule()
@@ -109,18 +83,6 @@ class TestApp extends TestCase
         $action = App::action();
         var_dump($action);
         self::assertEquals('test2', $action);
-    }
-
-    public function testAppPath()
-    {
-        $app_path = App::appPath();
-        self::assertEquals($app_path, dirname(__DIR__) . '/temp/app');
-    }
-
-    public function testConfigPath()
-    {
-        $config_path = App::configPath();
-        self::assertEquals($config_path, dirname(__DIR__) . '/temp/config');
     }
 
     public function testController()

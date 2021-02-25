@@ -4,6 +4,7 @@
 namespace fize\framework\handler;
 
 use fize\framework\App;
+use fize\framework\Env;
 use fize\log\Log;
 
 /**
@@ -16,7 +17,7 @@ class ShutdownHandler implements ShutdownHandlerInterface
      */
     public function run()
     {
-        if (App::env('debug')) {
+        if (Env::get('debug')) {
             Log::info('耗时：' . App::timeTaken());
         }
     }

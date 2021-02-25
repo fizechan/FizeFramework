@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+<?php
+/**
+ * @var string $message 描述
+ */
+?><!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">

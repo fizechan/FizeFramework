@@ -78,8 +78,7 @@ if (!function_exists('parse_args')) {
 /**
  * @var Exception $exception
  */
-?>
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
@@ -299,7 +298,7 @@ if (!function_exists('parse_args')) {
                         echo sprintf(
                             'at %s%s%s(%s)',
                             isset($trace['class']) ? parse_class($trace['class']) : '',
-                            isset($trace['type']) ? $trace['type'] : '',
+                            $trace['type'] ?? '',
                             $trace['function'],
                             isset($trace['args']) ? parse_args($trace['args']) : ''
                         );

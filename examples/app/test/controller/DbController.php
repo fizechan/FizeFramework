@@ -3,8 +3,8 @@
 
 namespace app\test\controller;
 
-use fize\db\Db;
-use fize\db\Query;
+use fize\database\Db;
+use fize\database\Query;
 
 
 class DbController
