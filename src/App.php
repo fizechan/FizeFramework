@@ -2,10 +2,15 @@
 
 namespace fize\framework;
 
-use ReflectionClass;
-use Throwable;
 use fize\cache\Cache;
 use fize\database\Db;
+use fize\framework\exception\ActionNotFoundException;
+use fize\framework\exception\ControllerNotFoundException;
+use fize\framework\exception\ModuleNotFoundException;
+use fize\framework\exception\ParameterNotSetException;
+use fize\framework\handler\ErrorHandlerInterface;
+use fize\framework\handler\ExceptionHandlerInterface;
+use fize\framework\handler\ShutdownHandlerInterface;
 use fize\io\Directory;
 use fize\io\Ob;
 use fize\log\Log;
@@ -14,13 +19,8 @@ use fize\web\Cookie;
 use fize\web\Request;
 use fize\web\Response;
 use fize\web\Session;
-use fize\framework\exception\ActionNotFoundException;
-use fize\framework\exception\ControllerNotFoundException;
-use fize\framework\exception\ModuleNotFoundException;
-use fize\framework\exception\ParameterNotSetException;
-use fize\framework\handler\ErrorHandlerInterface;
-use fize\framework\handler\ExceptionHandlerInterface;
-use fize\framework\handler\ShutdownHandlerInterface;
+use ReflectionClass;
+use Throwable;
 
 /**
  * 应用
@@ -166,7 +166,7 @@ class App
         new Session($session_config);
 
         $path_dir = self::$module ? Env::appPath() . '/' . self::$module . '/' . Env::appViewDir() : Env::appPath() . '/' . Env::appViewDir();
-        if (Directory::isDir($path_dir)) {
+        if (Directory::exists($path_dir)) {
             $config_view = Config::get('view');
             new View($config_view['handler'], $config_view['config']);
         }
@@ -227,7 +227,7 @@ class App
         } else {
             self::$module = Env::get('module');
         }
-        if (self::$module && !Directory::isDir(Env::appPath() . '/' . self::$module)) {
+        if (self::$module && !Directory::exists(Env::appPath() . '/' . self::$module)) {
             throw new ModuleNotFoundException(self::$module);
         }
     }
@@ -238,7 +238,7 @@ class App
      * @param bool   $throw      如果控制器不存在是否抛出错误
      * @return bool
      */
-    protected function checkController($controller, $throw = false)
+    protected function checkController(string $controller, bool $throw = false): bool
     {
         $config_controller = Config::get('controller');
         $class_path = '\\' . Env::appDir();
@@ -355,7 +355,7 @@ class App
      * 获取当前控制器
      * @return string
      */
-    public static function controller()
+    public static function controller(): string
     {
         return self::$controller;
     }
@@ -364,7 +364,7 @@ class App
      * 获取当前操作
      * @return string
      */
-    public static function action()
+    public static function action(): string
     {
         return self::$action;
     }
@@ -373,7 +373,7 @@ class App
      * 获取当前程序执行所用时间
      * @return float
      */
-    public static function timeTaken()
+    public static function timeTaken(): float
     {
         $microtime_now = microtime(true);
         return $microtime_now - self::$microtimeStart;

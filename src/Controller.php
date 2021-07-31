@@ -2,12 +2,12 @@
 
 namespace fize\framework;
 
+use fize\framework\exception\ResponseException;
 use fize\security\Validator;
 use fize\view\View;
 use fize\view\ViewFactory;
 use fize\web\Request;
 use fize\web\Response;
-use fize\framework\exception\ResponseException;
 
 /**
  * 控制器
@@ -17,11 +17,11 @@ abstract class Controller
 
     /**
      * 返回JSON结果
-     * @param array  $data    数据
-     * @param string $message 错误信息
-     * @param int    $code    错误码
+     * @param array       $data    数据
+     * @param string|null $message 错误信息
+     * @param int         $code    错误码
      */
-    protected function result(array $data, $message = null, $code = 0)
+    protected function result(array $data, string $message = null, int $code = 0)
     {
         $json = [
             'code'    => $code,
@@ -33,11 +33,11 @@ abstract class Controller
 
     /**
      * 成功操作
-     * @param string $message 错误信息
-     * @param string $url     回跳URL
-     * @param int    $code    错误码
+     * @param string      $message 错误信息
+     * @param string|null $url     回跳URL
+     * @param int         $code    错误码
      */
-    protected function success($message, $url = null, $code = 0)
+    protected function success(string $message, string $url = null, int $code = 0)
     {
         if (Request::isAjax()) {
             $json = [
@@ -69,7 +69,7 @@ abstract class Controller
      * @param string $message 错误信息
      * @param int    $code    错误码
      */
-    protected function error($message, $code = 0)
+    protected function error(string $message, int $code = 0)
     {
         if (Request::isAjax()) {
             $json = [
@@ -96,11 +96,11 @@ abstract class Controller
 
     /**
      * 跳转
-     * @param string $url    内部URL
-     * @param array  $params 附加的URL参数
-     * @param int    $delay  延迟时间，以秒为单位
+     * @param string   $url    内部URL
+     * @param array    $params 附加的URL参数
+     * @param int|null $delay  延迟时间，以秒为单位
      */
-    protected function redirect($url, array $params = [], $delay = null)
+    protected function redirect(string $url, array $params = [], int $delay = null)
     {
         $url = Url::create($url, $params);
         $response = Response::redirect($url, $delay);
@@ -109,9 +109,9 @@ abstract class Controller
 
     /**
      * 验证数据
-     * @param array $data 数据
+     * @param array|null $data 数据
      */
-    protected function validate($data = null)
+    protected function validate(array $data = null)
     {
         $config_validator = Config::get('validator');
 

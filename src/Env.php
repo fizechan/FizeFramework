@@ -44,7 +44,7 @@ class Env
         $env = array_merge($default_env, $env);
 
         if (is_null($env['root_path'])) {
-            $root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));  // 使用composer放置在vendor文件夹中的相对位置
+            $root_path = dirname(__FILE__, 5);  // 使用composer放置在vendor文件夹中的相对位置
             $env['root_path'] = $root_path;
         }
 
@@ -53,10 +53,10 @@ class Env
 
     /**
      * 获取底层框架配置
-     * @param string $key 如果指定该值，则返回该值指定的配置
+     * @param string|null $key 如果指定该值，则返回该值指定的配置
      * @return mixed
      */
-    public static function get($key = null)
+    public static function get(string $key = null)
     {
         if ($key) {
             return self::$env[$key];
@@ -68,7 +68,7 @@ class Env
      * 获取根目录路径
      * @return string
      */
-    public static function rootPath()
+    public static function rootPath(): string
     {
         return self::$env['root_path'];
     }
@@ -77,7 +77,7 @@ class Env
      * 获取应用文件夹名称
      * @return string
      */
-    public static function appDir()
+    public static function appDir(): string
     {
         return self::$env['app_dir'];
     }
@@ -86,7 +86,7 @@ class Env
      * 获取配置文件夹名称
      * @return string
      */
-    public static function configDir()
+    public static function configDir(): string
     {
         return self::$env['config_dir'];
     }
@@ -95,7 +95,7 @@ class Env
      * 获取运行时文件夹名称
      * @return string
      */
-    public static function runtimeDir()
+    public static function runtimeDir(): string
     {
         return self::$env['runtime_dir'];
     }
@@ -104,7 +104,7 @@ class Env
      * 获取应用控制器文件夹名称
      * @return string
      */
-    public static function appControllerDir()
+    public static function appControllerDir(): string
     {
         return self::$env['app_controller_dir'];
     }
@@ -113,7 +113,7 @@ class Env
      * 获取应用视图文件夹名称
      * @return string
      */
-    public static function appViewDir()
+    public static function appViewDir(): string
     {
         return self::$env['app_view_dir'];
     }
@@ -122,7 +122,7 @@ class Env
      * 获取应用目录路径
      * @return string
      */
-    public static function appPath()
+    public static function appPath(): string
     {
         return self::$env['root_path'] . '/' . self::$env['app_dir'];
     }
@@ -131,7 +131,7 @@ class Env
      * 获取配置目录路径
      * @return string
      */
-    public static function configPath()
+    public static function configPath(): string
     {
         return self::$env['root_path'] . '/' . self::$env['config_dir'];
     }
@@ -140,7 +140,7 @@ class Env
      * 获取运行目录路径
      * @return string
      */
-    public static function runtimePath()
+    public static function runtimePath(): string
     {
         return self::$env['root_path'] . '/' . self::$env['runtime_dir'];
     }

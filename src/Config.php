@@ -27,10 +27,10 @@ class Config
 
     /**
      * 初始化
-     * @param string $dir    配置目录
-     * @param string $module 指定要附加配置的模块名
+     * @param string      $dir    配置目录
+     * @param string|null $module 指定要附加配置的模块名
      */
-    public function __construct($dir, $module = null)
+    public function __construct(string $dir, string $module = null)
     {
         self::$dir = $dir;
         self::$module = $module;
@@ -42,7 +42,7 @@ class Config
      * @param string $key    键名，层级以.分隔
      * @return mixed
      */
-    protected static function getByKey(array $config, $key)
+    protected static function getByKey(array $config, string $key)
     {
         $keys = explode('.', $key);
         $cfg_temp = $config;
@@ -61,9 +61,8 @@ class Config
      * @param string $key     键名，层级以.分隔
      * @param mixed  $default 如未找到该配置时返回的默认值
      * @return mixed
-     * @noinspection PhpIncludeInspection
      */
-    public static function get($key, $default = null)
+    public static function get(string $key, $default = null)
     {
         //当前缓存配置
         $value = self::getByKey(self::$config, $key);
