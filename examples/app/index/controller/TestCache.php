@@ -3,7 +3,7 @@
 
 namespace app\index\controller;
 
-use fize\cache\Cache;
+use Fize\Cache\Cache;
 
 
 class TestCache

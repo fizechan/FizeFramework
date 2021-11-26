@@ -1,4 +1,5 @@
 <?php
+
 if (!function_exists('parse_padding')) {
     function parse_padding($source)
     {
@@ -76,10 +77,12 @@ if (!function_exists('parse_args')) {
 }
 
 /**
- * @var Exception $exception
+ * @var string $errfile 发生错误的文件
+ * @var int    $errline 发生的错误行数
+ * @var int    $errno   错误码
+ * @var string $errstr  错误信息
  */
-?>
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
@@ -128,6 +131,10 @@ if (!function_exists('parse_args')) {
 
         a:hover {
             text-decoration: underline;
+        }
+
+        .line-error {
+            background: #f8cbcb;
         }
 
         .echo table {
@@ -193,7 +200,7 @@ if (!function_exists('parse_args')) {
             min-width: 100%;
             box-sizing: border-box;
             font-size: 14px;
-            padding-left: <?php echo (isset($source) && !empty($source)) ? parse_padding($source) : 40;  ?>px;
+            padding-left: 40px;
         }
 
         .exception .source-code pre li {
@@ -230,48 +237,6 @@ if (!function_exists('parse_args')) {
             border-bottom-left-radius: 4px;
             border-bottom-right-radius: 4px;
         }
-
-        .exception-var table {
-            width: 100%;
-            margin: 12px 0;
-            box-sizing: border-box;
-            table-layout: fixed;
-            word-wrap: break-word;
-        }
-
-        .exception-var table caption {
-            text-align: left;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 6px 0;
-        }
-
-        .exception-var table caption small {
-            font-weight: 300;
-            display: inline-block;
-            margin-left: 10px;
-            color: #ccc;
-        }
-
-        .exception-var table tbody {
-            font-size: 13px;
-        }
-
-        .exception-var table td {
-            padding: 0 6px;
-            vertical-align: top;
-            word-break: break-all;
-        }
-
-        .exception-var table td:first-child {
-            width: 28%;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
-        .exception-var table td pre {
-            margin: 0;
-        }
     </style>
 </head>
 <body>
@@ -281,25 +246,31 @@ if (!function_exists('parse_args')) {
         <div class="info">
             <div>
                 <h2>
-                    [<?php echo $exception->getCode(); ?>]&nbsp;
-                    <?php echo sprintf('%s in %s', parse_class($exception->getFile()), parse_file($exception->getFile(), $exception->getLine())); ?></h2>
+                    [<?php echo $errno; ?>]&nbsp;
+                    <?php echo sprintf('%s in %s', parse_class($errfile), parse_file($errfile, $errline)); ?></h2>
             </div>
-            <div><h1><?php echo nl2br(htmlentities($exception->getMessage())); ?></h1></div>
+            <div><h1><?php echo nl2br(htmlentities($errstr)); ?></h1></div>
         </div>
 
     </div>
+
+
     <div class="trace">
         <h2>Call Stack</h2>
         <ol>
-            <li><?php echo sprintf('in %s', parse_file($exception->getFile(), $exception->getLine())); ?></li>
-            <?php foreach ($exception->getTrace() as $trace) { ?>
+            <?php
+            $traces = debug_backtrace();
+            unset($traces[0]);
+            unset($traces[1]);
+            foreach ($traces as $trace) {
+                ?>
                 <li>
                     <?php
                     if ($trace['function']) {
                         echo sprintf(
                             'at %s%s%s(%s)',
                             isset($trace['class']) ? parse_class($trace['class']) : '',
-                            isset($trace['type']) ? $trace['type'] : '',
+                            $trace['type'] ?? '',
                             $trace['function'],
                             isset($trace['args']) ? parse_args($trace['args']) : ''
                         );

@@ -3,7 +3,7 @@
 
 namespace app\index\controller;
 
-use fize\web\Session;
+use Fize\Web\Session;
 
 
 class TestSession

@@ -1,9 +1,9 @@
 <?php
 
+namespace Tests;
 
+use Fize\Framework\App;
 use PHPUnit\Framework\TestCase;
-use fize\framework\App;
-
 
 class TestController extends TestCase
 {
@@ -12,7 +12,6 @@ class TestController extends TestCase
      * @param null $name
      * @param array $data
      * @param string $dataName
-     * @noinspection PhpIncludeInspection
      */
     public function __construct($name = null, array $data = [], $dataName = '')
     {

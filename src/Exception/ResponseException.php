@@ -1,9 +1,9 @@
 <?php
 
-namespace fize\framework\exception;
+namespace Fize\Framework\Exception;
 
 use RuntimeException;
-use fize\web\Response;
+use Fize\Web\Response;
 
 /**
  * HTTP响应

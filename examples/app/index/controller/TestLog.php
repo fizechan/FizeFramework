@@ -3,7 +3,7 @@
 
 namespace app\index\controller;
 
-use fize\log\Log;
+use Fize\Log\Log;
 
 
 class TestLog

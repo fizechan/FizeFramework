@@ -1,8 +1,8 @@
 <?php
 
-use fize\framework\handler\ErrorHandler;
-use fize\framework\handler\ExceptionHandler;
-use fize\framework\handler\ShutdownHandler;
+use Fize\Framework\Handler\ErrorHandler;
+use Fize\Framework\Handler\ExceptionHandler;
+use Fize\Framework\Handler\ShutdownHandler;
 
 /**
  * 处理器设置

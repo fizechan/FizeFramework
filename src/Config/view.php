@@ -1,6 +1,7 @@
 <?php
 
-use fize\framework\App;
+use Fize\Framework\App;
+use Fize\Framework\Env;
 
 /**
  * 视图设置
@@ -8,7 +9,7 @@ use fize\framework\App;
 return [
     'handler'               => 'Php',
     'config'                => [
-        'view' => App::module() ? App::appPath() . '/' . App::module() . '/' . App::env('app_view_dir') : App::appPath() . '/' . App::env('app_view_dir')
+        'view' => App::module() ? Env::appPath() . '/' . App::module() . '/' . Env::appViewDir() : Env::appPath() . '/' . Env::appViewDir()
     ],
     'tpl_404'               => null,  // 模板：404
     'tpl_error'             => null,  // 模板：错误跳转

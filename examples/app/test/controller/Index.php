@@ -3,10 +3,10 @@
 
 namespace app\test\controller;
 
-use fize\framework\Controller;
-use fize\framework\Config;
-use fize\view\View;
-use fize\web\Response;
+use Fize\Framework\Controller;
+use Fize\Framework\Config;
+use Fize\View\View;
+use Fize\Web\Response;
 
 
 class Index extends Controller

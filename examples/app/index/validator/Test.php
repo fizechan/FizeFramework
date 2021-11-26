@@ -3,7 +3,7 @@
 
 namespace app\index\validator;
 
-use fize\security\Validator;
+use Fize\Security\Validator;
 
 
 class Test extends Validator

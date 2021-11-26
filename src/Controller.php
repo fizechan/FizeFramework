@@ -1,13 +1,13 @@
 <?php
 
-namespace fize\framework;
+namespace Fize\Framework;
 
-use fize\security\Validator;
-use fize\view\View;
-use fize\view\ViewFactory;
-use fize\web\Request;
-use fize\web\Response;
-use fize\framework\exception\ResponseException;
+use Fize\Framework\Exception\ResponseException;
+use Fize\Security\Validator;
+use Fize\View\View;
+use Fize\View\ViewFactory;
+use Fize\Web\Request;
+use Fize\Web\Response;
 
 /**
  * 控制器
@@ -17,11 +17,11 @@ abstract class Controller
 
     /**
      * 返回JSON结果
-     * @param array  $data    数据
-     * @param string $message 错误信息
-     * @param int    $code    错误码
+     * @param array       $data    数据
+     * @param string|null $message 错误信息
+     * @param int         $code    错误码
      */
-    protected function result(array $data, $message = null, $code = 0)
+    protected function result(array $data, string $message = null, int $code = 0)
     {
         $json = [
             'code'    => $code,
@@ -33,11 +33,11 @@ abstract class Controller
 
     /**
      * 成功操作
-     * @param string $message 错误信息
-     * @param string $url     回跳URL
-     * @param int    $code    错误码
+     * @param string      $message 错误信息
+     * @param string|null $url     回跳URL
+     * @param int         $code    错误码
      */
-    protected function success($message, $url = null, $code = 0)
+    protected function success(string $message, string $url = null, int $code = 0)
     {
         if (Request::isAjax()) {
             $json = [
@@ -54,7 +54,7 @@ abstract class Controller
                 View::assign('code', $code);
                 $response = Response::html(View::render());
             } else {
-                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
+                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/View']);
                 $view->assign('message', $message);
                 $view->assign('url', $url);
                 $view->assign('code', $code);
@@ -69,7 +69,7 @@ abstract class Controller
      * @param string $message 错误信息
      * @param int    $code    错误码
      */
-    protected function error($message, $code = 0)
+    protected function error(string $message, int $code = 0)
     {
         if (Request::isAjax()) {
             $json = [
@@ -85,7 +85,7 @@ abstract class Controller
                 View::assign('code', $code);
                 $response = Response::html(View::render());
             } else {
-                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
+                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/View']);
                 $view->assign('message', $message);
                 $view->assign('code', $code);
                 $response = Response::html($view->render('error'));
@@ -96,11 +96,11 @@ abstract class Controller
 
     /**
      * 跳转
-     * @param string $url    内部URL
-     * @param array  $params 附加的URL参数
-     * @param int    $delay  延迟时间，以秒为单位
+     * @param string   $url    内部URL
+     * @param array    $params 附加的URL参数
+     * @param int|null $delay  延迟时间，以秒为单位
      */
-    protected function redirect($url, array $params = [], $delay = null)
+    protected function redirect(string $url, array $params = [], int $delay = null)
     {
         $url = Url::create($url, $params);
         $response = Response::redirect($url, $delay);
@@ -109,19 +109,19 @@ abstract class Controller
 
     /**
      * 验证数据
-     * @param array $data 数据
+     * @param array|null $data 数据
      */
-    protected function validate($data = null)
+    protected function validate(array $data = null)
     {
         $config_validator = Config::get('validator');
 
-        $path = '\\' . App::env('app_dir') . '\\' . App::module() . '\\' . $config_validator['dir'] . '\\' . App::controller();
+        $path = '\\' . Env::appDir() . '\\' . App::module() . '\\' . $config_validator['dir'] . '\\' . App::controller();
         $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['postfix']);
         if (!class_exists($class)) {
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);
         }
         if (!class_exists($class)) {
-            $path = '\\' . App::env('app_dir') . '\\common\\' . $config_validator['dir'] . '\\' . App::controller();
+            $path = '\\' . Env::appDir() . '\\common\\' . $config_validator['dir'] . '\\' . App::controller();
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['postfix']);
             if (!class_exists($class)) {
                 $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);

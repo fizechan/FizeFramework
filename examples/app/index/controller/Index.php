@@ -3,10 +3,10 @@
 namespace app\index\controller;
 
 use RuntimeException;
-use fize\database\Db;
-use fize\framework\Config;
-use fize\framework\Controller;
-use fize\view\View;
+use Fize\Database\Db;
+use Fize\Framework\Config;
+use Fize\Framework\Controller;
+use Fize\View\View;
 
 
 class Index extends Controller

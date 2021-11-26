@@ -1,8 +1,6 @@
 <?php
 
-namespace fize\framework;
-
-use fize\misc\Preg;
+namespace Fize\Framework;
 
 /**
  * URL管理
@@ -29,7 +27,7 @@ class Url
      * @param string $query 请求GET字符串
      * @return array
      */
-    private static function convertQuery($query)
+    private static function convertQuery(string $query): array
     {
         $parts = explode('&', $query);
         $params = [];
@@ -45,11 +43,11 @@ class Url
      * @param string $url 待解析URL
      * @return string
      */
-    public static function parse($url)
+    public static function parse(string $url): string
     {
         $rules = self::$config['rules'];
         foreach ($rules as $pattern => $target) {
-            if (Preg::match("#^{$pattern}$#", $url, $matches)) {  // 命中路由规则
+            if (preg_match("#^$pattern$#", $url, $matches)) {  // 命中路由规则
                 //改装$target成url
                 if ($matches) {  // 捕获匹配组
                     foreach ($matches as $key => $value) {
@@ -59,10 +57,10 @@ class Url
                         if (is_int($key)) {  // 键名为数字时忽略
                             continue;
                         }
-                        if (strstr($target, "<{$key}>") === false) {  // 捕获组在URL中无定义则作为GET参数传递
+                        if (strstr($target, "<$key>") === false) {  // 捕获组在URL中无定义则作为GET参数传递
                             $_GET[$key] = $value;
                         } else {  // 捕获组在URL中有定义则进行URL替换
-                            $target = str_replace("<{$key}>", $value, $target);
+                            $target = str_replace("<$key>", $value, $target);
                         }
                     }
                 }
@@ -88,7 +86,7 @@ class Url
      * @param array  $params 要附加的参数
      * @return string 返回新的URL
      */
-    private static function appendQuery($url, array $params)
+    private static function appendQuery(string $url, array $params): string
     {
         $query = '';
         foreach ($params as $key => $value) {
@@ -114,7 +112,7 @@ class Url
      * @param array  $params 附加参数
      * @return string
      */
-    public static function create($url, array $params = [])
+    public static function create(string $url, array $params = []): string
     {
         $full_url = self::appendQuery($url, $params);
 
@@ -133,11 +131,11 @@ class Url
                 $finial_url = $pattern;
 
                 //清理非捕获组
-                $finial_url = Preg::replace('#\(\?\:[^\)]*\)#', '', $finial_url);
+                $finial_url = preg_replace('#\(\?\:[^\)]*\)#', '', $finial_url);
 
                 //匹配捕获组并替换
                 while (true) {
-                    if (Preg::match('#\(\?\<(?<name>[^\>]*)\>[^\)]*\)#', $finial_url, $matches)) {
+                    if (preg_match('#\(\?\<(?<name>[^\>]*)\>[^\)]*\)#', $finial_url, $matches)) {
                         if (isset($matches['name'])) {
                             if (isset($full_params[$matches['name']])) {
                                 $finial_url = str_replace($matches[0], $full_params[$matches['name']], $finial_url);

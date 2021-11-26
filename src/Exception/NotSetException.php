@@ -1,9 +1,9 @@
 <?php
 
-namespace fize\framework\exception;
+namespace Fize\Framework\Exception;
 
 use RuntimeException;
-use fize\web\Request;
+use Fize\Web\Request;
 
 /**
  * 未设置错误
