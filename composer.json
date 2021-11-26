@@ -17,7 +17,7 @@
     "php": ">=7.0.0",
     "fize/cache": "^4.0.0",
     "fize/database": "^4.0.0",
-    "fize/io": "^5.0.0",
+    "fize/io": "^6.0.0",
     "fize/log": "^4.0.0",
     "fize/security": "^2.0.0",
     "fize/view": "^3.0.0",
