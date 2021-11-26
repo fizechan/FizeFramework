@@ -4,7 +4,7 @@
 namespace app\test\controller;
 
 use Exception;
-use fize\framework\Controller;
+use Fize\Framework\Controller;
 
 
 class Test extends Controller

@@ -1,7 +1,9 @@
 <?php
 
+namespace Tests;
+
+use Fize\Framework\Config;
 use PHPUnit\Framework\TestCase;
-use fize\framework\Config;
 
 class TestConfig extends TestCase
 {

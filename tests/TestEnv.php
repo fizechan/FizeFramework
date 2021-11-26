@@ -1,7 +1,8 @@
 <?php
 
+namespace Tests;
 
-use fize\framework\Env;
+use Fize\Framework\Env;
 use PHPUnit\Framework\TestCase;
 
 class TestEnv extends TestCase

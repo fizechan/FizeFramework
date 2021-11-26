@@ -1,13 +1,13 @@
 <?php
 
-namespace fize\framework;
+namespace Fize\Framework;
 
-use fize\framework\exception\ResponseException;
-use fize\security\Validator;
-use fize\view\View;
-use fize\view\ViewFactory;
-use fize\web\Request;
-use fize\web\Response;
+use Fize\Framework\Exception\ResponseException;
+use Fize\Security\Validator;
+use Fize\View\View;
+use Fize\View\ViewFactory;
+use Fize\Web\Request;
+use Fize\Web\Response;
 
 /**
  * 控制器
@@ -54,7 +54,7 @@ abstract class Controller
                 View::assign('code', $code);
                 $response = Response::html(View::render());
             } else {
-                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
+                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/View']);
                 $view->assign('message', $message);
                 $view->assign('url', $url);
                 $view->assign('code', $code);
@@ -85,7 +85,7 @@ abstract class Controller
                 View::assign('code', $code);
                 $response = Response::html(View::render());
             } else {
-                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
+                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/View']);
                 $view->assign('message', $message);
                 $view->assign('code', $code);
                 $response = Response::html($view->render('error'));

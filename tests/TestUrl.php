@@ -1,9 +1,10 @@
 <?php
 
+namespace Tests;
 
-use fize\framework\Url;
-use fize\framework\Config;
-use fize\web\Request;
+use Fize\Framework\Config;
+use Fize\Framework\Url;
+use Fize\Web\Request;
 use PHPUnit\Framework\TestCase;
 
 class TestUrl extends TestCase

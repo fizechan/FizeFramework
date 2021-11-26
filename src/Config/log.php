@@ -1,6 +1,6 @@
 <?php
 
-use fize\framework\Env;
+use Fize\Framework\Env;
 
 /**
  * 日志设置

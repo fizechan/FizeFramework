@@ -1,9 +1,9 @@
 <?php
 
+namespace Tests;
 
+use Fize\Framework\App;
 use PHPUnit\Framework\TestCase;
-use fize\framework\App;
-
 
 class TestController extends TestCase
 {

@@ -4,7 +4,7 @@
 namespace app\test\controller;
 
 use Psr\Log\LogLevel;
-use fize\log\Log;
+use Fize\Log\Log;
 
 
 class LogController

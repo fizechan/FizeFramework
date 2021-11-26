@@ -1,7 +1,6 @@
 <?php
 
-
-namespace fize\framework;
+namespace Fize\Framework;
 
 /**
  * 环境

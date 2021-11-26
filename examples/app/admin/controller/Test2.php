@@ -2,7 +2,7 @@
 
 namespace app\admin\controller;
 
-use fize\framework\Url;
+use Fize\Framework\Url;
 
 class Test2
 {

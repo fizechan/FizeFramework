@@ -1,7 +1,7 @@
 <?php
 
 
-namespace fize\framework\handler;
+namespace Fize\Framework\Handler;
 
 /**
  * 错误处理器接口

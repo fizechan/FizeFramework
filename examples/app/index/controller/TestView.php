@@ -3,9 +3,9 @@
 
 namespace app\index\controller;
 
-use fize\framework\App;
-use fize\framework\Controller;
-use fize\view\View;
+use Fize\Framework\App;
+use Fize\Framework\Controller;
+use Fize\View\View;
 
 
 class TestView extends Controller

@@ -1,7 +1,6 @@
 <?php
 
-
-namespace fize\framework\handler;
+namespace Fize\Framework\Handler;
 
 use Throwable;
 

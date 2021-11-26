@@ -3,7 +3,7 @@
 
 namespace app\test\controller;
 
-use fize\cache\Cache;
+use Fize\Cache\Cache;
 
 
 class CacheController

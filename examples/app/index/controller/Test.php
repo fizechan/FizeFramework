@@ -3,8 +3,8 @@
 
 namespace app\index\controller;
 
-use fize\framework\Controller;
-use fize\framework\App;
+use Fize\Framework\Controller;
+use Fize\Framework\App;
 
 
 class Test extends Controller

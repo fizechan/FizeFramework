@@ -1,11 +1,10 @@
 <?php
 
+namespace Fize\Framework\Handler;
 
-namespace fize\framework\handler;
-
-use fize\framework\App;
-use fize\framework\Env;
-use fize\log\Log;
+use Fize\Framework\App;
+use Fize\Framework\Env;
+use Fize\Log\Log;
 
 /**
  * 结束处理器

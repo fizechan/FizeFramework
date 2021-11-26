@@ -1,8 +1,9 @@
 <?php
 
+namespace Tests;
 
-use fize\framework\App;
-use fize\web\Request;
+use Fize\Framework\App;
+use Fize\Web\Request;
 use PHPUnit\Framework\TestCase;
 
 class TestApp extends TestCase

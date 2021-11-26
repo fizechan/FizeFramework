@@ -1,7 +1,7 @@
 <?php
 
-use fize\framework\App;
-use fize\framework\Env;
+use Fize\Framework\App;
+use Fize\Framework\Env;
 
 /**
  * 视图设置

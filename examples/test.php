@@ -1,12 +1,11 @@
 <?php
 
-namespace fize\framework;
+namespace Fize\Framework;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 /**
  * 注册自动加载用于测试中加载控制器
- * @noinspection PhpIncludeInspection
  */
 function autoload_register()
 {

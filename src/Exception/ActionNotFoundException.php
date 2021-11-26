@@ -1,7 +1,7 @@
 <?php
 
 
-namespace fize\framework\exception;
+namespace Fize\Framework\Exception;
 
 /**
  * 操作不存在

@@ -1,6 +1,6 @@
 <?php
 
-namespace fize\framework;
+namespace Fize\Framework;
 
 /**
  * URL管理

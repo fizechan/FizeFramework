@@ -1,24 +1,24 @@
 <?php
 
-namespace fize\framework;
+namespace Fize\Framework;
 
-use fize\cache\Cache;
-use fize\database\Db;
-use fize\framework\exception\ActionNotFoundException;
-use fize\framework\exception\ControllerNotFoundException;
-use fize\framework\exception\ModuleNotFoundException;
-use fize\framework\exception\ParameterNotSetException;
-use fize\framework\handler\ErrorHandlerInterface;
-use fize\framework\handler\ExceptionHandlerInterface;
-use fize\framework\handler\ShutdownHandlerInterface;
-use fize\io\Directory;
-use fize\io\Ob;
-use fize\log\Log;
-use fize\view\View;
-use fize\web\Cookie;
-use fize\web\Request;
-use fize\web\Response;
-use fize\web\Session;
+use Fize\Cache\Cache;
+use Fize\Database\Db;
+use Fize\Framework\Exception\ActionNotFoundException;
+use Fize\Framework\Exception\ControllerNotFoundException;
+use Fize\Framework\Exception\ModuleNotFoundException;
+use Fize\Framework\Exception\ParameterNotSetException;
+use Fize\Framework\Handler\ErrorHandlerInterface;
+use Fize\Framework\Handler\ExceptionHandlerInterface;
+use Fize\Framework\Handler\ShutdownHandlerInterface;
+use Fize\IO\Directory;
+use Fize\IO\Ob;
+use Fize\Log\Log;
+use Fize\View\View;
+use Fize\Web\Cookie;
+use Fize\Web\Request;
+use Fize\Web\Response;
+use Fize\Web\Session;
 use ReflectionClass;
 use Throwable;
 

@@ -3,7 +3,7 @@
 
 namespace app\index\controller;
 
-use fize\framework\Controller;
+use Fize\Framework\Controller;
 
 class News extends Controller
 {
