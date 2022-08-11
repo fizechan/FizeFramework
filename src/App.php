@@ -8,11 +8,11 @@ use Fize\Framework\Exception\ActionNotFoundException;
 use Fize\Framework\Exception\ControllerNotFoundException;
 use Fize\Framework\Exception\ModuleNotFoundException;
 use Fize\Framework\Exception\ParameterNotSetException;
-use Fize\Framework\Handler\ErrorHandlerInterface;
-use Fize\Framework\Handler\ExceptionHandlerInterface;
-use Fize\Framework\Handler\ShutdownHandlerInterface;
+use Fize\Framework\HandlerInterface\ErrorHandlerInterface;
+use Fize\Framework\HandlerInterface\ExceptionHandlerInterface;
+use Fize\Framework\HandlerInterface\ShutdownHandlerInterface;
 use Fize\IO\Directory;
-use Fize\IO\Ob;
+use Fize\IO\OB;
 use Fize\Log\Log;
 use Fize\View\View;
 use Fize\Web\Cookie;
@@ -62,7 +62,7 @@ class App
     public function __construct(array $env = [])
     {
         self::$microtimeStart = microtime(true);
-        Ob::start();
+        OB::start();
         $this->init($env);
         $this->registerComponent();
         $this->setHandler();
@@ -179,7 +179,7 @@ class App
     {
         //系统错误处理
         set_error_handler(function ($errno, $errstr, $errfile = null, $errline = 0) {
-            Ob::clean();
+            OB::clean();
             $class = Config::get('handler.error');
             /**
              * @var ErrorHandlerInterface $handler
@@ -339,7 +339,7 @@ class App
                 $response->send();
             }
         }
-        Ob::endFlush();
+        OB::endFlush();
     }
 
     /**

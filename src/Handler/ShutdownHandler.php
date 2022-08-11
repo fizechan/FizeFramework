@@ -4,6 +4,7 @@ namespace Fize\Framework\Handler;
 
 use Fize\Framework\App;
 use Fize\Framework\Env;
+use Fize\Framework\HandlerInterface\ShutdownHandlerInterface;
 use Fize\Log\Log;
 
 /**
