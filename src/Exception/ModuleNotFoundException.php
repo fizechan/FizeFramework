@@ -29,7 +29,7 @@ class ModuleNotFoundException extends NotFoundException
      * 获取模块名
      * @return string
      */
-    public function module()
+    public function module(): string
     {
         return $this->module;
     }

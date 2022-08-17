@@ -4,10 +4,10 @@ namespace Fize\Framework;
 
 use Fize\Cache\Cache;
 use Fize\Database\Db;
+use Fize\Exception\ParameterNotSetException;
 use Fize\Framework\Exception\ActionNotFoundException;
 use Fize\Framework\Exception\ControllerNotFoundException;
 use Fize\Framework\Exception\ModuleNotFoundException;
-use Fize\Framework\Exception\ParameterNotSetException;
 use Fize\Framework\HandlerInterface\ErrorHandlerInterface;
 use Fize\Framework\HandlerInterface\ExceptionHandlerInterface;
 use Fize\Framework\HandlerInterface\ShutdownHandlerInterface;
@@ -177,7 +177,7 @@ class App
      */
     protected function setHandler()
     {
-        //系统错误处理
+        // 系统错误处理
         set_error_handler(function ($errno, $errstr, $errfile = null, $errline = 0) {
             OB::clean();
             $class = Config::get('handler.error');
@@ -188,7 +188,7 @@ class App
             return $handler->run($errno, $errstr, $errfile, $errline);
         }, E_ALL);
 
-        //系统异常处理
+        // 系统异常处理
         set_exception_handler(function (Throwable $exception) {
             $class = Config::get('handler.exception');
             /**
@@ -198,7 +198,7 @@ class App
             $handler->run($exception);
         });
 
-        //接管结束任务
+        // 接管结束任务
         register_shutdown_function(function () {
             $class = Config::get('handler.shutdown');
             /**
@@ -214,9 +214,9 @@ class App
      */
     protected function checkModule()
     {
-        if (Env::get('module') === false) {  //不使用分组
+        if (Env::get('module') === false) {  // 不使用分组
             self::$module = null;
-        } elseif (Env::get('module') === true) {  //自动判断分组
+        } elseif (Env::get('module') === true) {  // 自动判断分组
             $route = self::getRoute();
             if ($route) {
                 $routes = explode('/', $route);
@@ -270,23 +270,23 @@ class App
 
         if ($route) {
             $routes = explode('/', $route);
-            if (Env::get('module') === true) {  //自动判断
-                array_shift($routes);  //第一个即为模块名
+            if (Env::get('module') === true) {  // 自动判断
+                array_shift($routes);  // 第一个即为模块名
             }
 
-            if (count($routes) == 0) {  //默认
+            if (count($routes) == 0) {  // 默认
                 self::$controller = $config_controller['default_controller'];
                 self::$action = $config_controller['default_action'];
-            } elseif (count($routes) == 1) {  //单个即为控制器
+            } elseif (count($routes) == 1) {  // 单个即为控制器
                 self::$controller = ucfirst($routes[0]);
                 self::$action = $config_controller['default_action'];
             } else {
-                //最后一个是操作
+                // 最后一个是操作
                 $t_routes = $routes;
                 self::$action = array_pop($t_routes);
                 $t_routes[count($t_routes) - 1] = ucfirst($t_routes[count($t_routes) - 1]);
                 self::$controller = implode('\\', $t_routes);
-                if (!$this->checkController(self::$controller)) {  //整个URL都是控制器
+                if (!$this->checkController(self::$controller)) {  // 整个URL都是控制器
                     self::$controller = implode('\\', $routes);
                     self::$action = $config_controller['default_action'];
                 }

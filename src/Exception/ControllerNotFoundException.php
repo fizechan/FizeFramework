@@ -35,7 +35,7 @@ class ControllerNotFoundException extends NotFoundException
      * 获取模块名
      * @return string
      */
-    public function module()
+    public function module(): string
     {
         return $this->module;
     }
@@ -44,7 +44,7 @@ class ControllerNotFoundException extends NotFoundException
      * 取得控制器名
      * @return string
      */
-    public function controller()
+    public function controller(): string
     {
         return $this->controller;
     }

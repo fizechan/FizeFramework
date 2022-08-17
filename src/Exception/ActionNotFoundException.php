@@ -43,7 +43,7 @@ class ActionNotFoundException extends NotFoundException
      * 获取模块名
      * @return string
      */
-    public function module()
+    public function module(): string
     {
         return $this->module;
     }
@@ -52,7 +52,7 @@ class ActionNotFoundException extends NotFoundException
      * 取得控制器名
      * @return string
      */
-    public function controller()
+    public function controller(): string
     {
         return $this->controller;
     }
@@ -61,7 +61,7 @@ class ActionNotFoundException extends NotFoundException
      * 取得操作名
      * @return string
      */
-    public function action()
+    public function action(): string
     {
         return $this->action;
     }

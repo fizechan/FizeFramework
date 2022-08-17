@@ -2,8 +2,8 @@
 
 namespace Fize\Framework\Handler;
 
-use Fize\Framework\Exception\NotFoundException;
-use Fize\Framework\Exception\ResponseException;
+use Fize\Exception\HttpResponseException;
+use Fize\Exception\NotFoundException;
 use Fize\Framework\HandlerInterface\ExceptionHandlerInterface;
 use Fize\Log\Log;
 use Fize\View\ViewFactory;
@@ -22,7 +22,7 @@ class ExceptionHandler implements ExceptionHandlerInterface
      */
     public function run(Throwable $exception)
     {
-        if ($exception instanceof ResponseException) {
+        if ($exception instanceof HttpResponseException) {
             $response = $exception->getResponse();
             $response->send();
         } elseif ($exception instanceof NotFoundException) {

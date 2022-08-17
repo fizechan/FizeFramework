@@ -2,7 +2,7 @@
 
 namespace Fize\Framework;
 
-use Fize\Framework\Exception\ResponseException;
+use Fize\Exception\HttpResponseException;
 use Fize\Security\Validator;
 use Fize\View\View;
 use Fize\View\ViewFactory;
@@ -28,7 +28,7 @@ abstract class Controller
             'message' => $message,
             'data'    => $data
         ];
-        throw new ResponseException(Response::json($json));
+        throw new HttpResponseException(Response::json($json));
     }
 
     /**
@@ -61,7 +61,7 @@ abstract class Controller
                 $response = Response::html($view->render('success'));
             }
         }
-        throw new ResponseException($response);
+        throw new HttpResponseException($response);
     }
 
     /**
@@ -91,7 +91,7 @@ abstract class Controller
                 $response = Response::html($view->render('error'));
             }
         }
-        throw new ResponseException($response);
+        throw new HttpResponseException($response);
     }
 
     /**
@@ -104,7 +104,7 @@ abstract class Controller
     {
         $url = Url::create($url, $params);
         $response = Response::redirect($url, $delay);
-        throw new ResponseException($response);
+        throw new HttpResponseException($response);
     }
 
     /**
