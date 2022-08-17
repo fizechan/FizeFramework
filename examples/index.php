@@ -16,6 +16,7 @@ function autoload_register()
         }
     });
 }
+
 autoload_register();
 
 $app = new App(
