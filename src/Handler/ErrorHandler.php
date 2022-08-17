@@ -3,6 +3,7 @@
 
 namespace Fize\Framework\Handler;
 
+use Fize\Framework\HandlerInterface\ErrorHandlerInterface;
 use Fize\Log\Log;
 use Fize\View\ViewFactory;
 use Fize\Web\Response;
@@ -24,7 +25,7 @@ class ErrorHandler implements ErrorHandlerInterface
     public function run($errno, $errstr, $errfile = null, $errline = 0)
     {
         Log::error("[{$errno}]$errstr : {$errfile} Line: {$errline}");
-        $view = ViewFactory::create('Php', ['view' => dirname(__DIR__) . '/View']);
+        $view = ViewFactory::create('Php', ['view' => dirname(__DIR__) . '/view']);
         $view->assign('errno', $errno);
         $view->assign('errstr', $errstr);
         $view->assign('errfile', $errfile);
