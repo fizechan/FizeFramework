@@ -2,6 +2,8 @@
 
 namespace Fize\Framework\Exception;
 
+use Fize\Exception\NotFoundException;
+
 /**
  * 控制器不存在
  */

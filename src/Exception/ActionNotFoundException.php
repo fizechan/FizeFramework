@@ -3,6 +3,8 @@
 
 namespace Fize\Framework\Exception;
 
+use Fize\Exception\NotFoundException;
+
 /**
  * 操作不存在
  */
