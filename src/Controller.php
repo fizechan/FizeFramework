@@ -54,7 +54,8 @@ abstract class Controller
                 View::assign('code', $code);
                 $response = Response::html(View::render());
             } else {
-                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
+                $appdir = dirname(__FILE__, 2) . '/app';
+                $view = ViewFactory::create('Php', ['view' => $appdir . '/view']);
                 $view->assign('message', $message);
                 $view->assign('url', $url);
                 $view->assign('code', $code);
@@ -85,7 +86,8 @@ abstract class Controller
                 View::assign('code', $code);
                 $response = Response::html(View::render());
             } else {
-                $view = ViewFactory::create('Php', ['view' => __DIR__ . '/view']);
+                $appdir = dirname(__FILE__, 2) . '/app';
+                $view = ViewFactory::create('Php', ['view' => $appdir . '/view']);
                 $view->assign('message', $message);
                 $view->assign('code', $code);
                 $response = Response::html($view->render('error'));

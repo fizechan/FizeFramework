@@ -9,7 +9,7 @@ use Fize\Framework\Env;
 return [
     'handler'               => 'Php',
     'config'                => [
-        'view' => App::module() ? Env::appPath() . '/' . App::module() . '/' . Env::appViewDir() : Env::appPath() . '/' . Env::appViewDir()
+        'view' => App::module() ? Env::appPath() . 'view.php/' . App::module() . '/' . Env::appViewDir() : Env::appPath() . 'view.php/' . Env::appViewDir()
     ],
     'tpl_404'               => null,  // 模板：404
     'tpl_error'             => null,  // 模板：错误跳转

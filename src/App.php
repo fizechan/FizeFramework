@@ -85,7 +85,7 @@ class App
         static $route = null;
         if (is_null($route)) {
             $route_key = Env::get('route_key');
-            if (isset($_GET[$route_key]) && !is_null($_GET[$route_key])) {
+            if (isset($_GET[$route_key])) {
                 $route = Request::get($route_key);
             } else {
                 $route = Request::server('PATH_INFO');

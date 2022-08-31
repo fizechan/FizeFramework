@@ -73,7 +73,8 @@ class Config
         $file_name = $keys[0] . '.php';
 
         //框架默认配置
-        $cfg_files[] = __DIR__ . '/config/' . $file_name;
+        $appdir = dirname(__FILE__, 2) . '/app';
+        $cfg_files[] = $appdir . '/config/' . $file_name;
         //应用默认配置
         $cfg_files[] = self::$dir . '/' . $file_name;
         //公共模块配置
