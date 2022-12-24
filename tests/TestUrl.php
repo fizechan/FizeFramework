@@ -14,7 +14,7 @@ class TestUrl extends TestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        new Config(dirname(__DIR__) . '/temp/config', 'index');
+        new Config(dirname(__DIR__) . '/examples/config', 'index');
 
         $url_config = Config::get('url');
         new Url($url_config);
