@@ -82,6 +82,15 @@ class Env
     }
 
     /**
+     * 获取应用目录路径
+     * @return string
+     */
+    public static function appPath(): string
+    {
+        return self::$env['root_path'] . '/' . self::$env['app_dir'];
+    }
+
+    /**
      * 获取配置文件夹名称
      * @return string
      */
@@ -91,12 +100,30 @@ class Env
     }
 
     /**
+     * 获取配置目录路径
+     * @return string
+     */
+    public static function configPath(): string
+    {
+        return self::$env['root_path'] . '/' . self::$env['config_dir'];
+    }
+
+    /**
      * 获取运行时文件夹名称
      * @return string
      */
     public static function runtimeDir(): string
     {
         return self::$env['runtime_dir'];
+    }
+
+    /**
+     * 获取运行目录路径
+     * @return string
+     */
+    public static function runtimePath(): string
+    {
+        return self::$env['root_path'] . '/' . self::$env['runtime_dir'];
     }
 
     /**
@@ -115,32 +142,5 @@ class Env
     public static function appViewDir(): string
     {
         return self::$env['app_view_dir'];
-    }
-
-    /**
-     * 获取应用目录路径
-     * @return string
-     */
-    public static function appPath(): string
-    {
-        return self::$env['root_path'] . '/' . self::$env['app_dir'];
-    }
-
-    /**
-     * 获取配置目录路径
-     * @return string
-     */
-    public static function configPath(): string
-    {
-        return self::$env['root_path'] . '/' . self::$env['config_dir'];
-    }
-
-    /**
-     * 获取运行目录路径
-     * @return string
-     */
-    public static function runtimePath(): string
-    {
-        return self::$env['root_path'] . '/' . self::$env['runtime_dir'];
     }
 }

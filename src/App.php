@@ -307,7 +307,7 @@ class App
      */
     public function run()
     {
-        View::path(self::$controller . "/" . self::$action);
+        View::path(self::$controller . '/' . self::$action);
 
         $class = self::$class;
         $action = self::$action;

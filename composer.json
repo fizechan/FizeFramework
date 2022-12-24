@@ -17,11 +17,12 @@
     "php": ">=7.0.0",
     "fize/cache": "^4.0.0",
     "fize/database": "^4.0.0",
-    "fize/io": "^6.0.0",
+    "fize/http": "^4.0.1",
+    "fize/io": "^9.0.0",
     "fize/log": "^4.0.0",
     "fize/security": "^2.0.0",
     "fize/view": "^3.0.0",
-    "fize/web": "^3.0.0"
+    "fize/web": "^3.1.2"
   },
   "autoload-dev": {
     "psr-4": {

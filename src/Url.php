@@ -91,16 +91,16 @@ class Url
         $query = '';
         foreach ($params as $key => $value) {
             if (!$query) {
-                $query = urlencode($key) . "=" . urlencode($value);
+                $query = urlencode($key) . '=' . urlencode($value);
             } else {
-                $query .= "&" . urlencode($key) . "=" . urlencode($value);
+                $query .= '&' . urlencode($key) . '=' . urlencode($value);
             }
         }
         if ($query) {
             if (strstr($url, '?') === false) {
-                $url .= "?" . $query;
+                $url .= '?' . $query;
             } else {
-                $url .= "&" . $query;
+                $url .= '&' . $query;
             }
         }
         return $url;
