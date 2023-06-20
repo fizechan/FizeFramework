@@ -4,7 +4,6 @@ namespace Fize\Framework\Handler;
 
 use Fize\Exception\HttpResponseException;
 use Fize\Exception\NotFoundException;
-use Fize\Framework\HandlerInterface\ExceptionHandlerInterface;
 use Fize\Log\Log;
 use Fize\View\ViewFactory;
 use Fize\Web\Response;

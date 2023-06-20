@@ -3,7 +3,6 @@
 
 namespace Fize\Framework\Handler;
 
-use Fize\Framework\HandlerInterface\ErrorHandlerInterface;
 use Fize\Log\Log;
 use Fize\View\ViewFactory;
 use Fize\Web\Response;
