@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 class TestEnv extends TestCase
 {
 
-    public function testRuntimeDir()
+    public function test__construct()
     {
 
     }
@@ -53,12 +53,9 @@ class TestEnv extends TestCase
 
     public function testConfigDir()
     {
-
-    }
-
-    public function test__construct()
-    {
-
+        new Env();
+        $cfgDir = Env::configDir();
+        self::assertEquals('config', $cfgDir);
     }
 
     public function testRootPath()
@@ -71,5 +68,12 @@ class TestEnv extends TestCase
     {
         $runtime_path = Env::runtimePath();
         self::assertEquals($runtime_path, dirname(__DIR__) . '/temp/runtime');
+    }
+
+    public function testRuntimeDir()
+    {
+        new Env();
+        $rtDir = Env::runtimeDir();
+        self::assertEquals('runtime', $rtDir);
     }
 }
