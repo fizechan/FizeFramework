@@ -15,14 +15,14 @@
   },
   "require": {
     "php": ">=7.0.0",
-    "fize/cache": "^4.0.0",
-    "fize/database": "^4.0.0",
-    "fize/exception": "^2.1.0",
-    "fize/io": "^7.0.0",
-    "fize/log": "^4.0.0",
-    "fize/security": "^2.0.0",
-    "fize/view": "^3.0.0",
-    "fize/web": "^3.0.0"
+    "fize/cache": "*",
+    "fize/database": "*",
+    "fize/exception": "*",
+    "fize/io": "*",
+    "fize/log": "*",
+    "fize/security": "*",
+    "fize/view": "*",
+    "fize/web": "*"
   },
   "autoload-dev": {
     "psr-4": {
@@ -32,6 +32,6 @@
   "require-dev": {
     "guzzlehttp/guzzle": "^6.5.0",
     "phpunit/phpunit": "^9.5.0",
-    "twig/twig": "^3.0.0"
+    "twig/twig": "*"
   }
 }

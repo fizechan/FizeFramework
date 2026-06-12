@@ -2,7 +2,7 @@
 
 namespace Fize\Framework;
 
-use Fize\Exception\HttpResponseException;
+use Fize\Exception\HttpException\HttpResponseException;
 use Fize\Security\Validator;
 use Fize\View\View;
 use Fize\View\ViewFactory;

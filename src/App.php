@@ -4,7 +4,7 @@ namespace Fize\Framework;
 
 use Fize\Cache\Cache;
 use Fize\Database\Db;
-use Fize\Exception\ParameterNotSetException;
+use Fize\Exception\NotSetException\ParameterNotSetException;
 use Fize\Framework\Exception\ActionNotFoundException;
 use Fize\Framework\Exception\ControllerNotFoundException;
 use Fize\Framework\Exception\ModuleNotFoundException;
@@ -144,7 +144,7 @@ class App
 
         $cache_config = Config::get('cache');
         if ($cache_config['handler'] == 'DataBase') {  // Cahce 使用 Db 处理器时的默认配置
-            if (!isset($cache_config['config']['database']) || empty($cache_config['config']['database'])) {
+            if (empty($cache_config['config']['database'])) {
                 $cache_config['config']['database'] = $db_config;
             }
         }
@@ -152,7 +152,7 @@ class App
 
         $log_config = Config::get('log');  // Log 使用 Db 处理器时的默认配置
         if ($log_config['handler'] == 'DataBase') {  // Cahce 使用 Db 处理器时的默认配置
-            if (!isset($log_config['config']['database']) || empty($log_config['config']['database'])) {
+            if (empty($log_config['config']['database'])) {
                 $log_config['config']['database'] = $db_config;
             }
         }
@@ -160,7 +160,7 @@ class App
 
         $session_config = Config::get('session');
         if ($session_config['save_handler']['type'] == 'DataBase') {  // Session 使用 Db 处理器时的默认配置
-            if (!isset($session_config['save_handler']['config']['database']) || empty($session_config['save_handler']['config']['database'])) {
+            if (empty($session_config['save_handler']['config']['database'])) {
                 $session_config['save_handler']['config']['database'] = $db_config;
             }
         }
@@ -187,7 +187,7 @@ class App
              */
             $handler = new $class();
             return $handler->run($errno, $errstr, $errfile, $errline);
-        }, E_ALL);
+        });
 
         // 系统异常处理
         set_exception_handler(function (Throwable $exception) {

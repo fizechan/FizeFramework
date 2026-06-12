@@ -2,7 +2,7 @@
 
 namespace Fize\Framework\Handler;
 
-use Fize\Exception\HttpResponseException;
+use Fize\Exception\HttpException\HttpResponseException;
 use Fize\Exception\NotFoundException;
 use Fize\Log\Log;
 use Fize\View\ViewFactory;

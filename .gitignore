@@ -1,6 +1,6 @@
-/.idea
+/.idea/
+/examples/runtime/
 /temp/
 /vendor/
 /composer.lock
 /.phpunit.result.cache
-/examples/runtime
