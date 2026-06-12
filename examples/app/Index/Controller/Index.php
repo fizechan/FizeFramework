@@ -1,6 +1,6 @@
 <?php
 
-namespace app\index\controller;
+namespace App\Index\Controller;
 
 use RuntimeException;
 use Fize\Database\Db;

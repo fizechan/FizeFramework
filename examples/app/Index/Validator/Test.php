@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\index\validator;
+namespace App\Index\Validator;
 
 use Fize\Security\Validator;
 

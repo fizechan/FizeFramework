@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\index\controller;
+namespace App\Index\Controller;
 
 use Fize\Framework\Controller;
 use Fize\Framework\App;
