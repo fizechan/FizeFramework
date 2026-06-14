@@ -87,8 +87,10 @@ class Config
         $config = [];
         foreach ($cfg_files as $cfg_file) {
             if (File::exists($cfg_file)) {
-                $append = require_once $cfg_file;
-                $config = array_merge($config, $append);
+                $append = require $cfg_file;
+                if (is_array($append)) {
+                    $config = array_merge($config, $append);
+                }
             }
         }
 

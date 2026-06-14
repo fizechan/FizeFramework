@@ -32,8 +32,8 @@ class Url
         $parts = explode('&', $query);
         $params = [];
         foreach ($parts as $param) {
-            $item = explode('=', $param);
-            $params[$item[0]] = $item[1];
+            $item = explode('=', $param, 2);
+            $params[$item[0]] = $item[1] ?? '';
         }
         return $params;
     }

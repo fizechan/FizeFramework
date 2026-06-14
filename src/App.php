@@ -89,7 +89,7 @@ class App
             if (isset($_GET[$route_key])) {
                 $route = Request::get($route_key);
             } else {
-                $route = Request::server('PATH_INFO');
+                $route = Request::server('PATH_INFO') ?? '';
             }
             $route = Url::parse($route);
             if ($route) {
@@ -143,7 +143,7 @@ class App
         }
 
         $cache_config = Config::get('cache');
-        if ($cache_config['handler'] == 'DataBase') {  // Cahce 使用 Db 处理器时的默认配置
+        if ($cache_config['handler'] == 'DataBase') {  // Cache 使用 Db 处理器时的默认配置
             if (empty($cache_config['config']['database'])) {
                 $cache_config['config']['database'] = $db_config;
             }
@@ -151,7 +151,7 @@ class App
         new Cache($cache_config['handler'], $cache_config['config']);
 
         $log_config = Config::get('log');  // Log 使用 Db 处理器时的默认配置
-        if ($log_config['handler'] == 'DataBase') {  // Cahce 使用 Db 处理器时的默认配置
+        if ($log_config['handler'] == 'DataBase') {  // Log 使用 Db 处理器时的默认配置
             if (empty($log_config['config']['database'])) {
                 $log_config['config']['database'] = $db_config;
             }

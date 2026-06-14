@@ -18,7 +18,7 @@ abstract class Controller
     /**
      * 返回JSON结果
      * @param array       $data    数据
-     * @param string|null $message 错误信息
+     * @param string|null $message 提示信息
      * @param int         $code    错误码
      */
     protected function result(array $data, string $message = null, int $code = 0)
@@ -33,7 +33,7 @@ abstract class Controller
 
     /**
      * 成功操作
-     * @param string      $message 错误信息
+     * @param string      $message 成功信息
      * @param string|null $url     回跳URL
      * @param int         $code    错误码
      */
@@ -117,7 +117,8 @@ abstract class Controller
     {
         $config_validator = Config::get('validator');
 
-        $path = '\\' . Env::appDir() . '\\' . App::module() . '\\' . $config_validator['dir'] . '\\' . App::controller();
+        $module = App::module();
+        $path = '\\' . Env::appDir() . ($module ? '\\' . $module : '') . '\\' . $config_validator['dir'] . '\\' . App::controller();
         $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['postfix']);
         if (!class_exists($class)) {
             $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);

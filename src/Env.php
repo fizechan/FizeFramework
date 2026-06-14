@@ -58,7 +58,7 @@ class Env
     public static function get(string $key = null)
     {
         if ($key) {
-            return self::$env[$key];
+            return self::$env[$key] ?? null;
         }
         return self::$env;
     }

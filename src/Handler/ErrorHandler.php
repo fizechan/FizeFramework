@@ -32,7 +32,6 @@ class ErrorHandler implements ErrorHandlerInterface
         $view->assign('errline', $errline);
         $response = Response::html($view->render('error_handler'));
         $response->withStatus(500)->send();
-//        exit($errno);
         return false;
     }
 }
