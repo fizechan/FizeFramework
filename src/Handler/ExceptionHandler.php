@@ -25,7 +25,7 @@ class ExceptionHandler implements ExceptionHandlerInterface
             $response = $exception->getResponse();
             $response->send();
         } elseif ($exception instanceof NotFoundException) {
-            Log::notice("[404]Not Found[{$exception->getMessage()}] : {$exception->url()}");
+            Log::notice("[404]Not Found：{$exception->getMessage()}。");
             $appdir = dirname(__FILE__, 2) . '/app';
             $view = ViewFactory::create('Php', ['view' => $appdir . '/view']);
             $view->assign('exception', $exception);

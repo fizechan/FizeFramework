@@ -7,6 +7,6 @@ return [
         'host'     => 'localhost',
         'user'     => 'root',
         'password' => '123456',
-        'dbname'   => 'gm_test'
+        'dbname'   => 'fz_test'
     ]
 ];
