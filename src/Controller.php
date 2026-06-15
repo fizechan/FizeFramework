@@ -119,15 +119,15 @@ abstract class Controller
 
         $module = App::module();
         $path = '\\' . Env::appDir() . ($module ? '\\' . $module : '') . '\\' . $config_validator['dir'] . '\\' . App::controller();
-        $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['postfix']);
+        $class = $path . $config_validator['postfix'];
         if (!class_exists($class)) {
-            $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);
+            $class = $path;
         }
         if (!class_exists($class)) {
             $path = '\\' . Env::appDir() . '\\common\\' . $config_validator['dir'] . '\\' . App::controller();
-            $class = str_replace('\\', DIRECTORY_SEPARATOR, $path . $config_validator['postfix']);
+            $class = $path . $config_validator['postfix'];
             if (!class_exists($class)) {
-                $class = str_replace('\\', DIRECTORY_SEPARATOR, $path);
+                $class = $path;
             }
         }
 

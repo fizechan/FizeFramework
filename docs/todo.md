@@ -2,81 +2,14 @@
 
 ## 一、Bug 与代码缺陷
 
-### 1.1 `Url::convertQuery()` 越界访问（严重）
-
-**文件**: `src/Url.php` 第30-38行
-
-当 query 参数缺少 `=` 号时（如 `key1=val1&key2`），`explode('=', $param)` 仅返回一个元素，`$item[1]` 将触发 `Undefined offset` 警告。
-
-```php
-// 当前写法
-$item = explode('=', $param);
-$params[$item[0]] = $item[1];  // 可能越界
-
-// 建议修复
-$item = explode('=', $param, 2);
-$params[$item[0]] = $item[1] ?? '';
-```
-
-### 1.2 `Url::parse()` 接收 null 参数（严重）
-
-**文件**: `src/App.php` 第92行 → `src/Url.php` 第46行
-
-`Request::server('PATH_INFO')` 可能返回 `null`，直接传入 `Url::parse(string $url)` 的类型声明会导致 `TypeError`。
-
-```php
-// App.php 第92行，建议改为：
-$route = Request::server('PATH_INFO') ?? '';
-```
-
-### 1.3 `Config::get()` 使用 `require_once` 导致重复加载失败（严重）
-
-**文件**: `src/Config.php` 第90行
-
-`require_once` 在同进程内只执行一次。在测试或 Swoole 等长驻进程中，第二次加载同一配置文件返回 `true` 而非数组，`array_merge($config, true)` 将报错。
-
-```php
-// 建议改为 require + 类型检查
-$append = require $cfg_file;
-if (is_array($append)) {
-    $config = array_merge($config, $append);
-}
-```
-
-### 1.4 `Env::get()` 缺少键名保护
-
-**文件**: `src/Env.php` 第61行
-
-传入不存在的 `$key` 时直接访问 `self::$env[$key]` 产生 `Undefined index` 警告。
-
-```php
-return self::$env[$key] ?? null;
-```
-
-### 1.5 `Controller::validate()` 模块为 null 时路径异常
-
-**文件**: `src/Controller.php` 第120行
-
-`App::module()` 返回 `null` 时，拼接的路径含 `\\null\\`，验证器类名不匹配导致验证被跳过。
-
-```php
-// 当前
-$path = '\\' . Env::appDir() . '\\' . App::module() . '\\' . ...;
-
-// 建议增加空值保护
-$module = App::module();
-$path = '\\' . Env::appDir() . ($module ? '\\' . $module : '') . '\\' . ...;
-```
-
-### 1.6 注释与拼写错误
-
-| 位置 | 问题 | 修复 |
-|------|------|------|
-| `src/App.php` 第146、154行 | 注释 `Cahce` | 改为 `Cache` |
-| `src/App.php` 第154行 | 注释 "Log 使用 Db 处理器时的默认配置" 后面跟了 "Cahce" | 改为 `Log` |
-| `src/Controller.php` 第21行 | `result()` 的 `$message` 注释为"错误信息" | 改为"提示信息" |
-| `src/Controller.php` 第36行 | `success()` 的 `$message` 注释为"错误信息" | 改为"成功信息" |
-| `src/Handler/ErrorHandler.php` 第35行 | 注释 `exit($errno)` 未清理 | 删除该行 |
+> 以下原始问题已在代码中修复，予以移除：
+> - ~~1.1 `Url::convertQuery()` 越界访问~~ — 已使用 `explode('=', $param, 2)` + `$item[1] ?? ''` 修复
+> - ~~1.2 `Url::parse()` 接收 null 参数~~ — 已在 `App.php` 第92行添加 `?? ''` 修复
+> - ~~1.3 `Config::get()` 使用 `require_once`~~ — 已改为 `require` + `is_array()` 类型检查
+> - ~~1.4 `Env::get()` 缺少键名保护~~ — 已使用 `self::$env[$key] ?? null` 修复
+> - ~~1.5 `Controller::validate()` 模块为 null 时路径异常~~ — 已添加空值保护 `($module ? '\\' . $module : '')`
+> - ~~1.6 注释与拼写错误~~ — 所有注释拼写已修正
+> - ~~1.7 `Controller::validate()` `str_replace` 混淆命名空间与文件路径~~ — 已移除 `str_replace`，直接保持命名空间路径形式传给 `class_exists()`
 
 ---
 
