@@ -4,12 +4,14 @@
 namespace Fize\Framework\Exception;
 
 use Fize\Exception\NotFoundException;
+use Throwable;
 
 /**
  * 操作不存在
  */
 class ActionNotFoundException extends NotFoundException
 {
+
     /**
      * @var string 模块
      */
@@ -27,16 +29,23 @@ class ActionNotFoundException extends NotFoundException
 
     /**
      * 初始化
-     * @param string $module     模块
-     * @param string $controller 控制器
-     * @param string $action     操作
+     * @param string         $module     模块
+     * @param string         $controller 控制器
+     * @param string         $action     操作
+     * @param string|null    $path       路径
+     * @param string         $message    错误信息
+     * @param int            $code       错误码
+     * @param Throwable|null $previous   上个异常
      */
-    public function __construct($module, $controller, $action)
+    public function __construct($module, $controller, $action, string $path = null, string $message = "", int $code = 0, Throwable $previous = null)
     {
         $this->module = $module;
         $this->controller = $controller;
         $this->action = $action;
-        parent::__construct('ActionNotFoundException', 404);
+        if (is_null($path)) {
+            $path = "{$module}/{$controller}->{$action}";
+        }
+        parent::__construct($path, $message, $code, $previous);
     }
 
     /**

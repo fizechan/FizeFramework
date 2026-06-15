@@ -24,8 +24,8 @@ class ErrorHandler implements ErrorHandlerInterface
     public function run(int $errno, string $errstr, string $errfile = null, int $errline = 0): bool
     {
         Log::error("[$errno]$errstr : $errfile Line: $errline");
-        $appdir = dirname(__FILE__, 2) . '/app';
-        $view = ViewFactory::create('Php', ['view' => $appdir . '/view']);
+        $appdir = dirname(__FILE__, 3) . '/app';
+        $view = ViewFactory::create('PHP', ['view' => $appdir . '/view']);
         $view->assign('errno', $errno);
         $view->assign('errstr', $errstr);
         $view->assign('errfile', $errfile);

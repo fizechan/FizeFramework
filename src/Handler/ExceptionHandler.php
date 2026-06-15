@@ -3,7 +3,7 @@
 namespace Fize\Framework\Handler;
 
 use Fize\Exception\HttpException\HttpResponseException;
-use Fize\Exception\NotFoundException;
+use Fize\Exception\NotFoundException\PageNotFoundException;
 use Fize\Log\Log;
 use Fize\View\ViewFactory;
 use Fize\Web\Response;
@@ -24,17 +24,17 @@ class ExceptionHandler implements ExceptionHandlerInterface
         if ($exception instanceof HttpResponseException) {
             $response = $exception->getResponse();
             $response->send();
-        } elseif ($exception instanceof NotFoundException) {
-            Log::notice("[404]Not Found：{$exception->getMessage()}。");
-            $appdir = dirname(__FILE__, 2) . '/app';
-            $view = ViewFactory::create('Php', ['view' => $appdir . '/view']);
+        } elseif ($exception instanceof PageNotFoundException) {
+            Log::notice("[404]Not Found：{$exception->path()}。");
+            $appdir = dirname(__FILE__, 3) . '/app';
+            $view = ViewFactory::create('PHP', ['view' => $appdir . '/view']);
             $view->assign('exception', $exception);
             $response = Response::html($view->render('404'));
             $response->withStatus(404)->send();
         } else {
             Log::error("[{$exception->getCode()}]{$exception->getMessage()} : {$exception->getFile()} Line: {$exception->getLine()}");
-            $appdir = dirname(__FILE__, 2) . '/app';
-            $view = ViewFactory::create('Php', ['view' => $appdir . '/view']);
+            $appdir = dirname(__FILE__, 3) . '/app';
+            $view = ViewFactory::create('PHP', ['view' => $appdir . '/view']);
             $view->assign('exception', $exception);
             $response = Response::html($view->render('exception_handler'));
             $response->withStatus(500)->send();

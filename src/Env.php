@@ -33,10 +33,10 @@ class Env
             'app_dir'            => 'app',  // 应用文件夹
             'config_dir'         => 'config',  // 配置文件夹
             'runtime_dir'        => 'runtime',  // 运行时文件夹
-            'app_controller_dir' => 'controller',  // 控制器文件夹
-            'app_view_dir'       => 'view',  // 视图文件夹
+            'app_controller_dir' => 'Controller',  // 控制器文件夹
+            'app_view_dir'       => 'View',  // 视图文件夹
             'module'             => true,  // true表示开启分组并自动判断，false表示关闭分组，字符串表示指定分组
-            'default_module'     => 'index',  // 开启分组时的默认分组
+            'default_module'     => 'Index',  // 开启分组时的默认分组
             'route_key'          => '_r',  // 兼容模式路由GET参数名
             'debug'              => false,  // 是否调试模式
         ];

@@ -65,8 +65,8 @@ class App
         self::$microtimeStart = microtime(true);
         OB::start();
         $this->init($env);
-        $this->registerComponent();
         $this->setHandler();
+        $this->registerComponent();
         $this->check();
     }
 
@@ -228,8 +228,9 @@ class App
         } else {
             self::$module = Env::get('module');
         }
-        if (self::$module && !Directory::exists(Env::appPath() . '/' . self::$module)) {
-            throw new ModuleNotFoundException(self::$module);
+        $path = Env::appPath() . '/' . self::$module;
+        if (self::$module && !Directory::exists($path)) {
+            throw new ModuleNotFoundException(self::$module, $path);
         }
     }
 
@@ -242,20 +243,20 @@ class App
     protected function checkController(string $controller, bool $throw = false): bool
     {
         $config_controller = Config::get('controller');
-        $class_path = '\\' . Env::appDir();
+        $class_path = '\\' . ucfirst(Env::appDir());
         if (self::$module) {
             $class_path .= '\\' . self::$module;
         }
         $class_path .= '\\' . Env::appControllerDir() . '\\' . $controller;
-        $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path . $config_controller['controller_postfix']);
+        $class = $class_path . $config_controller['controller_postfix'];
         if (!class_exists($class)) {
-            $class = str_replace('\\', DIRECTORY_SEPARATOR, $class_path);
-            if (!class_exists($class)) {
-                if ($throw) {
-                    throw new ControllerNotFoundException(self::$module, $controller);
-                }
-                return false;
+            $class = $class_path;
+        }
+        if (!class_exists($class)) {
+            if ($throw) {
+                throw new ControllerNotFoundException(self::$module, $controller, $class, "{$class} not found");
             }
+            return false;
         }
         self::$class = $class;
         return true;
