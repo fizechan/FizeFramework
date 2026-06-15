@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\test\controller;
+namespace App\Tests\Controller;
 
 use Fize\Framework\Controller;
 use Fize\Framework\Config;

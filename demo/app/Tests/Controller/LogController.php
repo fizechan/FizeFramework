@@ -1,7 +1,6 @@
 <?php
 
-
-namespace app\test\controller;
+namespace App\Tests\Controller;
 
 use Psr\Log\LogLevel;
 use Fize\Log\Log;

@@ -7,7 +7,7 @@ use Fize\Framework\App;
 $app = new App(
     [
         'root_path' => __DIR__,
-        'module'    => 'test'
+        'module'    => 'tests'
     ]
 );
 $app->run();

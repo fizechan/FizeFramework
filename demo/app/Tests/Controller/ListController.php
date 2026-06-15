@@ -1,6 +1,6 @@
 <?php
 
-namespace app\test\controller;
+namespace App\Tests\Controller;
 
 
 class ListController

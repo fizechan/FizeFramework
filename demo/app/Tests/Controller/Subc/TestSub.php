@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\test\controller\subc;
+namespace App\Tests\Controller\Subc;
 
 
 class TestSub
