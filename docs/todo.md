@@ -15,80 +15,17 @@
 
 ## 二、架构优化
 
-### 2.1 组件延迟加载
+> 以下项目已实施：
+> - ~~2.1 组件延迟加载~~ — 新增 `App::db()` 延迟访问器，数据库组件按需初始化；`registerComponent()` 保留向后兼容
+> - ~~2.2 引入中间件管道~~ — 新增 `MiddlewareInterface`、`MiddlewarePipeline`，集成到 `App::run()`，支持 `config/middleware.php` 全局/路由中间件配置
+> - ~~2.3 减少全局静态依赖（部分）~~ — `App` 新增 `$instance` 单例属性及 `getInstance()` 访问器，静态方法保留为兼容层
+> - ~~2.4 控制器方法参数注入增强~~ — 新增 `resolveParameters()` 和 `resolveFromContainer()`，通过反射识别类型声明，对象类型从容器注入，标量类型从请求获取
 
-**现状**: `App::registerComponent()` 在构造时一次性初始化 Cookie、Request、Database、Cache、Log、Session、View 全部组件。
+### 2.5 Config / Env / Url 静态依赖改造（待实施）
 
-**问题**: 若某次请求只用到视图和日志，数据库/缓存/会话的初始化纯属浪费。
+**现状**: `App` 已引入单例兼容层，但 `Config`、`Env`、`Url` 三个核心类仍然全部使用 `static` 属性 + `static` 方法，测试间状态泄漏和多实例问题仍未彻底解决。
 
-**建议**: 引入延迟代理（Lazy Proxy），各组件在首次被调用时才真正初始化：
-
-```php
-// 示例：延迟初始化数据库
-public static function db(): Db
-{
-    static $db = null;
-    if ($db === null) {
-        $config = Config::get('database');
-        $db = new Db($config['type'], $config['config'], $config['mode'] ?? null);
-    }
-    return $db;
-}
-```
-
-### 2.2 引入中间件管道
-
-**现状**: 框架生命周期为线性流程，没有扩展点。
-
-**建议**: 在路由解析后、控制器执行前后增加中间件管道：
-
-```php
-// config/middleware.php
-return [
-    'global' => [
-        \App\Middleware\CorsMiddleware::class,
-    ],
-    'route' => [
-        'auth'  => \App\Middleware\AuthMiddleware::class,
-        'admin' => \App\Middleware\AdminMiddleware::class,
-    ],
-];
-```
-
-适用场景：
-- 全局 CORS 头处理
-- 认证/鉴权拦截
-- 请求速率限制
-- 请求日志记录
-
-### 2.3 减少全局静态依赖
-
-**现状**: `Env`、`Config`、`Url`、`App` 等核心类全部使用 `static` 属性 + `static` 方法，导致：
-- 类之间隐式耦合，难以独立测试
-- 无法在同一进程中运行多个应用实例（如 Swoole 多协程）
-- 测试间状态泄漏（一个测试修改的 Config 影响另一个测试）
-
-**建议**: 将静态属性改为实例属性，通过单例或服务容器访问。短期可保留静态接口作为兼容层，内部委托给实例。
-
-### 2.4 控制器方法参数注入增强
-
-**现状**: `App::run()` 仅从 `Request::get()` 获取方法参数值。
-
-**建议**: 通过反射识别类型声明，对对象类型参数从服务容器注入，对标量参数仍从请求获取：
-
-```php
-foreach ($ref_method->getParameters() as $parameter) {
-    $type = $parameter->getType();
-    if ($type && !$type->isBuiltin()) {
-        // 对象类型 → 从容器注入
-        $parameters[] = Container::get($type->getName());
-    } else {
-        // 标量类型 → 从请求获取
-        $value = Request::get($parameter->getName());
-        $parameters[] = $value ?? ($parameter->isOptional() ? $parameter->getDefaultValue() : throw ...);
-    }
-}
-```
+**建议**: 将这三个类的静态属性改为实例属性，通过 `App::getInstance()` 或服务容器访问。短期可保留静态方法作为兼容代理层，内部委托给实例。
 
 ---
 
