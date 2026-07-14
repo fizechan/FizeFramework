@@ -1,0 +1,148 @@
+<?php
+
+namespace Fize\Framework;
+
+use Fize\Exception\HttpException\HttpResponseException;
+use Fize\Security\Validator;
+use Fize\View\View;
+use Fize\View\ViewFactory;
+use Fize\Web\Request;
+use Fize\Web\Response;
+
+/**
+ * 控制器
+ */
+abstract class Controller
+{
+
+    /**
+     * 返回JSON结果
+     * @param array       $data    数据
+     * @param string|null $message 提示信息
+     * @param int         $code    错误码
+     */
+    protected function result(array $data, string $message = null, int $code = 0)
+    {
+        $json = [
+            'code'    => $code,
+            'message' => $message,
+            'data'    => $data
+        ];
+        throw new HttpResponseException(Response::json($json));
+    }
+
+    /**
+     * 成功操作
+     * @param string      $message 成功信息
+     * @param string|null $url     回跳URL
+     * @param int         $code    错误码
+     */
+    protected function success(string $message, string $url = null, int $code = 0)
+    {
+        if (Request::isAjax()) {
+            $json = [
+                'code'    => $code,
+                'message' => $message
+            ];
+            $response = Response::json($json);
+        } else {
+            $config_view = Config::get('view');
+            if ($config_view['tpl_success']) {
+                View::path($config_view['tpl_success']);
+                View::assign('message', $message);
+                View::assign('url', $url);
+                View::assign('code', $code);
+                $response = Response::html(View::render());
+            } else {
+                $appdir = dirname(__FILE__, 2) . '/app';
+                $view = ViewFactory::create('PHP', ['view' => $appdir . '/view']);
+                $view->assign('message', $message);
+                $view->assign('url', $url);
+                $view->assign('code', $code);
+                $response = Response::html($view->render('success'));
+            }
+        }
+        throw new HttpResponseException($response);
+    }
+
+    /**
+     * 失败操作
+     * @param string $message 错误信息
+     * @param int    $code    错误码
+     */
+    protected function error(string $message, int $code = 0)
+    {
+        if (Request::isAjax()) {
+            $json = [
+                'code'    => $code,
+                'message' => $message
+            ];
+            $response = Response::json($json);
+        } else {
+            $config_view = Config::get('view');
+            if ($config_view['tpl_error']) {
+                View::path($config_view['tpl_error']);
+                View::assign('message', $message);
+                View::assign('code', $code);
+                $response = Response::html(View::render());
+            } else {
+                $appdir = dirname(__FILE__, 2) . '/app';
+                $view = ViewFactory::create('PHP', ['view' => $appdir . '/view']);
+                $view->assign('message', $message);
+                $view->assign('code', $code);
+                $response = Response::html($view->render('error'));
+            }
+        }
+        throw new HttpResponseException($response);
+    }
+
+    /**
+     * 跳转
+     * @param string   $url    内部URL
+     * @param array    $params 附加的URL参数
+     * @param int|null $delay  延迟时间，以秒为单位
+     */
+    protected function redirect(string $url, array $params = [], int $delay = null)
+    {
+        $url = Url::create($url, $params);
+        $response = Response::redirect($url, $delay);
+        throw new HttpResponseException($response);
+    }
+
+    /**
+     * 验证数据
+     * @param array|null $data 数据
+     */
+    protected function validate(array $data = null)
+    {
+        $config_validator = Config::get('validator');
+
+        $module = App::module();
+        $path = '\\' . Env::appDir() . ($module ? '\\' . $module : '') . '\\' . $config_validator['dir'] . '\\' . App::controller();
+        $class = $path . $config_validator['postfix'];
+        if (!class_exists($class)) {
+            $class = $path;
+        }
+        if (!class_exists($class)) {
+            $path = '\\' . Env::appDir() . '\\common\\' . $config_validator['dir'] . '\\' . App::controller();
+            $class = $path . $config_validator['postfix'];
+            if (!class_exists($class)) {
+                $class = $path;
+            }
+        }
+
+        if (class_exists($class)) {
+            /**
+             * @var Validator $validator
+             */
+            $validator = new $class();
+            if ($validator->hasScene(App::action())) {
+                $validator->scene(App::action());
+            }
+            $result = $validator->check($data);
+            if ($result !== true) {
+                $this->error($result);
+            }
+        }
+    }
+}

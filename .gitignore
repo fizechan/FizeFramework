@@ -1,0 +1,6 @@
+/.idea/
+/demo/runtime/
+/temp/
+/vendor/
+/composer.lock
+/.phpunit.result.cache
