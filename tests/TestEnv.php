@@ -3,77 +3,56 @@
 namespace Tests;
 
 use Fize\Framework\Env;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class TestEnv extends TestCase
 {
-
-    public function test__construct()
+    public function testGetAndPaths()
     {
+        $root = dirname(__DIR__) . '/tests/fixtures';
+        $env = new Env(['root_path' => $root]);
 
+        self::assertIsArray($env->get());
+        self::assertEquals($root, $env->get('root_path'));
+        self::assertEquals($root, $env->rootPath());
+        self::assertEquals('app', $env->appDir());
+        self::assertEquals('config', $env->configDir());
+        self::assertEquals('runtime', $env->runtimeDir());
+        self::assertEquals('Controller', $env->appControllerDir());
+        self::assertEquals('View', $env->appViewDir());
+        self::assertEquals($root . '/app', $env->appPath());
+        self::assertEquals($root . '/config', $env->configPath());
+        self::assertEquals($root . '/runtime', $env->runtimePath());
     }
 
-    public function testGet()
+    public function testInstancesAreIndependent()
     {
-        $env = Env::get();
-        var_dump($env);
-        self::assertIsArray($env);
+        $env1 = new Env(['root_path' => '/tmp/a', 'debug' => true]);
+        $env2 = new Env(['root_path' => '/tmp/b', 'debug' => false]);
 
-        $root_path = Env::get('root_path');
-        var_dump($root_path);
-        self::assertEquals($root_path, dirname(__DIR__) . '/temp');
+        self::assertEquals('/tmp/a', $env1->rootPath());
+        self::assertEquals('/tmp/b', $env2->rootPath());
+        self::assertTrue($env1->get('debug'));
+        self::assertFalse($env2->get('debug'));
     }
 
-    public function testAppPath()
+    public function testRootPathRequired()
     {
-        $app_path = Env::appPath();
-        self::assertEquals($app_path, dirname(__DIR__) . '/temp/app');
+        $this->expectException(InvalidArgumentException::class);
+        new Env([]);
     }
 
-    public function testConfigPath()
+    public function testParameters()
     {
-        $config_path = Env::configPath();
-        self::assertEquals($config_path, dirname(__DIR__) . '/temp/config');
-    }
+        $env = new Env(['root_path' => '/proj']);
+        $params = $env->parameters();
+        self::assertEquals('/proj', $params['%root_path%']);
+        self::assertEquals('/proj/app', $params['%module_path%']);
+        self::assertEquals('', $params['%module%']);
 
-    public function testAppDir()
-    {
-
-    }
-
-    public function testAppControllerDir()
-    {
-
-    }
-
-    public function testAppViewDir()
-    {
-
-    }
-
-    public function testConfigDir()
-    {
-        new Env();
-        $cfgDir = Env::configDir();
-        self::assertEquals('config', $cfgDir);
-    }
-
-    public function testRootPath()
-    {
-        $root_path = Env::rootPath();
-        self::assertEquals($root_path, dirname(__DIR__) . '/temp');
-    }
-
-    public function testRuntimePath()
-    {
-        $runtime_path = Env::runtimePath();
-        self::assertEquals($runtime_path, dirname(__DIR__) . '/temp/runtime');
-    }
-
-    public function testRuntimeDir()
-    {
-        new Env();
-        $rtDir = Env::runtimeDir();
-        self::assertEquals('runtime', $rtDir);
+        $with_module = $env->parameters('Index');
+        self::assertEquals('Index', $with_module['%module%']);
+        self::assertEquals('/proj/app/Index', $with_module['%module_path%']);
     }
 }

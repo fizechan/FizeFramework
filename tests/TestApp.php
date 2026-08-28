@@ -3,100 +3,66 @@
 namespace Tests;
 
 use Fize\Framework\App;
-use Fize\Web\Request;
+use Fize\Framework\Config;
+use Fize\Framework\Env;
+use Fize\Framework\Url;
 use PHPUnit\Framework\TestCase;
 
 class TestApp extends TestCase
 {
-
     /**
-     * @var App
+     * @var int
      */
-    protected $app;
+    protected $obLevel;
 
-    /**
-     * 注册自动加载用于测试中加载控制器
-     * @param null $name
-     * @param array $data
-     * @param string $dataName
-     */
-    public function __construct($name = null, array $data = [], $dataName = '')
+    protected function setUp(): void
     {
-        parent::__construct($name, $data, $dataName);
-
-        $config = [
-            'root_path' => dirname(__DIR__) . '/examples',
-            'module'    => 'test'
-        ];
-
-        spl_autoload_register(function ($class_name) use ($config) {
-            $file_def = $config['root_path'] . str_replace('\\', DIRECTORY_SEPARATOR, "/{$class_name}.php");
-            if (is_file($file_def)) {
-                require_once $file_def;
-            }
-        });
-
-        $this->app = new App($config);
+        $this->obLevel = ob_get_level();
+        $_GET = [];
+        $_SERVER['PATH_INFO'] = '';
     }
 
-    public function testRun()
+    protected function tearDown(): void
     {
-        $_GET['_r'] = 'index/test';  //伪装路由
-        $config = [
-            'root_path' => dirname(__DIR__) . '/examples',
-            'module'    => 'test'
-        ];
-        $app = new App($config);
-        $app->run();
-        self::assertTrue(true);
-    }
-
-    public function testRoute()
-    {
-        $path_info = '/index/index';
-        $route = $path_info;
-        if ($route) {
-            $route = substr($route, 1);  //删除第一个字符'/'
-        } else {
-            $route = Request::get('_r');
+        while (ob_get_level() > $this->obLevel) {
+            ob_end_clean();
         }
-        var_dump($route);
-
-        self::assertEquals('index/index', $route);
+        restore_error_handler();
+        restore_exception_handler();
     }
 
-    public function testModule()
+    /**
+     * @return App
+     */
+    protected function createApp(array $env = []): App
     {
-        $module = App::module();
-        self::assertEquals('test', $module);
+        return new App(array_merge([
+            'root_path' => dirname(__DIR__) . '/tests/fixtures',
+            'app_dir'   => 'Fixture',
+            'module'    => 'Index',
+            'debug'     => false,
+        ], $env));
     }
 
-    public function testAction()
+    public function testGetInstanceAndServices()
     {
-        $_GET['_r'] = 'index/test2';  //伪装路由
+        $app = $this->createApp();
 
-        $config = [
-            'root_path' => dirname(__DIR__) . '/temp',
-            'module'    => 'test'
-        ];
-        new App($config);
-
-        $action = App::action();
-        var_dump($action);
-        self::assertEquals('test2', $action);
+        self::assertSame($app, App::getInstance());
+        self::assertSame($app->env, $app->container()->get(Env::class));
+        self::assertSame($app->config, $app->container()->get(Config::class));
+        self::assertSame($app->url, $app->container()->get(Url::class));
+        self::assertEquals('Index', App::module());
+        self::assertEquals('Index', App::controller());
+        self::assertEquals('index', App::action());
     }
 
-    public function testController()
+    public function testActionFromRoute()
     {
-        $_GET['_r'] = 'index/test2';  //伪装路由
+        $_GET['_r'] = '/index/test';
+        $this->createApp();
 
-        $config = [
-            'root_path' => dirname(__DIR__) . '/temp',
-            'module'    => 'test'
-        ];
-        new App($config);
-
-        $controller = App::controller();
-        self::assertEquals('Index', $controller);
+        self::assertEquals('Index', App::controller());
+        self::assertEquals('test', App::action());
     }
 }

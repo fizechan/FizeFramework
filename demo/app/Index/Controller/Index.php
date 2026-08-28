@@ -4,7 +4,6 @@ namespace App\Index\Controller;
 
 use RuntimeException;
 use Fize\Database\Db;
-use Fize\Framework\Config;
 use Fize\Framework\Controller;
 use Fize\View\View;
 
@@ -14,7 +13,7 @@ class Index extends Controller
 
     public function index()
     {
-        $version = Config::get('app.version');
+        $version = $this->app->config->get('app.version');
         View::assign('version', $version);
 
         $rows = Db::table('user')->limit(10)->select();

@@ -1,14 +1,12 @@
 <?php
 
-use Fize\Framework\Env;
-
 /**
  * 缓存设置
  */
 return [
     'handler' => 'File',
     'config'  => [
-        'path'   => Env::runtimePath() . '/cache',
+        'path'   => '%runtime_path%/cache',
         'expire' => 0
     ]
 ];

@@ -2,45 +2,45 @@
 
 namespace Tests;
 
+use Fixture\Index\Controller\Index;
 use Fize\Framework\App;
 use PHPUnit\Framework\TestCase;
 
 class TestController extends TestCase
 {
     /**
-     * 注册自动加载用于测试中加载控制器
-     * @param null $name
-     * @param array $data
-     * @param string $dataName
+     * @var int
      */
-    public function __construct($name = null, array $data = [], $dataName = '')
+    protected $obLevel;
+
+    protected function setUp(): void
     {
-        parent::__construct($name, $data, $dataName);
-
-        $config = [
-            'root_path' => dirname(__DIR__) . '/temp',
-            'module'    => 'test'
-        ];
-
-        spl_autoload_register(function ($class_name) use ($config) {
-            $file_def = $config['root_path'] . str_replace('\\', DIRECTORY_SEPARATOR, "/{$class_name}.php");
-            if (is_file($file_def)) {
-                require_once $file_def;
-            }
-        });
-
-        new App($config);
+        $this->obLevel = ob_get_level();
+        $_GET = [];
     }
 
-    public function testResult()
+    protected function tearDown(): void
     {
-        $_GET['_r'] = 'test/tresult';  //伪装路由
-        $config = [
-            'root_path' => dirname(__DIR__) . '/temp',
-            'module'    => 'test'
-        ];
-        $app = new App($config);
-        $app->run();
-        self::assertTrue(true);
+        while (ob_get_level() > $this->obLevel) {
+            ob_end_clean();
+        }
+        restore_error_handler();
+        restore_exception_handler();
+    }
+
+    public function testBindAppAndConfigAccess()
+    {
+        $app = new App([
+            'root_path' => dirname(__DIR__) . '/tests/fixtures',
+            'app_dir'   => 'Fixture',
+            'module'    => 'Index',
+            'debug'     => false,
+        ]);
+
+        $controller = $app->container()->make(Index::class);
+        $controller->bindApp($app);
+
+        self::assertSame($app, App::getInstance());
+        self::assertEquals('1.0', $controller->version());
     }
 }

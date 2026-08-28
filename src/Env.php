@@ -2,6 +2,8 @@
 
 namespace Fize\Framework;
 
+use InvalidArgumentException;
+
 /**
  * 环境
  */
@@ -11,11 +13,11 @@ class Env
     /**
      * @var array 环境配置
      */
-    protected static $env;
+    protected $env;
 
     /**
      * 构造
-     * @param array $env 环境配置
+     * @param array $env 环境配置，必须包含 root_path
      */
     public function __construct(array $env = [])
     {
@@ -42,12 +44,11 @@ class Env
         ];
         $env = array_merge($default_env, $env);
 
-        if (is_null($env['root_path'])) {
-            $root_path = dirname(__FILE__, 5);  // 使用composer放置在vendor文件夹中的相对位置
-            $env['root_path'] = $root_path;
+        if ($env['root_path'] === null || $env['root_path'] === '') {
+            throw new InvalidArgumentException('Env root_path is required');
         }
 
-        self::$env = $env;
+        $this->env = $env;
     }
 
     /**
@@ -55,92 +56,114 @@ class Env
      * @param string|null $key 如果指定该值，则返回该值指定的配置
      * @return mixed
      */
-    public static function get(string $key = null)
+    public function get(string $key = null)
     {
         if ($key) {
-            return self::$env[$key] ?? null;
+            return $this->env[$key] ?? null;
         }
-        return self::$env;
+        return $this->env;
     }
 
     /**
      * 获取根目录路径
      * @return string
      */
-    public static function rootPath(): string
+    public function rootPath(): string
     {
-        return self::$env['root_path'];
+        return $this->env['root_path'];
     }
 
     /**
      * 获取应用文件夹名称
      * @return string
      */
-    public static function appDir(): string
+    public function appDir(): string
     {
-        return self::$env['app_dir'];
+        return $this->env['app_dir'];
     }
 
     /**
      * 获取配置文件夹名称
      * @return string
      */
-    public static function configDir(): string
+    public function configDir(): string
     {
-        return self::$env['config_dir'];
+        return $this->env['config_dir'];
     }
 
     /**
      * 获取运行时文件夹名称
      * @return string
      */
-    public static function runtimeDir(): string
+    public function runtimeDir(): string
     {
-        return self::$env['runtime_dir'];
+        return $this->env['runtime_dir'];
     }
 
     /**
      * 获取应用控制器文件夹名称
      * @return string
      */
-    public static function appControllerDir(): string
+    public function appControllerDir(): string
     {
-        return self::$env['app_controller_dir'];
+        return $this->env['app_controller_dir'];
     }
 
     /**
      * 获取应用视图文件夹名称
      * @return string
      */
-    public static function appViewDir(): string
+    public function appViewDir(): string
     {
-        return self::$env['app_view_dir'];
+        return $this->env['app_view_dir'];
     }
 
     /**
      * 获取应用目录路径
      * @return string
      */
-    public static function appPath(): string
+    public function appPath(): string
     {
-        return self::$env['root_path'] . '/' . self::$env['app_dir'];
+        return $this->env['root_path'] . '/' . $this->env['app_dir'];
     }
 
     /**
      * 获取配置目录路径
      * @return string
      */
-    public static function configPath(): string
+    public function configPath(): string
     {
-        return self::$env['root_path'] . '/' . self::$env['config_dir'];
+        return $this->env['root_path'] . '/' . $this->env['config_dir'];
     }
 
     /**
      * 获取运行目录路径
      * @return string
      */
-    public static function runtimePath(): string
+    public function runtimePath(): string
     {
-        return self::$env['root_path'] . '/' . self::$env['runtime_dir'];
+        return $this->env['root_path'] . '/' . $this->env['runtime_dir'];
+    }
+
+    /**
+     * 供 Config 插值的占位符映射
+     * @param string|null $module 当前模块名
+     * @return array
+     */
+    public function parameters(string $module = null): array
+    {
+        $module_name = $module ?: '';
+        $app_path = $this->appPath();
+        return [
+            '%root_path%'          => $this->rootPath(),
+            '%app_path%'           => $app_path,
+            '%config_path%'        => $this->configPath(),
+            '%runtime_path%'       => $this->runtimePath(),
+            '%app_dir%'            => $this->appDir(),
+            '%app_view_dir%'       => $this->appViewDir(),
+            '%app_controller_dir%' => $this->appControllerDir(),
+            '%module%'             => $module_name,
+            '%module_path%'        => $module_name !== '' ? $app_path . '/' . $module_name : $app_path,
+        ];
     }
 }

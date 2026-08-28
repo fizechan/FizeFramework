@@ -136,29 +136,42 @@ return [
 3. **公共模块配置**（`config/common/*.php`）
 4. **当前模块配置**（`config/{module}/*.php`）
 
-支持以 `.` 分隔的层级键名访问配置：
+支持以 `.` 分隔的层级键名访问配置。配置文件为纯数组，路径等可用 `%runtime_path%`、`%module_path%` 等占位符，由 `Env` 在加载时替换。
+
+入口或测试：
 
 ```php
-use Fize\Framework\Config;
+$app = new \Fize\Framework\App(['root_path' => __DIR__]);
 
-$version = Config::get('app.version');
-$defaultController = Config::get('controller.default_controller');
+$version = $app->config->get('app.version');
+$defaultController = $app->config->get('controller.default_controller');
+
+// 与上面等价
+$version = $app->container()->get(\Fize\Framework\Config::class)->get('app.version');
+$version = \Fize\Framework\App::getInstance()->config->get('app.version');
+```
+
+控制器内通过 `$this->app` 访问同一批实例：
+
+```php
+$version = $this->app->config->get('app.version');
+$url = $this->app->url->create('/Index/News/details', ['id' => 1]);
 ```
 
 ### 环境参数（Env）
 
-在创建 `App` 实例时传入：
+在创建 `App` 实例时传入。`root_path` 必填。
 
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
-| `root_path` | 项目根目录 | 自动推断 |
+| `root_path` | 项目根目录 | （必填） |
 | `app_dir` | 应用文件夹 | `app` |
 | `config_dir` | 配置文件夹 | `config` |
 | `runtime_dir` | 运行时文件夹 | `runtime` |
-| `app_controller_dir` | 控制器文件夹 | `controller` |
-| `app_view_dir` | 视图文件夹 | `view` |
+| `app_controller_dir` | 控制器文件夹 | `Controller` |
+| `app_view_dir` | 视图文件夹 | `View` |
 | `module` | 模块设置：`true` 开启并自动判断，`false` 关闭，字符串指定模块 | `true` |
-| `default_module` | 默认模块 | `index` |
+| `default_module` | 默认模块 | `Index` |
 | `route_key` | 兼容模式路由 GET 参数名 | `_r` |
 | `debug` | 是否调试模式 | `false` |
 
@@ -224,7 +237,7 @@ class Test extends Validator
 框架内置三大处理器，均可通过 `config/handler.php` 替换为自定义实现：
 
 - **ErrorHandler**：处理 PHP 错误（`set_error_handler`）
-- **ExceptionHandler**：处理异常，区分 `HttpResponseException`（正常响应）、`NotFoundException`（404）和其他异常（500）
+- **ExceptionHandler**：处理异常，区分 `HttpResponseException`（正常响应）、`ContainerNotFoundException`（404）和其他异常（500）
 - **ShutdownHandler**：脚本结束时执行，调试模式下记录执行耗时
 
 自定义处理器只需实现对应接口（`ErrorHandlerInterface`、`ExceptionHandlerInterface`、`ShutdownHandlerInterface`），然后在配置中指定类名即可。

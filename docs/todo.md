@@ -20,12 +20,7 @@
 > - ~~2.2 引入中间件管道~~ — 新增 `MiddlewareInterface`、`MiddlewarePipeline`，集成到 `App::run()`，支持 `config/middleware.php` 全局/路由中间件配置
 > - ~~2.3 减少全局静态依赖（部分）~~ — `App` 新增 `$instance` 单例属性及 `getInstance()` 访问器，静态方法保留为兼容层
 > - ~~2.4 控制器方法参数注入增强~~ — 新增 `resolveParameters()` 和 `resolveFromContainer()`，通过反射识别类型声明，对象类型从容器注入，标量类型从请求获取
-
-### 2.5 Config / Env / Url 静态依赖改造（待实施）
-
-**现状**: `App` 已引入单例兼容层，但 `Config`、`Env`、`Url` 三个核心类仍然全部使用 `static` 属性 + `static` 方法，测试间状态泄漏和多实例问题仍未彻底解决。
-
-**建议**: 将这三个类的静态属性改为实例属性，通过 `App::getInstance()` 或服务容器访问。短期可保留静态方法作为兼容代理层，内部委托给实例。
+> - ~~2.5 Config / Env / Url 静态依赖改造~~ — 改为纯实例，由 `App` 持有并注册到最小 PSR-11 容器；配置文件用 `%param%` 插值；Controller 经 `$this->app->env` 访问。详见 `docs/plan-config-env-url-static-refactor.md`。完整自动装配 / 委托容器仍属后续。
 
 ---
 
@@ -214,11 +209,10 @@ CACHE_HANDLER=Redis
 
 ### 7.1 测试中状态隔离
 
-**现状**: `TestApp`、`TestController` 在构造函数中创建 `App` 实例，多个测试共享静态状态，测试顺序依赖。
+**现状**: `Env` / `Config` / `Url` 已无类级静态业务状态，测试可独立 `new`。剩余泄漏在 `App` 的 module/controller/action/`$instance` 等静态字段。
 
 **建议**:
-- 每个测试方法在 `setUp()` 中重置静态状态
-- 为 `Config::$config`、`Env::$env` 等提供 `reset()` 方法
+- 每个测试方法在 `setUp()` 中重置 `App` 静态状态，或每用例独立 `new App(...)`
 - 使用 `@runInSeparateProcess` 隔离无法重置的测试
 
 ### 7.2 补充边界用例测试

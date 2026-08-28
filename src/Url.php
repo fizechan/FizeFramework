@@ -11,7 +11,7 @@ class Url
     /**
      * @var array 当前配置
      */
-    protected static $config;
+    protected $config;
 
     /**
      * 根据配置初始化
@@ -19,7 +19,7 @@ class Url
      */
     public function __construct(array $config)
     {
-        self::$config = $config;
+        $this->config = $config;
     }
 
     /**
@@ -27,7 +27,7 @@ class Url
      * @param string $query 请求GET字符串
      * @return array
      */
-    private static function convertQuery(string $query): array
+    private function convertQuery(string $query): array
     {
         $parts = explode('&', $query);
         $params = [];
@@ -43,9 +43,9 @@ class Url
      * @param string $url 待解析URL
      * @return string
      */
-    public static function parse(string $url): string
+    public function parse(string $url): string
     {
-        $rules = self::$config['rules'];
+        $rules = $this->config['rules'] ?? [];
         foreach ($rules as $pattern => $target) {
             if (preg_match("#^$pattern$#", $url, $matches)) {  // 命中路由规则
                 //改装$target成url
@@ -68,7 +68,7 @@ class Url
                 //解析GET参数，并注入到 $_GET 中去
                 $turl = parse_url($target);
                 if (isset($turl['query'])) {
-                    $gets = self::convertQuery($turl['query']);
+                    $gets = $this->convertQuery($turl['query']);
                     foreach ($gets as $key => $value) {
                         $_GET[$key] = $value;
                     }
@@ -86,7 +86,7 @@ class Url
      * @param array  $params 要附加的参数
      * @return string 返回新的URL
      */
-    private static function appendQuery(string $url, array $params): string
+    private function appendQuery(string $url, array $params): string
     {
         $query = '';
         foreach ($params as $key => $value) {
@@ -112,21 +112,22 @@ class Url
      * @param array  $params 附加参数
      * @return string
      */
-    public static function create(string $url, array $params = []): string
+    public function create(string $url, array $params = []): string
     {
-        $full_url = self::appendQuery($url, $params);
+        $full_url = $this->appendQuery($url, $params);
 
         $finial_url = $full_url;
 
         $turl = parse_url($full_url);
         $full_params = [];
         if (isset($turl['query'])) {
-            $full_params = self::convertQuery($turl['query']);
+            $full_params = $this->convertQuery($turl['query']);
         }
 
+        $rules = $this->config['rules'] ?? [];
         $test_urls = [$full_url, $url];
         foreach ($test_urls as $test_url) {
-            if ($pattern = array_search($test_url, self::$config['rules'])) {  //命中路由规则
+            if ($pattern = array_search($test_url, $rules)) {  //命中路由规则
                 //改装$pattern成url
                 $finial_url = $pattern;
 

@@ -1,15 +1,12 @@
 <?php
 
-use Fize\Framework\App;
-use Fize\Framework\Env;
-
 /**
  * 视图设置
  */
 return [
     'handler' => 'PHP',
     'config'  => [
-        'view' => App::module() ? Env::appPath() . 'view/' . App::module() . '/' . Env::appViewDir() : Env::appPath() . 'view/' . Env::appViewDir()
+        'view' => '%module_path%/%app_view_dir%'
     ],
     'tpl'     => [
         'tpl_404'               => null,  // 模板：404

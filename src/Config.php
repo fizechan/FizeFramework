@@ -9,30 +9,49 @@ use Fize\IO\File;
  */
 class Config
 {
+
     /**
      * @var string 配置目录
      */
-    protected static $dir;
+    protected $dir;
 
     /**
-     * @var string 当前模块
+     * @var string|null 当前模块
      */
-    protected static $module;
+    protected $module;
+
+    /**
+     * @var array 占位符映射
+     */
+    protected $parameters = [];
 
     /**
      * @var array 已读取到的配置
      */
-    protected static $config = [];
+    protected $config = [];
 
     /**
      * 初始化
-     * @param string      $dir    配置目录
-     * @param string|null $module 指定要附加配置的模块名
+     * @param string      $dir        配置目录
+     * @param array       $parameters 占位符映射
+     * @param string|null $module     指定要附加配置的模块名
      */
-    public function __construct(string $dir, string $module = null)
+    public function __construct(string $dir, array $parameters = [], string $module = null)
     {
-        self::$dir = $dir;
-        self::$module = $module;
+        $this->dir = $dir;
+        $this->parameters = $parameters;
+        $this->module = $module;
+        $this->syncModuleParameters();
+    }
+
+    /**
+     * 切换模块（不清已缓存配置）
+     * @param string|null $module 模块名
+     */
+    public function setModule(string $module = null): void
+    {
+        $this->module = $module;
+        $this->syncModuleParameters();
     }
 
     /**
@@ -41,13 +60,13 @@ class Config
      * @param string $key    键名，层级以.分隔
      * @return mixed
      */
-    protected static function getByKey(array $config, string $key)
+    protected function getByKey(array $config, string $key)
     {
         $keys = explode('.', $key);
         $cfg_temp = $config;
-        foreach ($keys as $key) {
-            if (isset($cfg_temp[$key])) {
-                $cfg_temp = $cfg_temp[$key];
+        foreach ($keys as $key_item) {
+            if (isset($cfg_temp[$key_item])) {
+                $cfg_temp = $cfg_temp[$key_item];
             } else {
                 return null;
             }
@@ -61,10 +80,9 @@ class Config
      * @param mixed  $default 如未找到该配置时返回的默认值
      * @return mixed
      */
-    public static function get(string $key, $default = null)
+    public function get(string $key, $default = null)
     {
-        //当前缓存配置
-        $value = self::getByKey(self::$config, $key);
+        $value = $this->getByKey($this->config, $key);
         if (!is_null($value)) {
             return $value;
         }
@@ -72,16 +90,12 @@ class Config
         $keys = explode('.', $key);
         $file_name = $keys[0] . '.php';
 
-        //框架默认配置
-        $appdir = dirname(__FILE__, 2) . '/app';
-        $cfg_files[] = $appdir . '/config/' . $file_name;
-        //应用默认配置
-        $cfg_files[] = self::$dir . '/' . $file_name;
-        //公共模块配置
-        $cfg_files[] = self::$dir . '/common/' . $file_name;
-        //当前模块配置
-        if (self::$module) {
-            $cfg_files[] = self::$dir . '/' . self::$module . '/' . $file_name;
+        $cfg_files = [];
+        $cfg_files[] = __DIR__ . '/../app/config/' . $file_name;
+        $cfg_files[] = $this->dir . '/' . $file_name;
+        $cfg_files[] = $this->dir . '/common/' . $file_name;
+        if ($this->module) {
+            $cfg_files[] = $this->dir . '/' . $this->module . '/' . $file_name;
         }
 
         $config = [];
@@ -89,18 +103,47 @@ class Config
             if (File::exists($cfg_file)) {
                 $append = require $cfg_file;
                 if (is_array($append)) {
-                    $config = array_merge($config, $append);
+                    $config = array_replace_recursive($config, $append);
                 }
             }
         }
 
-        self::$config[$keys[0]] = $config;
+        $this->config[$keys[0]] = $this->interpolate($config);
 
-        $value = self::getByKey(self::$config, $key);
+        $value = $this->getByKey($this->config, $key);
         if (is_null($value)) {
             return $default;
         }
 
         return $value;
+    }
+
+    /**
+     * 根据当前模块更新插值参数
+     */
+    protected function syncModuleParameters(): void
+    {
+        $module_name = $this->module ?: '';
+        $this->parameters['%module%'] = $module_name;
+        $app_path = $this->parameters['%app_path%'] ?? '';
+        $this->parameters['%module_path%'] = $module_name !== '' ? $app_path . '/' . $module_name : $app_path;
+    }
+
+    /**
+     * 替换配置值中的占位符
+     * @param array $config 配置
+     * @return array
+     */
+    protected function interpolate(array $config): array
+    {
+        if (!$this->parameters) {
+            return $config;
+        }
+        array_walk_recursive($config, function (&$value) {
+            if (is_string($value)) {
+                $value = strtr($value, $this->parameters);
+            }
+        });
+        return $config;
     }
 }

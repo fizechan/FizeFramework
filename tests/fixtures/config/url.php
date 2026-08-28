@@ -1,0 +1,6 @@
+<?php
+
+return [
+    'maps'  => [],
+    'rules' => [],
+];

@@ -4,7 +4,6 @@
 namespace App\Tests\Controller;
 
 use Fize\Framework\Controller;
-use Fize\Framework\Config;
 use Fize\View\View;
 use Fize\Web\Response;
 
@@ -29,7 +28,7 @@ class Index extends Controller
 
     public function config()
     {
-        $config = Config::get('app');
+        $config = $this->app->config->get('app');
         var_dump($config);
     }
 

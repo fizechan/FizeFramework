@@ -22,6 +22,7 @@ use Fize\Web\Cookie;
 use Fize\Web\Request;
 use Fize\Web\Response;
 use Fize\Web\Session;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 use Throwable;
@@ -33,9 +34,34 @@ class App
 {
 
     /**
-     * @var App 当前应用实例（单例兼容层）
+     * @var App|null 当前应用实例
      */
     protected static $instance;
+
+    /**
+     * @var Container
+     */
+    protected $container;
+
+    /**
+     * @var Env
+     */
+    public $env;
+
+    /**
+     * @var Config
+     */
+    public $config;
+
+    /**
+     * @var Url
+     */
+    public $url;
+
+    /**
+     * @var string|null 当前路由
+     */
+    protected $route;
 
     /**
      * @var string 当前分组
@@ -71,9 +97,18 @@ class App
      * 获取当前应用实例
      * @return App|null
      */
-    public static function getInstance()
+    public static function getInstance(): ?App
     {
         return self::$instance;
+    }
+
+    /**
+     * 获取容器
+     * @return Container
+     */
+    public function container(): Container
+    {
+        return $this->container;
     }
 
     /**
@@ -104,29 +139,30 @@ class App
      * 获取实际路由地址
      * @return string
      */
-    protected static function getRoute()
+    protected function getRoute()
     {
-        static $route = null;
-        if (is_null($route)) {
-            $route_key = Env::get('route_key');
-            if (isset($_GET[$route_key])) {
-                $route = Request::get($route_key);
-            } else {
-                $route = Request::server('PATH_INFO') ?? '';
-            }
-            $route = Url::parse($route);
-            if ($route) {
-                // 删除第一个字符'/'
-                $route = substr($route, 1);
-                // 删除最后一个字符'/'
-                if (substr($route, -1) == '/') {
-                    $route = substr($route, 0, -1);
-                }
-            } else {
-                $route = '';
-            }
+        if ($this->route !== null) {
+            return $this->route;
         }
-        return $route;
+        $route_key = $this->env->get('route_key');
+        if (isset($_GET[$route_key])) {
+            $route = Request::get($route_key);
+        } else {
+            $route = Request::server('PATH_INFO') ?? '';
+        }
+        $route = $this->url->parse($route);
+        if ($route) {
+            // 删除第一个字符'/'
+            $route = substr($route, 1);
+            // 删除最后一个字符'/'
+            if (substr($route, -1) == '/') {
+                $route = substr($route, 0, -1);
+            }
+        } else {
+            $route = '';
+        }
+        $this->route = $route;
+        return $this->route;
     }
 
     /**
@@ -135,17 +171,22 @@ class App
      */
     protected function init(array $env)
     {
-        new Env($env);
+        $this->container = new Container();
+        $this->container->set(ContainerInterface::class, $this->container);
+        $this->container->set(Container::class, $this->container);
+        $this->container->set(App::class, $this);
 
-        // URL配置仅顶层有效
-        new Config(Env::configPath());
-        $url_config = Config::get('url');
-        new Url($url_config);
+        $this->env = new Env($env);
+        $this->container->set(Env::class, $this->env);
 
-        // 由于需要读取分组参数所以 module 必须先确定
+        $this->config = new Config($this->env->configPath(), $this->env->parameters());
+        $this->container->set(Config::class, $this->config);
+
+        $this->url = new Url($this->config->get('url'));
+        $this->container->set(Url::class, $this->url);
+
         $this->checkModule();
-
-        new Config(Env::configPath(), self::$module);
+        $this->config->setModule(self::$module);
     }
 
     /**
@@ -155,7 +196,7 @@ class App
     protected function loadMiddleware(): MiddlewarePipeline
     {
         $pipeline = new MiddlewarePipeline();
-        $config = Config::get('middleware');
+        $config = $this->config->get('middleware');
         if ($config && !empty($config['global'])) {
             foreach ($config['global'] as $middleware_class) {
                 $middleware = new $middleware_class();
@@ -175,19 +216,19 @@ class App
      */
     protected function registerComponent()
     {
-        $cookie_config = Config::get('cookie');
+        $cookie_config = $this->config->get('cookie');
         new Cookie($cookie_config);
 
-        $request_config = Config::get('request');
+        $request_config = $this->config->get('request');
         new Request($request_config);
 
-        $db_config = Config::get('database');
+        $db_config = $this->config->get('database');
         if ($db_config) {
             $db_mode = $db_config['mode'] ?? null;
             new Db($db_config['type'], $db_config['config'], $db_mode);
         }
 
-        $cache_config = Config::get('cache');
+        $cache_config = $this->config->get('cache');
         if ($cache_config['handler'] == 'DataBase') {  // Cache 使用 Db 处理器时的默认配置
             if (empty($cache_config['config']['database'])) {
                 $cache_config['config']['database'] = $db_config;
@@ -195,7 +236,7 @@ class App
         }
         new Cache($cache_config['handler'], $cache_config['config']);
 
-        $log_config = Config::get('log');  // Log 使用 Db 处理器时的默认配置
+        $log_config = $this->config->get('log');  // Log 使用 Db 处理器时的默认配置
         if ($log_config['handler'] == 'DataBase') {  // Log 使用 Db 处理器时的默认配置
             if (empty($log_config['config']['database'])) {
                 $log_config['config']['database'] = $db_config;
@@ -203,7 +244,7 @@ class App
         }
         new Log($log_config['handler'], $log_config['config']);
 
-        $session_config = Config::get('session');
+        $session_config = $this->config->get('session');
         if ($session_config['save_handler']['type'] == 'DataBase') {  // Session 使用 Db 处理器时的默认配置
             if (empty($session_config['save_handler']['config']['database'])) {
                 $session_config['save_handler']['config']['database'] = $db_config;
@@ -211,9 +252,9 @@ class App
         }
         new Session($session_config);
 
-        $path_dir = self::$module ? Env::appPath() . '/' . self::$module . '/' . Env::appViewDir() : Env::appPath() . '/' . Env::appViewDir();
+        $path_dir = self::$module ? $this->env->appPath() . '/' . self::$module . '/' . $this->env->appViewDir() : $this->env->appPath() . '/' . $this->env->appViewDir();
         if (Directory::exists($path_dir)) {
-            $config_view = Config::get('view');
+            $config_view = $this->config->get('view');
             new View($config_view['handler'], $config_view['config']);
         }
     }
@@ -230,7 +271,8 @@ class App
         if (self::$lazyDb !== null) {
             return self::$lazyDb;
         }
-        $config = Config::get('database');
+        $app = self::getInstance();
+        $config = $app->config->get('database');
         self::$lazyDb = new Db($config['type'], $config['config'], $config['mode'] ?? null);
         return self::$lazyDb;
     }
@@ -240,34 +282,36 @@ class App
      */
     protected function setHandler()
     {
+        $app = $this;
+
         // 系统错误处理
-        set_error_handler(function ($errno, $errstr, $errfile = null, $errline = 0) {
+        set_error_handler(function ($errno, $errstr, $errfile = null, $errline = 0) use ($app) {
             OB::clean();
-            $class = Config::get('handler.error');
+            $class = $app->config->get('handler.error');
             /**
              * @var ErrorHandlerInterface $handler
              */
-            $handler = new $class();
+            $handler = $app->container()->make($class);
             return $handler->run($errno, $errstr, $errfile, $errline);
         });
 
         // 系统异常处理
-        set_exception_handler(function (Throwable $exception) {
-            $class = Config::get('handler.exception');
+        set_exception_handler(function (Throwable $exception) use ($app) {
+            $class = $app->config->get('handler.exception');
             /**
              * @var ExceptionHandlerInterface $handler
              */
-            $handler = new $class();
+            $handler = $app->container()->make($class);
             $handler->run($exception);
         });
 
         // 接管结束任务
-        register_shutdown_function(function () {
-            $class = Config::get('handler.shutdown');
+        register_shutdown_function(function () use ($app) {
+            $class = $app->config->get('handler.shutdown');
             /**
              * @var ShutdownHandlerInterface $handler
              */
-            $handler = new $class();
+            $handler = $app->container()->make($class);
             $handler->run();
         });
     }
@@ -277,20 +321,20 @@ class App
      */
     protected function checkModule()
     {
-        if (Env::get('module') === false) {  // 不使用分组
+        if ($this->env->get('module') === false) {  // 不使用分组
             self::$module = null;
-        } elseif (Env::get('module') === true) {  // 自动判断分组
-            $route = self::getRoute();
+        } elseif ($this->env->get('module') === true) {  // 自动判断分组
+            $route = $this->getRoute();
             if ($route) {
                 $routes = explode('/', $route);
                 self::$module = $routes[0];
             } else {
-                self::$module = Env::get('default_module');
+                self::$module = $this->env->get('default_module');
             }
         } else {
-            self::$module = Env::get('module');
+            self::$module = $this->env->get('module');
         }
-        $path = Env::appPath() . '/' . self::$module;
+        $path = $this->env->appPath() . '/' . self::$module;
         if (self::$module && !Directory::exists($path)) {
             throw new ModuleNotFoundException(self::$module, $path);
         }
@@ -304,12 +348,12 @@ class App
      */
     protected function checkController(string $controller, bool $throw = false): bool
     {
-        $config_controller = Config::get('controller');
-        $class_path = '\\' . ucfirst(Env::appDir());
+        $config_controller = $this->config->get('controller');
+        $class_path = '\\' . ucfirst($this->env->appDir());
         if (self::$module) {
             $class_path .= '\\' . self::$module;
         }
-        $class_path .= '\\' . Env::appControllerDir() . '\\' . $controller;
+        $class_path .= '\\' . $this->env->appControllerDir() . '\\' . $controller;
         $class = $class_path . $config_controller['controller_postfix'];
         if (!class_exists($class)) {
             $class = $class_path;
@@ -329,12 +373,12 @@ class App
      */
     protected function check()
     {
-        $config_controller = Config::get('controller');
-        $route = self::getRoute();
+        $config_controller = $this->config->get('controller');
+        $route = $this->getRoute();
 
         if ($route) {
             $routes = explode('/', $route);
-            if (Env::get('module') === true) {  // 自动判断
+            if ($this->env->get('module') === true) {  // 自动判断
                 array_shift($routes);  // 第一个即为模块名
             }
 
@@ -382,7 +426,10 @@ class App
         $core = Closure::bind(function ($request) {
             $class = self::$class;
             $action = self::$action;
-            $controller = new $class();
+            $controller = $this->container->make($class);
+            if ($controller instanceof Controller) {
+                $controller->bindApp($this);
+            }
 
             $ref_class = new ReflectionClass($class);
             $ref_method = $ref_class->getMethod($action);
@@ -412,7 +459,7 @@ class App
      * 解析控制器方法参数
      *
      * 通过反射识别参数类型声明：
-     * - 对象类型参数：从容器/服务注入（当前为框架内置类型自动创建）
+     * - 对象类型参数：从容器/服务注入
      * - 标量类型参数：从 Request::get() 获取
      * @param \ReflectionMethod $ref_method 方法反射
      * @param string            $class      控制器类名
@@ -455,21 +502,17 @@ class App
 
     /**
      * 从容器解析依赖
-     *
-     * 当前支持框架内置类型的自动注入，后续可扩展为完整的服务容器。
      * @param string $type_name 类全限定名
      * @return object|null
      */
     protected function resolveFromContainer(string $type_name)
     {
-        // 框架内置类型自动注入
-        $builtins = [
-            Request::class  => function () { return new Request(); },
-        ];
-        if (isset($builtins[$type_name])) {
-            return $builtins[$type_name]();
+        if ($this->container->has($type_name)) {
+            return $this->container->get($type_name);
         }
-        // 通用类尝试无参构造
+        if ($type_name === Request::class) {
+            return new Request();
+        }
         if (class_exists($type_name)) {
             $ref = new ReflectionClass($type_name);
             if ($ref->isInstantiable() && $ref->getConstructor() === null) {

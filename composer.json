@@ -13,6 +13,9 @@
       "Fize\\Framework\\": "src"
     }
   },
+  "provide": {
+    "psr/container-implementation": "1.0.0"
+  },
   "require": {
     "php": ">=7.2.0",
     "fize/cache": "*",
@@ -22,7 +25,8 @@
     "fize/log": "*",
     "fize/security": "*",
     "fize/view": "*",
-    "fize/web": "*"
+    "fize/web": "*",
+    "psr/container": "^1.1"
   },
   "autoload-dev": {
     "psr-4": {

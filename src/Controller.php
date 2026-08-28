@@ -16,6 +16,20 @@ abstract class Controller
 {
 
     /**
+     * @var App
+     */
+    protected $app;
+
+    /**
+     * 绑定当前应用（由 App::run() 调用；也可自行 App::getInstance()）
+     * @param App $app 应用实例
+     */
+    public function bindApp(App $app): void
+    {
+        $this->app = $app;
+    }
+
+    /**
      * 返回JSON结果
      * @param array       $data    数据
      * @param string|null $message 提示信息
@@ -46,7 +60,7 @@ abstract class Controller
             ];
             $response = Response::json($json);
         } else {
-            $config_view = Config::get('view');
+            $config_view = $this->app->config->get('view');
             if ($config_view['tpl_success']) {
                 View::path($config_view['tpl_success']);
                 View::assign('message', $message);
@@ -54,8 +68,7 @@ abstract class Controller
                 View::assign('code', $code);
                 $response = Response::html(View::render());
             } else {
-                $appdir = dirname(__FILE__, 2) . '/app';
-                $view = ViewFactory::create('PHP', ['view' => $appdir . '/view']);
+                $view = ViewFactory::create('PHP', ['view' => __DIR__ . '/../app/view']);
                 $view->assign('message', $message);
                 $view->assign('url', $url);
                 $view->assign('code', $code);
@@ -79,15 +92,14 @@ abstract class Controller
             ];
             $response = Response::json($json);
         } else {
-            $config_view = Config::get('view');
+            $config_view = $this->app->config->get('view');
             if ($config_view['tpl_error']) {
                 View::path($config_view['tpl_error']);
                 View::assign('message', $message);
                 View::assign('code', $code);
                 $response = Response::html(View::render());
             } else {
-                $appdir = dirname(__FILE__, 2) . '/app';
-                $view = ViewFactory::create('PHP', ['view' => $appdir . '/view']);
+                $view = ViewFactory::create('PHP', ['view' => __DIR__ . '/../app/view']);
                 $view->assign('message', $message);
                 $view->assign('code', $code);
                 $response = Response::html($view->render('error'));
@@ -104,7 +116,7 @@ abstract class Controller
      */
     protected function redirect(string $url, array $params = [], int $delay = null)
     {
-        $url = Url::create($url, $params);
+        $url = $this->app->url->create($url, $params);
         $response = Response::redirect($url, $delay);
         throw new HttpResponseException($response);
     }
@@ -115,16 +127,16 @@ abstract class Controller
      */
     protected function validate(array $data = null)
     {
-        $config_validator = Config::get('validator');
+        $config_validator = $this->app->config->get('validator');
 
         $module = App::module();
-        $path = '\\' . Env::appDir() . ($module ? '\\' . $module : '') . '\\' . $config_validator['dir'] . '\\' . App::controller();
+        $path = '\\' . $this->app->env->appDir() . ($module ? '\\' . $module : '') . '\\' . $config_validator['dir'] . '\\' . App::controller();
         $class = $path . $config_validator['postfix'];
         if (!class_exists($class)) {
             $class = $path;
         }
         if (!class_exists($class)) {
-            $path = '\\' . Env::appDir() . '\\common\\' . $config_validator['dir'] . '\\' . App::controller();
+            $path = '\\' . $this->app->env->appDir() . '\\common\\' . $config_validator['dir'] . '\\' . App::controller();
             $class = $path . $config_validator['postfix'];
             if (!class_exists($class)) {
                 $class = $path;
