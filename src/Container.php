@@ -2,11 +2,11 @@
 
 namespace Fize\Framework;
 
-use Fize\Framework\Container\ContainerException;
-use Fize\Framework\Container\ContainerNotFoundException;
+use Fize\Framework\Exception\ContainerException;
+use Fize\Framework\Exception\ContainerNotFoundException;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
-use Psr\Container\ContainerInterface;
 
 /**
  * 最小 PSR-11 容器

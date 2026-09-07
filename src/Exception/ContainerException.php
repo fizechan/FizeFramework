@@ -1,6 +1,6 @@
 <?php
 
-namespace Fize\Framework\Container;
+namespace Fize\Framework\Exception;
 
 use Psr\Container\ContainerExceptionInterface;
 use RuntimeException;
