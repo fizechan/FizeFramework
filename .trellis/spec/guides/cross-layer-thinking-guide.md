@@ -34,10 +34,13 @@ For each arrow, ask:
 
 ### Step 2: Identify Boundaries
 
-| Boundary              | Common Issues                     |
-| --------------------- | --------------------------------- |
-| API ↔ Service         | Type mismatches, missing fields   |
-| Service ↔ Database    | Format conversions, null handling |
+| Boundary | Common Issues |
+| -------- | ------------- |
+| 入口 ↔ App::init | 漏传 `root_path`、Env 未就绪就读 Config |
+| Config ↔ 组件 | 占位符未替换、空 `database` 仍去连库 |
+| Url::parse ↔ Action 注入 | `$_GET` 副作用与 `Request::get` 不一致 |
+| Controller ↔ Handler | 把 `HttpResponseException` 当故障 |
+| App 单例 ↔ 测试 | 静态 `$module` / handler / OB 泄漏 |
 | Backend ↔ Frontend    | Serialization, date formats       |
 | Component ↔ Component | Props shape changes               |
 

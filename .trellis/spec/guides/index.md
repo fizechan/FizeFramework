@@ -30,12 +30,12 @@ These guides help you **ask the right questions before coding**.
 
 ### When to Think About Cross-Layer Issues
 
-- [ ] Feature touches 3+ layers (API, Service, Component, Database)
-- [ ] Data format changes between layers
-- [ ] Multiple consumers need the same data
-- [ ] You're not sure where to put some logic
-- [ ] You are adding an event kind, JSONL record, RPC payload, or config field
-- [ ] UI / command code starts casting raw payload fields directly
+- [ ] 一次改动穿过 App 启动、Config、Controller、Handler 或 fize 组件
+- [ ] 配置占位符 / 模块切换会影响已缓存的 Config
+- [ ] 同一数据既给视图又给 JSON（`success` / `result`）
+- [ ] 不确定逻辑该放 Env、config 文件，还是 Controller
+- [ ] 新增配置键、Handler 类名或中间件
+- [ ] 路由 `parse` 写入的 `$_GET` 被后续 Request 注入读到
 
 → Read [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md)
 
