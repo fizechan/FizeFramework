@@ -25,6 +25,7 @@ use Fize\Web\Session;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionMethod;
 use Throwable;
 
 /**
@@ -461,13 +462,14 @@ class App
      * 通过反射识别参数类型声明：
      * - 对象类型参数：从容器/服务注入
      * - 标量类型参数：从 Request::get() 获取
-     * @param \ReflectionMethod $ref_method 方法反射
+     * @param ReflectionMethod $ref_method 方法反射
      * @param string            $class      控制器类名
      * @param string            $action     操作名
      * @return array 解析后的参数列表
      * @throws ParameterNotSetException 必需参数未提供时抛出
+     * @throws ReflectionException
      */
-    protected function resolveParameters(\ReflectionMethod $ref_method, string $class, string $action): array
+    protected function resolveParameters(ReflectionMethod $ref_method, string $class, string $action): array
     {
         $parameters = [];
         foreach ($ref_method->getParameters() as $parameter) {

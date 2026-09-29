@@ -9,9 +9,7 @@ use ReflectionClass;
 use ReflectionException;
 
 /**
- * 最小 PSR-11 容器
- *
- * get/has 符合 PSR-11；set/make 为框架扩展。
+ * 容器
  */
 class Container implements ContainerInterface
 {
@@ -26,7 +24,7 @@ class Container implements ContainerInterface
      * @param string $id    条目标识
      * @param mixed  $entry 实例
      */
-    public function set(string $id, $entry): void
+    public function set(string $id, $entry)
     {
         $this->entries[$id] = $entry;
     }
@@ -36,7 +34,7 @@ class Container implements ContainerInterface
      * @return mixed
      * @throws ContainerNotFoundException
      */
-    public function get($id)
+    public function get(string $id)
     {
         if (!$this->has($id)) {
             throw new ContainerNotFoundException("Container entry [{$id}] not found");
@@ -48,7 +46,7 @@ class Container implements ContainerInterface
      * @param string $id 条目标识
      * @return bool
      */
-    public function has($id): bool
+    public function has(string $id): bool
     {
         return array_key_exists($id, $this->entries);
     }
@@ -58,6 +56,7 @@ class Container implements ContainerInterface
      * @param string $class 类名
      * @return object
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public function make(string $class)
     {
@@ -65,12 +64,7 @@ class Container implements ContainerInterface
             throw new ContainerException("Class [{$class}] not found");
         }
 
-        try {
-            $ref = new ReflectionClass($class);
-        } catch (ReflectionException $e) {
-            throw new ContainerException($e->getMessage(), (int)$e->getCode(), $e);
-        }
-
+        $ref = new ReflectionClass($class);
         if (!$ref->isInstantiable()) {
             throw new ContainerException("Class [{$class}] is not instantiable");
         }

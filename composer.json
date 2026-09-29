@@ -24,6 +24,7 @@
     "fize/io": "*",
     "fize/log": "*",
     "fize/security": "*",
+    "fize/session": "*",
     "fize/view": "*",
     "fize/web": "*",
     "psr/container": "^1.1"
