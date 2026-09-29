@@ -1,13 +1,4 @@
 <?php
-
-if (!function_exists('parse_padding')) {
-    function parse_padding($source)
-    {
-        $length = strlen(strval(count($source['source']) + $source['first']));
-        return 40 + ($length - 1) * 8;
-    }
-}
-
 if (!function_exists('parse_class')) {
     function parse_class($name)
     {

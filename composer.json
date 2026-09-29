@@ -1,6 +1,6 @@
 {
   "name": "fize/framework",
-  "description": "Fize，一个轻巧、自由、灵活的MVC框架。",
+  "description": "FizeFramework，一个轻巧、自由、灵活的MVC框架。",
   "license": "MIT",
   "authors": [
     {
@@ -9,6 +9,9 @@
     }
   ],
   "autoload": {
+    "files": [
+      "app/functions.php"
+    ],
     "psr-4": {
       "Fize\\Framework\\": "src"
     }

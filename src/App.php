@@ -91,14 +91,15 @@ class App
 
     /**
      * @var Db|null 延迟加载的数据库实例
+     * @todo 不太合适放这里。
      */
     protected static $lazyDb;
 
     /**
      * 获取当前应用实例
-     * @return App|null
+     * @return App
      */
-    public static function getInstance(): ?App
+    public static function getInstance(): App
     {
         return self::$instance;
     }

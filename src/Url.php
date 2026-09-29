@@ -4,7 +4,7 @@ namespace Fize\Framework;
 
 /**
  * URL管理
- * @todo 待移除，准备使用Route。
+ * @deprecated 待移除，准备使用Route。
  */
 class Url
 {
