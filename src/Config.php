@@ -120,6 +120,7 @@ class Config
 
     /**
      * 根据当前模块更新插值参数
+     * @todo 不使用占位符
      */
     protected function syncModuleParameters(): void
     {
@@ -133,6 +134,7 @@ class Config
      * 替换配置值中的占位符
      * @param array $config 配置
      * @return array
+     * @todo 不使用占位符
      */
     protected function interpolate(array $config): array
     {

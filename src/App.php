@@ -35,7 +35,7 @@ class App
 {
 
     /**
-     * @var App|null 当前应用实例
+     * @var App 当前应用实例
      */
     protected static $instance;
 
@@ -255,7 +255,7 @@ class App
         }
         new Session($session_config);
 
-        $path_dir = self::$module ? $this->env->appPath() . '/' . self::$module . '/' . $this->env->appViewDir() : $this->env->appPath() . '/' . $this->env->appViewDir();
+        $path_dir = self::$module ? $this->env->appPath() . '/' . self::$module . '/' . $this->env->viewDir() : $this->env->appPath() . '/' . $this->env->viewDir();
         if (Directory::exists($path_dir)) {
             $config_view = $this->config->get('view');
             new View($config_view['handler'], $config_view['config']);
@@ -268,6 +268,7 @@ class App
      * 如已在 registerComponent() 中初始化则直接返回，否则按需创建。
      * 适用于 Swoole 等长驻进程中跳过不需要的组件初始化。
      * @return Db
+     * @todo 不太合适放这里。
      */
     public static function db(): Db
     {
@@ -356,7 +357,7 @@ class App
         if (self::$module) {
             $class_path .= '\\' . self::$module;
         }
-        $class_path .= '\\' . $this->env->appControllerDir() . '\\' . $controller;
+        $class_path .= '\\' . $this->env->controllerDir() . '\\' . $controller;
         $class = $class_path . $config_controller['controller_postfix'];
         if (!class_exists($class)) {
             $class = $class_path;
@@ -382,7 +383,7 @@ class App
         if ($route) {
             $routes = explode('/', $route);
             if ($this->env->get('module') === true) {  // 自动判断
-                array_shift($routes);  // 第一个即为模块名
+                array_shift($routes);                  // 第一个即为模块名
             }
 
             if (count($routes) == 0) {  // 默认
@@ -418,7 +419,6 @@ class App
      *
      * 通过中间件管道包装控制器执行，支持全局中间件拦截。
      * 参数注入通过反射自动识别类型：对象类型从容器注入，标量类型从请求获取。
-     * @throws ReflectionException
      */
     public function run()
     {
@@ -464,8 +464,8 @@ class App
      * - 对象类型参数：从容器/服务注入
      * - 标量类型参数：从 Request::get() 获取
      * @param ReflectionMethod $ref_method 方法反射
-     * @param string            $class      控制器类名
-     * @param string            $action     操作名
+     * @param string           $class      控制器类名
+     * @param string           $action     操作名
      * @return array 解析后的参数列表
      * @throws ParameterNotSetException 必需参数未提供时抛出
      * @throws ReflectionException

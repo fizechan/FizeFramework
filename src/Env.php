@@ -6,6 +6,7 @@ use InvalidArgumentException;
 
 /**
  * 环境
+ * @todo 待该为环境变量
  */
 class Env
 {
@@ -31,16 +32,16 @@ class Env
     protected function init(array $env)
     {
         $default_env = [
-            'root_path'          => null,  // 根目录
-            'app_dir'            => 'app',  // 应用文件夹
-            'config_dir'         => 'config',  // 配置文件夹
-            'runtime_dir'        => 'runtime',  // 运行时文件夹
-            'app_controller_dir' => 'Controller',  // 控制器文件夹
-            'app_view_dir'       => 'View',  // 视图文件夹
-            'module'             => true,  // true表示开启分组并自动判断，false表示关闭分组，字符串表示指定分组
-            'default_module'     => 'Index',  // 开启分组时的默认分组
-            'route_key'          => '_r',  // 兼容模式路由GET参数名
-            'debug'              => false,  // 是否调试模式
+            'root_path'      => null,          // 根目录
+            'app_dir'        => 'app',         // 应用文件夹
+            'config_dir'     => 'config',      // 配置文件夹
+            'runtime_dir'    => 'runtime',     // 运行时文件夹
+            'controller_dir' => 'Controller',  // 控制器文件夹
+            'view_dir'       => 'View',        // 视图文件夹
+            'module'         => true,          // true表示开启分组并自动判断，false表示关闭分组，字符串表示指定分组
+            'default_module' => 'Index',       // 开启分组时的默认分组
+            'route_key'      => '_r',          // 兼容模式路由GET参数名
+            'debug'          => false,         // 是否调试模式
         ];
         $env = array_merge($default_env, $env);
 
@@ -104,18 +105,18 @@ class Env
      * 获取应用控制器文件夹名称
      * @return string
      */
-    public function appControllerDir(): string
+    public function controllerDir(): string
     {
-        return $this->env['app_controller_dir'];
+        return $this->env['controller_dir'];
     }
 
     /**
      * 获取应用视图文件夹名称
      * @return string
      */
-    public function appViewDir(): string
+    public function viewDir(): string
     {
-        return $this->env['app_view_dir'];
+        return $this->env['view_dir'];
     }
 
     /**
@@ -155,15 +156,15 @@ class Env
         $module_name = $module ?: '';
         $app_path = $this->appPath();
         return [
-            '%root_path%'          => $this->rootPath(),
-            '%app_path%'           => $app_path,
-            '%config_path%'        => $this->configPath(),
-            '%runtime_path%'       => $this->runtimePath(),
-            '%app_dir%'            => $this->appDir(),
-            '%app_view_dir%'       => $this->appViewDir(),
-            '%app_controller_dir%' => $this->appControllerDir(),
-            '%module%'             => $module_name,
-            '%module_path%'        => $module_name !== '' ? $app_path . '/' . $module_name : $app_path,
+            '%root_path%'      => $this->rootPath(),
+            '%app_path%'       => $app_path,
+            '%config_path%'    => $this->configPath(),
+            '%runtime_path%'   => $this->runtimePath(),
+            '%app_dir%'        => $this->appDir(),
+            '%view_dir%'       => $this->viewDir(),
+            '%controller_dir%' => $this->controllerDir(),
+            '%module%'         => $module_name,
+            '%module_path%'    => $module_name !== '' ? $app_path . '/' . $module_name : $app_path,
         ];
     }
 }

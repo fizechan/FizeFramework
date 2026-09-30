@@ -19,8 +19,8 @@ class TestEnv extends TestCase
         self::assertEquals('app', $env->appDir());
         self::assertEquals('config', $env->configDir());
         self::assertEquals('runtime', $env->runtimeDir());
-        self::assertEquals('Controller', $env->appControllerDir());
-        self::assertEquals('View', $env->appViewDir());
+        self::assertEquals('Controller', $env->controllerDir());
+        self::assertEquals('View', $env->viewDir());
         self::assertEquals($root . '/app', $env->appPath());
         self::assertEquals($root . '/config', $env->configPath());
         self::assertEquals($root . '/runtime', $env->runtimePath());

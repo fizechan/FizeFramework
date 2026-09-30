@@ -1,6 +1,6 @@
 <?php
 
-namespace Fize\Framework;
+namespace Fize\Framework\Controller;
 
 use Fize\Exception\HttpException\HttpResponseException;
 use Fize\Security\Validator;
@@ -11,6 +11,7 @@ use Fize\Web\Response;
 
 /**
  * 控制器
+ * @todo 待合并到Controller文件夹
  */
 abstract class Controller
 {
