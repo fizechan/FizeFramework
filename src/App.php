@@ -135,6 +135,7 @@ class App
      */
     public function __destruct()
     {
+        OB::endFlush();
     }
 
     /**
@@ -454,7 +455,6 @@ class App
         if ($response instanceof Response) {
             $response->send();
         }
-        OB::endFlush();
     }
 
     /**
