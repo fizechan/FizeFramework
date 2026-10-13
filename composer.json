@@ -10,7 +10,8 @@
   ],
   "autoload": {
     "files": [
-      "app/functions.php"
+      "app/common/constants.php",
+      "app/common/functions.php"
     ],
     "psr-4": {
       "Fize\\Framework\\": "src"

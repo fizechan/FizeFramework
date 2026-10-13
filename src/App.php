@@ -43,7 +43,7 @@ class App
     /**
      * @var Boot
      */
-    protected $boot;
+    public $boot;
 
     /**
      * @var Container

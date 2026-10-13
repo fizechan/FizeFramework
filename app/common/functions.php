@@ -1,17 +1,24 @@
 <?php
-function app()
+
+use Fize\Framework\App;
+
+/**
+ * 当前应用
+ * @return App
+ */
+function app(): App
 {
-    
+    return App::getInstance();
 }
 
 function cache()
 {
-    
+
 }
 
 function config()
 {
-    
+
 }
 
 function cookie()
@@ -36,10 +43,24 @@ function lang()
 
 function loger()
 {
-    
+
 }
 
 function session()
 {
-    
+
+}
+
+function url()
+{
+
+}
+
+/**
+ * 应用根目录路径
+ * @return string
+ */
+function fize_runtime_path(): string
+{
+    return App::getInstance()->boot->rootPath();
 }

@@ -30,7 +30,7 @@ class Boot
      */
     protected function init(array $cfg)
     {
-        $default_env = [
+        $defaultCfg = [
             'root_path'      => null,          // 根目录
             'app_dir'        => 'app',         // 应用文件夹
             'config_dir'     => 'config',      // 配置文件夹
@@ -42,12 +42,10 @@ class Boot
             'route_key'      => '_r',          // 兼容模式路由GET参数名
             'debug'          => false,         // 是否调试模式
         ];
-        $cfg = array_merge($default_env, $cfg);
-
+        $cfg = array_merge($defaultCfg, $cfg);
         if ($cfg['root_path'] === null || $cfg['root_path'] === '') {
-            throw new InvalidArgumentException('Env root_path is required');
+            throw new InvalidArgumentException('root_path is required');
         }
-
         $this->cfg = $cfg;
     }
 
@@ -143,27 +141,5 @@ class Boot
     public function runtimePath(): string
     {
         return $this->cfg['root_path'] . '/' . $this->cfg['runtime_dir'];
-    }
-
-    /**
-     * 供 Config 插值的占位符映射
-     * @param string|null $module 当前模块名
-     * @return array
-     */
-    public function parameters(string $module = null): array
-    {
-        $module_name = $module ?: '';
-        $app_path = $this->appPath();
-        return [
-            '%root_path%'      => $this->rootPath(),
-            '%app_path%'       => $app_path,
-            '%config_path%'    => $this->configPath(),
-            '%runtime_path%'   => $this->runtimePath(),
-            '%app_dir%'        => $this->appDir(),
-            '%view_dir%'       => $this->viewDir(),
-            '%controller_dir%' => $this->controllerDir(),
-            '%module%'         => $module_name,
-            '%module_path%'    => $module_name !== '' ? $app_path . '/' . $module_name : $app_path,
-        ];
     }
 }
