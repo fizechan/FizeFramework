@@ -136,7 +136,7 @@ return [
 3. **公共模块配置**（`config/common/*.php`）
 4. **当前模块配置**（`config/{module}/*.php`）
 
-支持以 `.` 分隔的层级键名访问配置。配置文件为纯数组，路径等可用 `%runtime_path%`、`%module_path%` 等占位符，由 `Env` 在加载时替换。
+支持以 `.` 分隔的层级键名访问配置。配置文件为纯数组，路径等可用 `%runtime_path%`、`%module_path%` 等占位符，由 `Root` 在加载时替换。
 
 入口或测试：
 

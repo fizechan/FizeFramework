@@ -3,7 +3,7 @@
 namespace Tests;
 
 use Fize\Framework\Config;
-use Fize\Framework\Env;
+use Fize\Framework\Boot;
 use PHPUnit\Framework\TestCase;
 
 class TestConfig extends TestCase
@@ -21,12 +21,12 @@ class TestConfig extends TestCase
     protected function setUp(): void
     {
         $root = dirname(__DIR__) . '/tests/fixtures';
-        $env = new Env([
+        $boot = new Boot([
             'root_path' => $root,
             'app_dir'   => 'Fixture',
         ]);
-        $this->dir = $env->configPath();
-        $this->parameters = $env->parameters('Index');
+        $this->dir = $boot->configPath();
+        $this->parameters = $boot->parameters('Index');
     }
 
     public function testLayeredDeepMergeAndInterpolate()

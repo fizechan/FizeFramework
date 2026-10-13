@@ -4,7 +4,7 @@ namespace Tests;
 
 use Fize\Framework\App;
 use Fize\Framework\Config;
-use Fize\Framework\Env;
+use Fize\Framework\Root;
 use Fize\Framework\Url;
 use PHPUnit\Framework\TestCase;
 
@@ -49,7 +49,7 @@ class TestApp extends TestCase
         $app = $this->createApp();
 
         self::assertSame($app, App::getInstance());
-        self::assertSame($app->env, $app->container()->get(Env::class));
+        self::assertSame($app->env, $app->container()->get(Root::class));
         self::assertSame($app->config, $app->container()->get(Config::class));
         self::assertSame($app->url, $app->container()->get(Url::class));
         self::assertEquals('Index', App::module());

@@ -209,7 +209,7 @@ CACHE_HANDLER=Redis
 
 ### 7.1 测试中状态隔离
 
-**现状**: `Env` / `Config` / `Url` 已无类级静态业务状态，测试可独立 `new`。剩余泄漏在 `App` 的 module/controller/action/`$instance` 等静态字段。
+**现状**: `Root` / `Config` / `Url` 已无类级静态业务状态，测试可独立 `new`。剩余泄漏在 `App` 的 module/controller/action/`$instance` 等静态字段。
 
 **建议**:
 - 每个测试方法在 `setUp()` 中重置 `App` 静态状态，或每用例独立 `new App(...)`

@@ -13,22 +13,22 @@ class Boot
     /**
      * @var array 环境配置
      */
-    protected $env;
+    protected $cfg;
 
     /**
      * 构造
-     * @param array $env 环境配置，必须包含 root_path
+     * @param array $cfg 环境配置，必须包含 root_path
      */
-    public function __construct(array $env = [])
+    public function __construct(array $cfg = [])
     {
-        $this->init($env);
+        $this->init($cfg);
     }
 
     /**
      * 环境初始化
-     * @param array $env 参数
+     * @param array $cfg 参数
      */
-    protected function init(array $env)
+    protected function init(array $cfg)
     {
         $default_env = [
             'root_path'      => null,          // 根目录
@@ -42,13 +42,13 @@ class Boot
             'route_key'      => '_r',          // 兼容模式路由GET参数名
             'debug'          => false,         // 是否调试模式
         ];
-        $env = array_merge($default_env, $env);
+        $cfg = array_merge($default_env, $cfg);
 
-        if ($env['root_path'] === null || $env['root_path'] === '') {
+        if ($cfg['root_path'] === null || $cfg['root_path'] === '') {
             throw new InvalidArgumentException('Env root_path is required');
         }
 
-        $this->env = $env;
+        $this->cfg = $cfg;
     }
 
     /**
@@ -59,9 +59,9 @@ class Boot
     public function get(string $key = null)
     {
         if ($key) {
-            return $this->env[$key] ?? null;
+            return $this->cfg[$key] ?? null;
         }
-        return $this->env;
+        return $this->cfg;
     }
 
     /**
@@ -70,7 +70,7 @@ class Boot
      */
     public function rootPath(): string
     {
-        return $this->env['root_path'];
+        return $this->cfg['root_path'];
     }
 
     /**
@@ -79,7 +79,7 @@ class Boot
      */
     public function appDir(): string
     {
-        return $this->env['app_dir'];
+        return $this->cfg['app_dir'];
     }
 
     /**
@@ -88,7 +88,7 @@ class Boot
      */
     public function configDir(): string
     {
-        return $this->env['config_dir'];
+        return $this->cfg['config_dir'];
     }
 
     /**
@@ -97,7 +97,7 @@ class Boot
      */
     public function runtimeDir(): string
     {
-        return $this->env['runtime_dir'];
+        return $this->cfg['runtime_dir'];
     }
 
     /**
@@ -106,7 +106,7 @@ class Boot
      */
     public function controllerDir(): string
     {
-        return $this->env['controller_dir'];
+        return $this->cfg['controller_dir'];
     }
 
     /**
@@ -115,7 +115,7 @@ class Boot
      */
     public function viewDir(): string
     {
-        return $this->env['view_dir'];
+        return $this->cfg['view_dir'];
     }
 
     /**
@@ -124,7 +124,7 @@ class Boot
      */
     public function appPath(): string
     {
-        return $this->env['root_path'] . '/' . $this->env['app_dir'];
+        return $this->cfg['root_path'] . '/' . $this->cfg['app_dir'];
     }
 
     /**
@@ -133,7 +133,7 @@ class Boot
      */
     public function configPath(): string
     {
-        return $this->env['root_path'] . '/' . $this->env['config_dir'];
+        return $this->cfg['root_path'] . '/' . $this->cfg['config_dir'];
     }
 
     /**
@@ -142,7 +142,7 @@ class Boot
      */
     public function runtimePath(): string
     {
-        return $this->env['root_path'] . '/' . $this->env['runtime_dir'];
+        return $this->cfg['root_path'] . '/' . $this->cfg['runtime_dir'];
     }
 
     /**

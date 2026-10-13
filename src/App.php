@@ -6,6 +6,7 @@ use Closure;
 use Fize\Cache\Cache;
 use Fize\Database\Db;
 use Fize\Exception\NotSetException\ParameterNotSetException;
+use Fize\Framework\Controller\Controller;
 use Fize\Framework\Exception\ActionNotFoundException;
 use Fize\Framework\Exception\ControllerNotFoundException;
 use Fize\Framework\Exception\ModuleNotFoundException;
@@ -40,14 +41,14 @@ class App
     protected static $instance;
 
     /**
+     * @var Boot
+     */
+    protected $boot;
+
+    /**
      * @var Container
      */
     protected $container;
-
-    /**
-     * @var Env
-     */
-    public $env;
 
     /**
      * @var Config
@@ -96,38 +97,20 @@ class App
     protected static $lazyDb;
 
     /**
-     * 获取当前应用实例
-     * @return App
-     */
-    public static function getInstance(): App
-    {
-        return self::$instance;
-    }
-
-    /**
-     * 获取容器
-     * @return Container
-     */
-    public function container(): Container
-    {
-        return $this->container;
-    }
-
-    /**
      * 构造。
      *
      * 在此执行所有准备流程。
-     * @param array $env 环境配置
+     * @param array $cfg 环境配置
      */
-    public function __construct(array $env = [])
+    public function __construct(array $cfg = [])
     {
-        self::$instance = $this;
-        self::$microtimeStart = microtime(true);
         OB::start();
-        $this->init($env);
+        self::$microtimeStart = microtime(true);
+        $this->init($cfg);
         $this->setHandler();
         $this->registerComponent();
         $this->check();
+        self::$instance = $this;
     }
 
     /**
@@ -139,6 +122,26 @@ class App
     }
 
     /**
+     * 获取当前应用实例
+     * @return App
+     */
+    public static function getInstance(): App
+    {
+        return self::$instance;
+    }
+
+
+
+    /**
+     * 获取容器
+     * @return Container
+     */
+    public function container(): Container
+    {
+        return $this->container;
+    }
+
+    /**
      * 获取实际路由地址
      * @return string
      */
@@ -147,7 +150,7 @@ class App
         if ($this->route !== null) {
             return $this->route;
         }
-        $route_key = $this->env->get('route_key');
+        $route_key = $this->boot->get('route_key');
         if (isset($_GET[$route_key])) {
             $route = Request::get($route_key);
         } else {
@@ -170,19 +173,19 @@ class App
 
     /**
      * 初始化
-     * @param array $env 参数
+     * @param array $cfg 环境配置
      */
-    protected function init(array $env)
+    protected function init(array $cfg)
     {
         $this->container = new Container();
         $this->container->set(ContainerInterface::class, $this->container);
         $this->container->set(Container::class, $this->container);
         $this->container->set(App::class, $this);
 
-        $this->env = new Env($env);
-        $this->container->set(Env::class, $this->env);
+        $this->boot = new Boot($cfg);
+        $this->container->set(Boot::class, $this->boot);
 
-        $this->config = new Config($this->env->configPath(), $this->env->parameters());
+        $this->config = new Config($this->boot->configPath(), $this->boot->parameters());
         $this->container->set(Config::class, $this->config);
 
         $this->url = new Url($this->config->get('url'));
@@ -255,7 +258,7 @@ class App
         }
         new Session($session_config);
 
-        $path_dir = self::$module ? $this->env->appPath() . '/' . self::$module . '/' . $this->env->viewDir() : $this->env->appPath() . '/' . $this->env->viewDir();
+        $path_dir = self::$module ? $this->boot->appPath() . '/' . self::$module . '/' . $this->boot->viewDir() : $this->boot->appPath() . '/' . $this->boot->viewDir();
         if (Directory::exists($path_dir)) {
             $config_view = $this->config->get('view');
             new View($config_view['handler'], $config_view['config']);
@@ -325,20 +328,20 @@ class App
      */
     protected function checkModule()
     {
-        if ($this->env->get('module') === false) {  // 不使用分组
+        if ($this->boot->get('module') === false) {  // 不使用分组
             self::$module = null;
-        } elseif ($this->env->get('module') === true) {  // 自动判断分组
+        } elseif ($this->boot->get('module') === true) {  // 自动判断分组
             $route = $this->getRoute();
             if ($route) {
                 $routes = explode('/', $route);
                 self::$module = $routes[0];
             } else {
-                self::$module = $this->env->get('default_module');
+                self::$module = $this->boot->get('default_module');
             }
         } else {
-            self::$module = $this->env->get('module');
+            self::$module = $this->boot->get('module');
         }
-        $path = $this->env->appPath() . '/' . self::$module;
+        $path = $this->boot->appPath() . '/' . self::$module;
         if (self::$module && !Directory::exists($path)) {
             throw new ModuleNotFoundException(self::$module, $path);
         }
@@ -353,11 +356,11 @@ class App
     protected function checkController(string $controller, bool $throw = false): bool
     {
         $config_controller = $this->config->get('controller');
-        $class_path = '\\' . ucfirst($this->env->appDir());
+        $class_path = '\\' . ucfirst($this->boot->appDir());
         if (self::$module) {
             $class_path .= '\\' . self::$module;
         }
-        $class_path .= '\\' . $this->env->controllerDir() . '\\' . $controller;
+        $class_path .= '\\' . $this->boot->controllerDir() . '\\' . $controller;
         $class = $class_path . $config_controller['controller_postfix'];
         if (!class_exists($class)) {
             $class = $class_path;
@@ -382,7 +385,7 @@ class App
 
         if ($route) {
             $routes = explode('/', $route);
-            if ($this->env->get('module') === true) {  // 自动判断
+            if ($this->boot->get('module') === true) {  // 自动判断
                 array_shift($routes);                  // 第一个即为模块名
             }
 

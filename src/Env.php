@@ -2,169 +2,188 @@
 
 namespace Fize\Framework;
 
-use InvalidArgumentException;
+use ArrayAccess;
+use Exception;
 
 /**
- * 环境
- * @todo 待该为环境变量
+ * 环境变量
  */
-class Env
+class Env implements ArrayAccess
 {
+    /**
+     * 环境变量数据
+     * @var array
+     */
+    protected $data = [];
 
     /**
-     * @var array 环境配置
+     * 数据转换映射
+     * @var array
      */
-    protected $env;
+    protected $convert = [
+        'true'  => true,
+        'false' => false,
+        'off'   => false,
+        'on'    => true,
+    ];
 
-    /**
-     * 构造
-     * @param array $env 环境配置，必须包含 root_path
-     */
-    public function __construct(array $env = [])
+    public function __construct()
     {
-        $this->init($env);
+        $this->data = $_ENV;
     }
 
     /**
-     * 环境初始化
-     * @param array $env 参数
+     * 读取环境变量定义文件
+     * @access public
+     * @param string $file 环境变量定义文件
+     * @return void
      */
-    protected function init(array $env)
+    public function load(string $file)
     {
-        $default_env = [
-            'root_path'      => null,          // 根目录
-            'app_dir'        => 'app',         // 应用文件夹
-            'config_dir'     => 'config',      // 配置文件夹
-            'runtime_dir'    => 'runtime',     // 运行时文件夹
-            'controller_dir' => 'Controller',  // 控制器文件夹
-            'view_dir'       => 'View',        // 视图文件夹
-            'module'         => true,          // true表示开启分组并自动判断，false表示关闭分组，字符串表示指定分组
-            'default_module' => 'Index',       // 开启分组时的默认分组
-            'route_key'      => '_r',          // 兼容模式路由GET参数名
-            'debug'          => false,         // 是否调试模式
-        ];
-        $env = array_merge($default_env, $env);
-
-        if ($env['root_path'] === null || $env['root_path'] === '') {
-            throw new InvalidArgumentException('Env root_path is required');
-        }
-
-        $this->env = $env;
+        $env = parse_ini_file($file, true, INI_SCANNER_RAW) ?: [];
+        $this->set($env);
     }
 
     /**
-     * 获取底层框架配置
-     * @param string|null $key 如果指定该值，则返回该值指定的配置
+     * 获取环境变量值
+     * @param string|null $name    环境变量名
+     * @param mixed       $default 默认值
      * @return mixed
      */
-    public function get(string $key = null)
+    public function get(string $name = null, $default = null)
     {
-        if ($key) {
-            return $this->env[$key] ?? null;
+        if (is_null($name)) {
+            return $this->data;
         }
-        return $this->env;
+
+        $name = strtoupper(str_replace('.', '_', $name));
+        if (isset($this->data[$name])) {
+            $result = $this->data[$name];
+
+            if (is_string($result) && isset($this->convert[$result])) {
+                return $this->convert[$result];
+            }
+
+            return $result;
+        }
+
+        return $this->getEnv($name, $default);
+    }
+
+    protected function getEnv(string $name, $default = null)
+    {
+        $result = getenv('PHP_' . $name);
+
+        if (false === $result) {
+            return $default;
+        }
+
+        if ('false' === $result) {
+            $result = false;
+        } elseif ('true' === $result) {
+            $result = true;
+        }
+
+        if (!isset($this->data[$name])) {
+            $this->data[$name] = $result;
+        }
+
+        return $result;
     }
 
     /**
-     * 获取根目录路径
-     * @return string
+     * 设置环境变量值
+     * @access public
+     * @param string|array $env   环境变量
+     * @param mixed        $value 值
+     * @return void
      */
-    public function rootPath(): string
+    public function set($env, $value = null)
     {
-        return $this->env['root_path'];
+        if (is_array($env)) {
+            $env = array_change_key_case($env, CASE_UPPER);
+
+            foreach ($env as $key => $val) {
+                if (is_array($val)) {
+                    foreach ($val as $k => $v) {
+                        $this->data[$key . '_' . strtoupper($k)] = $v;
+                    }
+                } else {
+                    $this->data[$key] = $val;
+                }
+            }
+        } else {
+            $name = strtoupper(str_replace('.', '_', $env));
+
+            $this->data[$name] = $value;
+        }
     }
 
     /**
-     * 获取应用文件夹名称
-     * @return string
+     * 检测是否存在环境变量
+     * @access public
+     * @param string $name 参数名
+     * @return bool
      */
-    public function appDir(): string
+    public function has(string $name): bool
     {
-        return $this->env['app_dir'];
+        return !is_null($this->get($name));
     }
 
     /**
-     * 获取配置文件夹名称
-     * @return string
+     * 设置环境变量
+     * @access public
+     * @param string $name  参数名
+     * @param mixed  $value 值
      */
-    public function configDir(): string
+    public function __set(string $name, $value)
     {
-        return $this->env['config_dir'];
+        $this->set($name, $value);
     }
 
     /**
-     * 获取运行时文件夹名称
-     * @return string
+     * 获取环境变量
+     * @access public
+     * @param string $name 参数名
+     * @return mixed
      */
-    public function runtimeDir(): string
+    public function __get(string $name)
     {
-        return $this->env['runtime_dir'];
+        return $this->get($name);
     }
 
     /**
-     * 获取应用控制器文件夹名称
-     * @return string
+     * 检测是否存在环境变量
+     * @access public
+     * @param string $name 参数名
+     * @return bool
      */
-    public function controllerDir(): string
+    public function __isset(string $name): bool
     {
-        return $this->env['controller_dir'];
+        return $this->has($name);
     }
 
-    /**
-     * 获取应用视图文件夹名称
-     * @return string
-     */
-    public function viewDir(): string
+    #[\ReturnTypeWillChange]
+    public function offsetSet($offset, $value)
     {
-        return $this->env['view_dir'];
+        $this->set($offset, $value);
     }
 
-    /**
-     * 获取应用目录路径
-     * @return string
-     */
-    public function appPath(): string
+    #[\ReturnTypeWillChange]
+    public function offsetExists($offset): bool
     {
-        return $this->env['root_path'] . '/' . $this->env['app_dir'];
+        return $this->__isset($offset);
     }
 
-    /**
-     * 获取配置目录路径
-     * @return string
-     */
-    public function configPath(): string
+    #[\ReturnTypeWillChange]
+    public function offsetUnset($offset)
     {
-        return $this->env['root_path'] . '/' . $this->env['config_dir'];
+        throw new Exception('not support: unset');
     }
 
-    /**
-     * 获取运行目录路径
-     * @return string
-     */
-    public function runtimePath(): string
+    #[\ReturnTypeWillChange]
+    public function offsetGet($offset)
     {
-        return $this->env['root_path'] . '/' . $this->env['runtime_dir'];
-    }
-
-    /**
-     * 供 Config 插值的占位符映射
-     * @param string|null $module 当前模块名
-     * @return array
-     */
-    public function parameters(string $module = null): array
-    {
-        $module_name = $module ?: '';
-        $app_path = $this->appPath();
-        return [
-            '%root_path%'      => $this->rootPath(),
-            '%app_path%'       => $app_path,
-            '%config_path%'    => $this->configPath(),
-            '%runtime_path%'   => $this->runtimePath(),
-            '%app_dir%'        => $this->appDir(),
-            '%view_dir%'       => $this->viewDir(),
-            '%controller_dir%' => $this->controllerDir(),
-            '%module%'         => $module_name,
-            '%module_path%'    => $module_name !== '' ? $app_path . '/' . $module_name : $app_path,
-        ];
+        return $this->get($offset);
     }
 }
