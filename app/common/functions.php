@@ -26,7 +26,7 @@ function cookie()
 
 }
 
-function env()
+function env(string $name = null, $default = null)
 {
 
 }

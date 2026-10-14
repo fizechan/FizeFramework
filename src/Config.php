@@ -21,11 +21,6 @@ class Config
     protected $module;
 
     /**
-     * @var array 占位符映射
-     */
-    protected $parameters = [];
-
-    /**
      * @var array 已读取到的配置
      */
     protected $config = [];
@@ -33,25 +28,21 @@ class Config
     /**
      * 初始化
      * @param string      $dir        配置目录
-     * @param array       $parameters 占位符映射
      * @param string|null $module     指定要附加配置的模块名
      */
-    public function __construct(string $dir, array $parameters = [], string $module = null)
+    public function __construct(string $dir, string $module = null)
     {
         $this->dir = $dir;
-        $this->parameters = $parameters;
         $this->module = $module;
-        $this->syncModuleParameters();
     }
 
     /**
-     * 切换模块（不清已缓存配置）
+     * 设置模块
      * @param string|null $module 模块名
      */
     public function setModule(string $module = null): void
     {
         $this->module = $module;
-        $this->syncModuleParameters();
     }
 
     /**
@@ -108,44 +99,11 @@ class Config
             }
         }
 
-        $this->config[$keys[0]] = $this->interpolate($config);
-
         $value = $this->getByKey($this->config, $key);
         if (is_null($value)) {
             return $default;
         }
 
         return $value;
-    }
-
-    /**
-     * 根据当前模块更新插值参数
-     * @todo 不使用占位符
-     */
-    protected function syncModuleParameters(): void
-    {
-        $module_name = $this->module ?: '';
-        $this->parameters['%module%'] = $module_name;
-        $app_path = $this->parameters['%app_path%'] ?? '';
-        $this->parameters['%module_path%'] = $module_name !== '' ? $app_path . '/' . $module_name : $app_path;
-    }
-
-    /**
-     * 替换配置值中的占位符
-     * @param array $config 配置
-     * @return array
-     * @todo 不使用占位符
-     */
-    protected function interpolate(array $config): array
-    {
-        if (!$this->parameters) {
-            return $config;
-        }
-        array_walk_recursive($config, function (&$value) {
-            if (is_string($value)) {
-                $value = strtr($value, $this->parameters);
-            }
-        });
-        return $config;
     }
 }
