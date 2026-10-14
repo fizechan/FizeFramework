@@ -16,7 +16,7 @@ class ShutdownHandler implements ShutdownHandlerInterface
     public function run()
     {
         $app = App::getInstance();
-        $debug = $app ? $app->env->get('debug') : false;
+        $debug = $app->boot->get('debug');
         if ($debug) {
             Log::info('耗时：' . App::timeTaken());
         }

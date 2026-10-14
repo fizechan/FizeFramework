@@ -30,7 +30,7 @@ class ErrorHandler implements ErrorHandlerInterface
         $view->assign('errstr', $errstr);
         $view->assign('errfile', $errfile);
         $view->assign('errline', $errline);
-        $response = Response::html($view->render('error_handler'));
+        $response = Response::html($view->render('handler_error'));
         $response->withStatus(500)->send();
         return false;
     }

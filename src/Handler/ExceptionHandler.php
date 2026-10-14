@@ -36,7 +36,7 @@ class ExceptionHandler implements ExceptionHandlerInterface
             $appdir = dirname(__FILE__, 3) . '/app';
             $view = ViewFactory::create('PHP', ['view' => $appdir . '/view']);
             $view->assign('exception', $exception);
-            $response = Response::html($view->render('exception_handler'));
+            $response = Response::html($view->render('handler_exception'));
             $response->withStatus(500)->send();
         }
     }

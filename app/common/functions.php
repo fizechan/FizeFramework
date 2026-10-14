@@ -64,3 +64,13 @@ function fize_runtime_path(): string
 {
     return App::getInstance()->boot->rootPath();
 }
+
+/**
+ * 应用视图目录路径
+ * @return string
+ */
+function fize_view_path(): string
+{
+    $boot = App::getInstance()->boot;
+    return $boot->appPath() . '/' . $boot->viewDir();
+}

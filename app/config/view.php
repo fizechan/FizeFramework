@@ -6,13 +6,13 @@
 return [
     'handler' => 'PHP',
     'config'  => [
-        'view' => '%module_path%/%app_view_dir%'
+        'view' => fize_view_path()
     ],
     'tpl'     => [
-        'tpl_404'               => null,  // 模板：404
-        'tpl_error'             => null,  // 模板：错误跳转
-        'tpl_success'           => null,  // 模板：成功跳转
-        'tpl_error_handler'     => null,  // 模板：系统错误
-        'tpl_exception_handler' => null,  // 模板：系统异常
+        'page_404'          => null,  // 模板：404
+        'msg_error'         => null,  // 模板：错误跳转
+        'msg_success'       => null,  // 模板：成功跳转
+        'handler_error'     => null,  // 模板：系统错误
+        'handler_exception' => null,  // 模板：系统异常
     ]
 ];
