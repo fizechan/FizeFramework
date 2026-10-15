@@ -9,10 +9,11 @@ return [
         'view' => fize_view_path()
     ],
     'tpl'     => [
-        'page_404'          => null,  // 模板：404
-        'msg_error'         => null,  // 模板：错误跳转
-        'msg_success'       => null,  // 模板：成功跳转
-        'handler_error'     => null,  // 模板：系统错误
-        'handler_exception' => null,  // 模板：系统异常
+        'page_404'          => null,  // 404页面
+        'page_500'          => null,  // 500页面
+        'msg_error'         => null,  // 错误信息
+        'msg_success'       => null,  // 成功信息
+        'handler_error'     => null,  // 系统错误
+        'handler_exception' => null,  // 系统异常
     ]
 ];

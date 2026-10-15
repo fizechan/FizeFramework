@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'version' => date('Y.m.d'),
+    'version' => '1.0',
     'test0' => '0',
     'test1' => '1',
     'test2' => [

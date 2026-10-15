@@ -27,8 +27,8 @@ class Config
 
     /**
      * 初始化
-     * @param string      $dir        配置目录
-     * @param string|null $module     指定要附加配置的模块名
+     * @param string      $dir    配置目录
+     * @param string|null $module 指定要附加配置的模块名
      */
     public function __construct(string $dir, string $module = null)
     {
@@ -47,12 +47,16 @@ class Config
 
     /**
      * 从配置数组中获取配置
-     * @param array  $config 配置数组
-     * @param string $key    键名，层级以.分隔
+     * @param array       $config 配置数组
+     * @param string|null $key    键名，层级以.分隔
      * @return mixed
      */
-    protected function getByKey(array $config, string $key)
+    protected static function getByKey(array $config, string $key = null)
     {
+        if ($config && is_null($key)) {
+            return $config;
+        }
+
         $keys = explode('.', $key);
         $cfg_temp = $config;
         foreach ($keys as $key_item) {
@@ -67,26 +71,25 @@ class Config
 
     /**
      * 获取配置
-     * @param string $key     键名，层级以.分隔
-     * @param mixed  $default 如未找到该配置时返回的默认值
+     * @param string      $name    配置名
+     * @param string|null $key     键名，层级以.分隔
+     * @param mixed       $default 如未找到该配置时返回的默认值
      * @return mixed
      */
-    public function get(string $key, $default = null)
+    public function get(string $name, string $key = null, $default = null)
     {
-        $value = $this->getByKey($this->config, $key);
+        $value = self::getByKey($this->config, $key);
         if (!is_null($value)) {
             return $value;
         }
 
-        $keys = explode('.', $key);
-        $file_name = $keys[0] . '.php';
-
+        $file_name = $name . '.php';
         $cfg_files = [];
-        $cfg_files[] = __DIR__ . '/../app/config/' . $file_name;
-        $cfg_files[] = $this->dir . '/' . $file_name;
-        $cfg_files[] = $this->dir . '/common/' . $file_name;
+        $cfg_files[] = __DIR__ . '/../app/config/' . $file_name;  // 框架配置
+        $cfg_files[] = $this->dir . '/' . $file_name;             // 主配置
+        $cfg_files[] = $this->dir . '/common/' . $file_name;      // 公共模块配置覆盖
         if ($this->module) {
-            $cfg_files[] = $this->dir . '/' . $this->module . '/' . $file_name;
+            $cfg_files[] = $this->dir . '/' . $this->module . '/' . $file_name;  // 应用模块配置覆盖
         }
 
         $config = [];
@@ -99,11 +102,11 @@ class Config
             }
         }
 
-        $value = $this->getByKey($this->config, $key);
+        $this->config = $config;
+        $value = self::getByKey($config, $key);
         if (is_null($value)) {
             return $default;
         }
-
         return $value;
     }
 }

@@ -46,14 +46,14 @@ class App
     public $boot;
 
     /**
-     * @var Container
-     */
-    protected $container;
-
-    /**
      * @var Config
      */
     public $config;
+
+    /**
+     * @var Container
+     */
+    protected $container;
 
     /**
      * @var Url
@@ -178,6 +178,7 @@ class App
     protected function init(array $cfg)
     {
         $this->container = new Container();
+
         $this->container->set(ContainerInterface::class, $this->container);
         $this->container->set(Container::class, $this->container);
         $this->container->set(App::class, $this);
@@ -185,7 +186,7 @@ class App
         $this->boot = new Boot($cfg);
         $this->container->set(Boot::class, $this->boot);
 
-        $this->config = new Config($this->boot->configPath(), $this->boot->parameters());
+        $this->config = new Config($this->boot->configPath());
         $this->container->set(Config::class, $this->config);
 
         $this->url = new Url($this->config->get('url'));
