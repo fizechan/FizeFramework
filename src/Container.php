@@ -54,7 +54,6 @@ class Container implements ContainerInterface
     /**
      * 按构造函数类型提示装配，结果不缓存
      * @param string $class 类名
-     * @return object
      * @throws ContainerException
      * @throws ReflectionException
      */

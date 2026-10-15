@@ -2,8 +2,8 @@
 
 namespace Tests;
 
-use Fize\Framework\Container\Container;
-use Fize\Framework\Container\ContainerException;
+use Fize\Framework\Container;
+use Fize\Framework\Exception\ContainerException;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\NotFoundExceptionInterface;
 use stdClass;
