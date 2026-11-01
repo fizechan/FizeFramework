@@ -42,6 +42,6 @@
   "require-dev": {
     "guzzlehttp/guzzle": "*",
     "phpunit/phpunit": "*",
-    "twig/twig": "*"
+    "twig/twig": "^3.11.3"
   }
 }
