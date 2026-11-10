@@ -144,6 +144,7 @@ class App
     /**
      * 获取实际路由地址
      * @return string
+     * @deprecated 将弃用，改用 Route
      */
     protected function getRoute()
     {
@@ -272,7 +273,7 @@ class App
      * 如已在 registerComponent() 中初始化则直接返回，否则按需创建。
      * 适用于 Swoole 等长驻进程中跳过不需要的组件初始化。
      * @return Db
-     * @todo 不太合适放这里。
+     * @todo 不太合适放这里，准备移至Facade。
      */
     public static function db(): Db
     {
