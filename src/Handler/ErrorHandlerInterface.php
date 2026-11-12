@@ -17,5 +17,5 @@ interface ErrorHandlerInterface
      * @param int         $errline 发生错误的行号
      * @return bool 是否不触发系统默认错误处理器
      */
-    public function run(int $errno, string $errstr, string $errfile = null, int $errline = 0): bool;
+    public function run(int $errno, string $errstr, ?string $errfile = null, int $errline = 0): bool;
 }

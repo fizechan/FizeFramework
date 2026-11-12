@@ -21,7 +21,7 @@ class ErrorHandler implements ErrorHandlerInterface
      * @param int         $errline 发生错误的行号
      * @return bool 返回true表示不触发系统默认错误处理器
      */
-    public function run(int $errno, string $errstr, string $errfile = null, int $errline = 0): bool
+    public function run(int $errno, string $errstr, ?string $errfile = null, int $errline = 0): bool
     {
         Log::error("[$errno]$errstr : $errfile Line: $errline");
         $appdir = dirname(__FILE__, 3) . '/app';
