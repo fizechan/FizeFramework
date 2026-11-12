@@ -112,6 +112,7 @@ class App
         $this->registerComponent();
         $this->check();
         self::$instance = $this;
+        require_once dirname(__FILE__, 2) . "/app/common/constants.php";
     }
 
     /**

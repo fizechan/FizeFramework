@@ -10,7 +10,6 @@
   ],
   "autoload": {
     "files": [
-      "app/common/constants.php",
       "app/common/functions.php"
     ],
     "psr-4": {
