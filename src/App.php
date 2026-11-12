@@ -6,6 +6,7 @@ use Closure;
 use Fize\Cache\Cache;
 use Fize\Database\Db;
 use Fize\Exception\NotSetException\ParameterNotSetException;
+use Fize\Exception\RuntimeException;
 use Fize\Framework\Controller\Controller;
 use Fize\Framework\Exception\ActionNotFoundException;
 use Fize\Framework\Exception\ControllerNotFoundException;
@@ -127,10 +128,11 @@ class App
      */
     public static function getInstance(): App
     {
+        if (!self::$instance) {
+            throw new RuntimeException("Not yet instantiated!");  // 尚未实例化。
+        }
         return self::$instance;
     }
-
-
 
     /**
      * 获取容器

@@ -142,4 +142,13 @@ class Boot
     {
         return $this->cfg['root_path'] . '/' . $this->cfg['runtime_dir'];
     }
+
+    /**
+     * 获取视图目录路径
+     * @return string
+     */
+    public function viewPath(): string
+    {
+        return $this->cfg['root_path'] . '/' . $this->cfg['view_dir'];
+    }
 }
