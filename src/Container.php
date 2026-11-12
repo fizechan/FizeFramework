@@ -6,7 +6,6 @@ use Fize\Framework\Exception\ContainerException;
 use Fize\Framework\Exception\ContainerNotFoundException;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
-use ReflectionException;
 
 /**
  * 容器
@@ -55,7 +54,6 @@ class Container implements ContainerInterface
      * 按构造函数类型提示装配，结果不缓存
      * @param string $class 类名
      * @throws ContainerException
-     * @throws ReflectionException
      */
     public function make(string $class)
     {

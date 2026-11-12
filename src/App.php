@@ -108,11 +108,11 @@ class App
         OB::start();
         self::$microtimeStart = microtime(true);
         $this->init($cfg);
-        $this->setHandler();
         $this->registerComponent();
-        $this->check();
+        $this->setHandler();
         self::$instance = $this;
         require_once dirname(__FILE__, 2) . "/app/common/constants.php";
+        $this->check();
     }
 
     /**
@@ -130,7 +130,7 @@ class App
     public static function getInstance(): App
     {
         if (!self::$instance) {
-            throw new RuntimeException("Not yet instantiated!");  // 尚未实例化。
+            throw new RuntimeException("FizeFramework Not Yet Instantiated!");  // 尚未实例化。
         }
         return self::$instance;
     }
@@ -191,6 +191,8 @@ class App
         $this->container->set(Boot::class, $this->boot);
 
         $this->config = new Config($this->boot->configPath());
+//        var_dump($this->boot->configPath());
+//        die();
         $this->container->set(Config::class, $this->config);
 
         $this->url = new Url($this->config->get('url'));
@@ -234,12 +236,16 @@ class App
         new Request($request_config);
 
         $db_config = $this->config->get('database');
+        var_dump($db_config);
+        die();
         if ($db_config) {
             $db_mode = $db_config['mode'] ?? null;
             new Db($db_config['type'], $db_config['config'], $db_mode);
         }
 
         $cache_config = $this->config->get('cache');
+        var_dump($cache_config);
+        die();
         if ($cache_config['handler'] == 'DataBase') {  // Cache 使用 Db 处理器时的默认配置
             if (empty($cache_config['config']['database'])) {
                 $cache_config['config']['database'] = $db_config;
@@ -291,7 +297,6 @@ class App
 
     /**
      * 接管异常处理
-     * @throws ReflectionException
      */
     protected function setHandler()
     {

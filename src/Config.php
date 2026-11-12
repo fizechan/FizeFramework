@@ -30,7 +30,7 @@ class Config
      * @param string      $dir    配置目录
      * @param string|null $module 指定要附加配置的模块名
      */
-    public function __construct(string $dir, string $module = null)
+    public function __construct(string $dir, ?string $module = null)
     {
         $this->dir = $dir;
         $this->module = $module;
@@ -40,7 +40,7 @@ class Config
      * 设置模块
      * @param string|null $module 模块名
      */
-    public function setModule(string $module = null): void
+    public function setModule(?string $module = null): void
     {
         $this->module = $module;
     }
@@ -51,9 +51,9 @@ class Config
      * @param string|null $key    键名，层级以.分隔
      * @return mixed
      */
-    protected static function getByKey(array $config, string $key = null)
+    protected static function getByKey(array $config, ?string $key = null)
     {
-        if ($config && is_null($key)) {
+        if (is_null($key)) {
             return $config;
         }
 
@@ -76,11 +76,13 @@ class Config
      * @param mixed       $default 如未找到该配置时返回的默认值
      * @return mixed
      */
-    public function get(string $name, string $key = null, $default = null)
+    public function get(string $name, ?string $key = null, $default = null)
     {
-        $value = self::getByKey($this->config, $key);
-        if (!is_null($value)) {
-            return $value;
+        if ($this->config) {
+            $value = self::getByKey($this->config, $key);
+            if (!is_null($value)) {
+                return $value;
+            }
         }
 
         $file_name = $name . '.php';
