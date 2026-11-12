@@ -291,6 +291,7 @@ class App
 
     /**
      * 接管异常处理
+     * @throws ReflectionException
      */
     protected function setHandler()
     {
@@ -299,7 +300,7 @@ class App
         // 系统错误处理
         set_error_handler(function ($errno, $errstr, $errfile = null, $errline = 0) use ($app) {
             OB::clean();
-            $class = $app->config->get('handler.error');
+            $class = $app->config->get('handler', 'error');
             /**
              * @var ErrorHandlerInterface $handler
              */
@@ -309,7 +310,7 @@ class App
 
         // 系统异常处理
         set_exception_handler(function (Throwable $exception) use ($app) {
-            $class = $app->config->get('handler.exception');
+            $class = $app->config->get('handler', 'exception');
             /**
              * @var ExceptionHandlerInterface $handler
              */
@@ -319,7 +320,7 @@ class App
 
         // 接管结束任务
         register_shutdown_function(function () use ($app) {
-            $class = $app->config->get('handler.shutdown');
+            $class = $app->config->get('handler', 'shutdown');
             /**
              * @var ShutdownHandlerInterface $handler
              */
