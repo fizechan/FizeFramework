@@ -50,7 +50,7 @@ class Env implements ArrayAccess
      * @param mixed       $default 默认值
      * @return mixed
      */
-    public function get(string $name = null, $default = null)
+    public function get(?string $name = null, $default = null)
     {
         if (is_null($name)) {
             return $this->data;
@@ -93,10 +93,11 @@ class Env implements ArrayAccess
 
     /**
      * 设置环境变量值
-     * @access public
+     * @access     public
      * @param string|array $env   环境变量
      * @param mixed        $value 值
      * @return void
+     * @deprecated 不建议使用！
      */
     public function set($env, $value = null)
     {
@@ -132,9 +133,10 @@ class Env implements ArrayAccess
 
     /**
      * 设置环境变量
-     * @access public
+     * @access     public
      * @param string $name  参数名
      * @param mixed  $value 值
+     * @deprecated 不建议使用！
      */
     public function __set(string $name, $value)
     {

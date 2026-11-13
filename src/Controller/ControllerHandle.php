@@ -167,7 +167,10 @@ class ControllerHandle
             'time' => Request::server('REQUEST_TIME')
         ];
         $type = $type ?: $this->getResponseType();
-        $response = Response::create($result, $type)->header($header);
+        if ($type == 'html') {
+
+        }
+        $response = Response::json($result);
         throw new HttpResponseException($response);
     }
 

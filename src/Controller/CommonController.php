@@ -2,9 +2,6 @@
 
 namespace Fize\Framework\Controller;
 
-use think\App;
-use think\exception\HttpResponseException;
-use think\exception\ValidateException;
 
 /**
  * 公用控制器
@@ -14,11 +11,10 @@ abstract class CommonController extends SimpleController
 
     /**
      * 构造方法
-     * @param App $app 应用对象
      */
-    public function __construct(App $app)
+    public function __construct()
     {
-        parent::__construct($app);
+        parent::__construct();
         $this->initialize();
     }
 
@@ -35,7 +31,6 @@ abstract class CommonController extends SimpleController
      * @param bool              $batch    是否批量验证
      * @param bool              $throw    验证不通过时是否抛出错误
      * @return bool
-     * @throws ValidateException
      */
     protected function validate(array $data = null, $validate = null, array $message = [], bool $batch = false, bool $throw = true): bool
     {
@@ -66,7 +61,6 @@ abstract class CommonController extends SimpleController
      * @param mixed       $data   返回的数据
      * @param int         $wait   跳转等待时间
      * @param array       $header 发送的Header信息
-     * @throws HttpResponseException
      */
     protected function error($msg = '', int $code = 500, string $url = null, $data = '', int $wait = 3, array $header = [])
     {

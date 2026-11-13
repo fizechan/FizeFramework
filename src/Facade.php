@@ -4,6 +4,7 @@ namespace Fize\Framework;
 
 /**
  * Facade管理类
+ * @todo 待修改
  */
 class Facade
 {
