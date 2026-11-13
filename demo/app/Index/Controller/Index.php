@@ -4,11 +4,11 @@ namespace App\Index\Controller;
 
 use RuntimeException;
 use Fize\Database\Db;
-use Fize\Framework\Controller;
+use Fize\Framework\Controller\Common;
 use Fize\View\View;
 
 
-class Index extends Controller
+class Index extends Common
 {
 
     public function index()

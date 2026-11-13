@@ -6,7 +6,7 @@
 return [
     'handler' => 'PHP',
     'config'  => [
-        'view' => fize_view_path()
+        'view' => FIZE_VIEW_PATH
     ],
     'tpl'     => [
         'page_404'          => null,  // 404页面

@@ -108,10 +108,10 @@ class App
         OB::start();
         self::$microtimeStart = microtime(true);
         $this->init($cfg);
-        $this->registerComponent();
-        $this->setHandler();
         self::$instance = $this;
         require_once dirname(__FILE__, 2) . "/app/common/constants.php";
+        $this->registerComponent();
+        $this->setHandler();
         $this->check();
     }
 
@@ -240,8 +240,6 @@ class App
         }
 
         $cache_config = $this->config->get('cache');
-        var_dump($cache_config);
-        die();
         if ($cache_config['handler'] == 'DataBase') {  // Cache 使用 Db 处理器时的默认配置
             if (empty($cache_config['config']['database'])) {
                 $cache_config['config']['database'] = $db_config;

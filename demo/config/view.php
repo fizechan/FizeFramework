@@ -3,8 +3,8 @@
 return [
     'handler' => 'Twig',
     'config'  => [
-        'view'  => '%module_path%/%app_view_dir%',
-        'cache' => '%runtime_path%/view',
+        'view'  => FIZE_APP_PATH . '/Index/View',  // @todo 模块定位问题。
+        'cache' => FIZE_RUNTIME_PATH . '/view',
         'debug' => true
     ]
 ];

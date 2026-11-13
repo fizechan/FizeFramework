@@ -6,7 +6,7 @@
 return [
     'handler' => 'File',
     'config'  => [
-        'path'   => fize_runtime_path() . '/cache',
+        'path'   => FIZE_RUNTIME_PATH . '/cache',
         'expire' => 0
     ]
 ];
