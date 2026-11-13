@@ -78,8 +78,8 @@ class Config
      */
     public function get(string $name, ?string $key = null, $default = null)
     {
-        if ($this->config) {
-            $value = self::getByKey($this->config, $key);
+        if (isset($this->config[$name])) {
+            $value = self::getByKey($this->config[$name], $key);
             if (!is_null($value)) {
                 return $value;
             }
@@ -88,8 +88,8 @@ class Config
         $file_name = $name . '.php';
         $cfg_files = [];
         $cfg_files[] = __DIR__ . '/../app/config/' . $file_name;  // 框架配置
-        $cfg_files[] = $this->dir . '/' . $file_name;             // 主配置
-        $cfg_files[] = $this->dir . '/common/' . $file_name;      // 公共模块配置覆盖
+        $cfg_files[] = $this->dir . '/' . $file_name;             // 应用配置
+        $cfg_files[] = $this->dir . '/common/' . $file_name;      // 应用公共配置覆盖
         if ($this->module) {
             $cfg_files[] = $this->dir . '/' . $this->module . '/' . $file_name;  // 应用模块配置覆盖
         }
@@ -104,7 +104,7 @@ class Config
             }
         }
 
-        $this->config = $config;
+        $this->config[$name] = $config;
         $value = self::getByKey($config, $key);
         if (is_null($value)) {
             return $default;

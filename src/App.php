@@ -191,8 +191,6 @@ class App
         $this->container->set(Boot::class, $this->boot);
 
         $this->config = new Config($this->boot->configPath());
-//        var_dump($this->boot->configPath());
-//        die();
         $this->container->set(Config::class, $this->config);
 
         $this->url = new Url($this->config->get('url'));
@@ -236,8 +234,6 @@ class App
         new Request($request_config);
 
         $db_config = $this->config->get('database');
-        var_dump($db_config);
-        die();
         if ($db_config) {
             $db_mode = $db_config['mode'] ?? null;
             new Db($db_config['type'], $db_config['config'], $db_mode);
