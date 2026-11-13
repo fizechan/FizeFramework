@@ -12,6 +12,7 @@ use Fize\Web\Response;
 /**
  * 控制器
  * @todo 待合并到Controller文件夹
+ * @deprecated 合并后待删除
  */
 abstract class Controller
 {

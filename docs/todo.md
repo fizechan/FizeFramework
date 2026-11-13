@@ -40,10 +40,6 @@ Url::route('user.detail', ['id' => 42]);  // → /user/detail?id=42
 
 ## 四、安全增强
 
-### 4.2 XSS 防御
-
-`Controller::success()` / `Controller::error()` 中 `$message` 直接传入视图，若内容来自用户输入则存在 XSS 风险。建议在视图层默认启用 HTML 转义。
-
 ### 4.4 敏感信息泄露
 
 `ExceptionHandler` 在非调试模式下仍输出完整异常堆栈到页面。建议区分环境：
@@ -75,17 +71,6 @@ return ['version' => '1.0', 'debug' => false, ...];
 
 ## 六、功能扩展
 
-### 6.1 CLI 命令行模式
-
-当前框架仅面向 HTTP。建议增加命令行入口：
-
-```php
-// console.php
-$app = new App(['root_path' => __DIR__, 'mode' => 'cli']);
-$app->command('migrate', MigrateCommand::class);
-$app->runConsole($argv);
-```
-
 ### 6.2 控制器生命周期钩子
 
 在 `Controller` 基类中支持 `_before()` / `_after()` 方法，在每个操作执行前后自动调用：
@@ -115,15 +100,6 @@ class BaseController extends Controller
 
 ```php
 protected function result(array $data, string $message = null, int $code = 0, int $httpStatus = 200)
-```
-
-### 6.4 分页工具类
-
-提供内置分页组件，与数据库查询集成：
-
-```php
-$paginator = Paginator::create($query, $currentPage, $perPage);
-// 返回 { data: [...], meta: { total, current_page, last_page, per_page } }
 ```
 
 ### 6.6 `.env` 环境配置文件支持
@@ -161,12 +137,6 @@ CACHE_HANDLER=Redis
 | 配置深层合并 | 嵌套数组配置是否正确合并而非覆盖 |
 | 路由捕获组边界 | 命名捕获组为空、含特殊字符时的行为 |
 | `convertQuery` 边界 | 空字符串、缺少 `=`、值含 `=` 号的情况 |
-
-### 7.3 测试目录规范
-
-当前测试中引用 `dirname(__DIR__) . '/temp'` 目录，但该目录不在项目结构中。建议：
-- 将测试 fixtures 统一放置在 `tests/fixtures/` 下
-- 在 `phpunit.xml` 中配置 bootstrap 和环境变量
 
 ---
 

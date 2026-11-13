@@ -2,26 +2,16 @@
 
 namespace Fize\Framework\Controller;
 
-use think\App;
-use think\exception\HttpResponseException;
-use think\exception\ValidateException;
-use think\facade\Config;
-use think\facade\Request;
-use think\facade\View;
-use think\Response;
-use think\Validate;
+use Fize\Exception\HttpException\HttpResponseException;
+use Fize\View\ViewFactory;
+use Fize\Web\Response;
+use Fize\Web\Request;
 
 /**
  * 控制器处理类
  */
 class ControllerHandle
 {
-
-    /**
-     * 应用实例
-     * @var App
-     */
-    protected $app;
 
     /**
      * 是否批量验证
@@ -31,12 +21,10 @@ class ControllerHandle
 
     /**
      * 构造方法
-     * @param App  $app           应用对象
      * @param bool $batchValidate 是否批量验证
      */
-    public function __construct(App $app, bool $batchValidate = false)
+    public function __construct(bool $batchValidate = false)
     {
-        $this->app = $app;
         $this->batchValidate = $batchValidate;
     }
 
@@ -94,35 +82,37 @@ class ControllerHandle
         return $v->failException($throw)->check($data);
     }
 
+
     /**
-     * 操作成功跳转的快捷方法.
-     *
-     * @param mixed       $msg    提示信息
-     * @param mixed       $data   返回的数据
-     * @param string|null $url    跳转的 URL 地址
-     * @param int         $code   返回的 code
-     * @param int         $wait   跳转等待时间
-     * @param array       $header 发送的 Header 信息
+     * 成功操作
+     * @param string      $message 成功信息
+     * @param string|null $url     回跳URL
+     * @param int         $code    错误码
      */
-    public function success($msg = '', $data = '', string $url = null, int $code = 0, int $wait = 3, array $header = [])
+    public function success(string $message, string $url = null, int $code = 0)
     {
-        if (is_null($url) && !is_null(Request::server('HTTP_REFERER'))) {
-            $url = Request::server('HTTP_REFERER');
-        } elseif ('' !== $url && !strpos($url, '://') && 0 !== strpos($url, '/')) {
-            $url = url($url);
+        if (Request::isAjax()) {
+            $json = [
+                'code'    => $code,
+                'message' => $message
+            ];
+            $response = Response::json($json);
+        } else {
+            $config_view = app()->config->get('view');
+            if ($config_view['tpl_success']) {
+                View::path($config_view['tpl_success']);
+                View::assign('message', $message);
+                View::assign('url', $url);
+                View::assign('code', $code);
+                $response = Response::html(View::render());
+            } else {
+                $view = ViewFactory::create('PHP', ['view' => __DIR__ . '/../app/view']);
+                $view->assign('message', $message);
+                $view->assign('url', $url);
+                $view->assign('code', $code);
+                $response = Response::html($view->render('success'));
+            }
         }
-        $type = $this->getResponseType();
-        $result = [
-            'code' => $code,
-            'msg'  => $msg,
-            'data' => $data,
-            'url'  => $url,
-            'wait' => $wait,
-        ];
-        if ('html' == strtolower($type)) {
-            $result = View::fetch(Config::get('app.dispatch_success_tmpl'), $result);
-        }
-        $response = Response::create($result, $type)->header($header);
         throw new HttpResponseException($response);
     }
 
@@ -141,7 +131,7 @@ class ControllerHandle
     {
         $type = $this->getResponseType();
         if (is_null($url)) {
-            $url = $this->app['request']->isAjax() ? '' : 'javascript:history.back(-1);';
+            $url = Request::isAjax() ? '' : 'javascript:history.back(-1);';
         } elseif ('' !== $url) {
             $url = (strpos($url, '://') || 0 === strpos($url, '/')) ? $url : $this->app['url']->build($url);
         }
