@@ -1,5 +1,6 @@
 <?php
 
+use Fize\Cache\Cache;
 use Fize\Framework\App;
 use Fize\Framework\Facade\Config;
 use Fize\Framework\Facade\Env;
