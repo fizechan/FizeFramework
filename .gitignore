@@ -1,6 +1,14 @@
+/.agents/
+/.claude/
+/.codebuddy/
+/.codex/
+/.cursor/
 /.idea/
+/.qoder/
+/.trae/
 /demo/runtime/
 /temp/
 /vendor/
-/composer.lock
 /.phpunit.result.cache
+/AGENTS.md
+/composer.lock
