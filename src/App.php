@@ -47,6 +47,11 @@ class App
     public $boot;
 
     /**
+     * @var Env
+     */
+    public $env;
+
+    /**
      * @var Config
      */
     public $config;
@@ -90,12 +95,6 @@ class App
      * @var float 程序启动时时间戳
      */
     protected static $microtimeStart;
-
-    /**
-     * @var Db|null 延迟加载的数据库实例
-     * @todo 不太合适放这里。
-     */
-    protected static $lazyDb;
 
     /**
      * 构造。
@@ -190,6 +189,12 @@ class App
         $this->boot = new Boot($cfg);
         $this->container->set(Boot::class, $this->boot);
 
+        $this->env = new Env();
+        $envFile = $this->boot->rootPath() . '/.env';
+        if (is_file($envFile)) {
+            $this->env->load($envFile);
+        }
+
         $this->config = new Config($this->boot->configPath());
         $this->container->set(Config::class, $this->config);
 
@@ -268,25 +273,6 @@ class App
             $config_view = $this->config->get('view');
             new View($config_view['handler'], $config_view['config']);
         }
-    }
-
-    /**
-     * 获取数据库实例（延迟加载）
-     *
-     * 如已在 registerComponent() 中初始化则直接返回，否则按需创建。
-     * 适用于 Swoole 等长驻进程中跳过不需要的组件初始化。
-     * @return Db
-     * @todo 不太合适放这里，准备移至Facade。
-     */
-    public static function db(): Db
-    {
-        if (self::$lazyDb !== null) {
-            return self::$lazyDb;
-        }
-        $app = self::getInstance();
-        $config = $app->config->get('database');
-        self::$lazyDb = new Db($config['type'], $config['config'], $config['mode'] ?? null);
-        return self::$lazyDb;
     }
 
     /**

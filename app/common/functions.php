@@ -1,8 +1,10 @@
 <?php
 
 use Fize\Cache\Cache;
+use Fize\Database\Core\Db as CoreDb;
 use Fize\Framework\App;
 use Fize\Framework\Facade\Config;
+use Fize\Framework\Facade\Db;
 use Fize\Framework\Facade\Env;
 
 /**
@@ -37,9 +39,17 @@ function cookie()
 
 }
 
-function db()
+/**
+ * 指定当前要操作的表
+ *
+ * 支持链式调用
+ * @param string      $name   表名
+ * @param string|null $prefix 表前缀，默认为null表示使用当前前缀
+ * @return CoreDb
+ */
+function db(string $name, ?string $prefix = null): CoreDb
 {
-
+    return Db::table($name, $prefix);
 }
 
 /**
@@ -71,4 +81,9 @@ function session()
 function url()
 {
 
+}
+
+function view()
+{
+    
 }
