@@ -18,7 +18,9 @@ abstract class CommonController extends SimpleController
         $this->initialize();
     }
 
-    // 初始化
+    /**
+     * 初始化
+     */
     protected function initialize()
     {
     }

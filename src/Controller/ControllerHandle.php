@@ -30,6 +30,7 @@ class ControllerHandle
 
     /**
      * 验证数据
+     * @todo 待修正
      * @param array|null        $data     数据，null表示当前POST数据
      * @param string|array|null $validate 验证器名或者验证规则数组，null表示使用控制器同名验证器
      * @param array             $message  提示信息
