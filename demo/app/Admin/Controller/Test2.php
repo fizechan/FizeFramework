@@ -2,9 +2,9 @@
 
 namespace App\Admin\Controller;
 
-use Fize\Framework\Controller;
+use Fize\Framework\Controller\Common;
 
-class Test2 extends Controller
+class Test2 extends Common
 {
 
     public function index()

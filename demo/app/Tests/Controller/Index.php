@@ -3,12 +3,12 @@
 
 namespace App\Tests\Controller;
 
-use Fize\Framework\Controller;
+use Fize\Framework\Controller\Common;
 use Fize\View\View;
 use Fize\Web\Response;
 
 
-class Index extends Controller
+class Index extends Common
 {
 
     public function index()

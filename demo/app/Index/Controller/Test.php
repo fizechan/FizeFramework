@@ -3,11 +3,11 @@
 
 namespace App\Index\Controller;
 
-use Fize\Framework\Controller;
 use Fize\Framework\App;
+use Fize\Framework\Controller\Common;
 
 
-class Test extends Controller
+class Test extends Common
 {
     public function __construct()
     {

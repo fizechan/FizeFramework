@@ -3,8 +3,9 @@
 namespace App\Index\Controller;
 
 use RuntimeException;
-use Fize\Database\Db;
 use Fize\Framework\Controller\Common;
+use Fize\Framework\Facade\Config;
+use Fize\Framework\Facade\Db;
 use Fize\View\View;
 
 
@@ -13,7 +14,7 @@ class Index extends Common
 
     public function index()
     {
-        $version = $this->app->config->get('app.version');
+        $version = Config::get('app', 'version');
         View::assign('version', $version);
 
         $rows = Db::table('user')->limit(10)->select();

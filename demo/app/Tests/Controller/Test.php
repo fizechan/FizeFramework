@@ -3,10 +3,10 @@
 namespace App\Tests\Controller;
 
 use Exception;
-use Fize\Framework\Controller;
+use Fize\Framework\Controller\Common;
 
 
-class Test extends Controller
+class Test extends Common
 {
 
     public function tresult()

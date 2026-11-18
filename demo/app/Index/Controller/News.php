@@ -1,11 +1,10 @@
 <?php
 
-
 namespace App\Index\Controller;
 
-use Fize\Framework\Controller;
+use Fize\Framework\Controller\Common;
 
-class News extends Controller
+class News extends Common
 {
 
     public function details($id)
