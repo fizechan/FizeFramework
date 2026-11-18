@@ -3,6 +3,7 @@
 namespace Fize\Framework\Controller;
 
 use Fize\Exception\HttpException\HttpResponseException;
+use Fize\Framework\Facade\Config;
 use Fize\View\ViewFactory;
 use Fize\Web\Response;
 use Fize\Web\Request;

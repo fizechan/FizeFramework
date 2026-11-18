@@ -102,19 +102,6 @@ class BaseController extends Controller
 protected function result(array $data, string $message = null, int $code = 0, int $httpStatus = 200)
 ```
 
-### 6.6 `.env` 环境配置文件支持
-
-当前环境配置仅通过 `App` 构造函数传入。建议支持 `.env` 文件：
-
-```env
-APP_DEBUG=true
-DB_HOST=127.0.0.1
-DB_NAME=myapp
-CACHE_HANDLER=Redis
-```
-
-通过 `vlucas/phpdotenv` 或自研解析器加载，不同环境使用不同的 `.env` 文件。
-
 ---
 
 ## 七、测试改进
