@@ -105,9 +105,7 @@ class App
     public function __construct(array $cfg = [])
     {
         OB::start();
-        self::$microtimeStart = microtime(true);
         $this->init($cfg);
-        self::$instance = $this;
         require_once dirname(__FILE__, 2) . "/app/common/constants.php";
         $this->registerComponent();
         $this->setHandler();
@@ -180,6 +178,8 @@ class App
      */
     protected function init(array $cfg)
     {
+        self::$microtimeStart = microtime(true);
+
         $this->container = new Container();
 
         $this->container->set(ContainerInterface::class, $this->container);
@@ -203,6 +203,8 @@ class App
 
         $this->checkModule();
         $this->config->setModule(self::$module);
+
+        self::$instance = $this;
     }
 
     /**

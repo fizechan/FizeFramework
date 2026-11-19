@@ -54,7 +54,7 @@ class Boot
      * @param string|null $key 如果指定该值，则返回该值指定的配置
      * @return mixed
      */
-    public function get(string $key = null)
+    public function get(?string $key = null)
     {
         if ($key) {
             return $this->cfg[$key] ?? null;
