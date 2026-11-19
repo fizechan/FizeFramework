@@ -14,13 +14,13 @@ class Env implements ArrayAccess
      * 环境变量数据
      * @var array
      */
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * 数据转换映射
      * @var array
      */
-    protected $convert = [
+    protected array $convert = [
         'true'  => true,
         'false' => false,
         'off'   => false,

@@ -100,6 +100,8 @@ class ControllerHandle
             ];
             $response = Response::json($json);
         } else {
+            $viewCFG = Config::get('view');
+
             $config_view = app()->config->get('view');
             if ($config_view['tpl_success']) {
                 View::path($config_view['tpl_success']);

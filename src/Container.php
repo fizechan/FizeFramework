@@ -17,7 +17,7 @@ class Container implements ContainerInterface
     /**
      * @var array 已注册的共享条目
      */
-    protected $entries = [];
+    protected array $entries = [];
 
     /**
      * 注册共享实例

@@ -12,7 +12,7 @@ class Facade
      * 始终创建新的对象实例
      * @var bool
      */
-    protected static $alwaysNewInstance;
+    protected static bool $alwaysNewInstance;
 
     /**
      * 创建Facade实例
@@ -69,7 +69,7 @@ class Facade
      * @param bool       $newInstance 是否每次创建新的实例
      * @return object
      */
-    public static function make(string $class, $args = [], $newInstance = false)
+    public static function make(string $class, $args = [], bool $newInstance = false)
     {
         if (__CLASS__ != static::class) {
             return self::__callStatic('make', func_get_args());

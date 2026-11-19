@@ -13,17 +13,17 @@ class Config
     /**
      * @var string 配置目录
      */
-    protected $dir;
+    protected string $dir;
 
     /**
      * @var string|null 当前模块
      */
-    protected $module;
+    protected ?string $module;
 
     /**
      * @var array 已读取到的配置
      */
-    protected $config = [];
+    protected array $config = [];
 
     /**
      * 初始化

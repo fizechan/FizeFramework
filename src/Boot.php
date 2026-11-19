@@ -13,7 +13,7 @@ class Boot
     /**
      * @var array 环境配置
      */
-    protected $cfg;
+    protected array $cfg;
 
     /**
      * 构造

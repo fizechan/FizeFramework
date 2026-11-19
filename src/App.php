@@ -194,6 +194,7 @@ class App
         if (is_file($envFile)) {
             $this->env->load($envFile);
         }
+        $this->container->set(Env::class, $this->env);
 
         $this->config = new Config($this->boot->configPath());
         $this->container->set(Config::class, $this->config);
@@ -231,6 +232,7 @@ class App
      *
      * 轻量组件（Cookie、Request）在构造时初始化，
      * 重量组件（Database、Cache、Log、Session、View）建议通过延迟访问器按需加载。
+     * @todo 考虑使用门面类替代。
      */
     protected function registerComponent()
     {

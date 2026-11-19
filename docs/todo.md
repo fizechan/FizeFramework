@@ -2,20 +2,6 @@
 
 ## 三、路由系统增强
 
-### 3.1 支持 HTTP Method 路由
-
-当前路由仅按 URL 模式匹配，不区分请求方法。建议扩展规则格式：
-
-```php
-return [
-    'rules' => [
-        'GET  /api/users'            => 'Api/User/index',
-        'POST /api/users'            => 'Api/User/create',
-        'PUT  /api/users/(?<id>\d+)' => 'Api/User/update',
-    ]
-];
-```
-
 ### 3.2 命名路由
 
 `Url::create()` 用 `array_search` 反查规则效率低且语义不清晰。建议支持命名路由：
@@ -29,12 +15,6 @@ return [
 // 生成
 Url::route('user.detail', ['id' => 42]);  // → /user/detail?id=42
 ```
-
-### 3.3 `Url::create()` 正则反向解析缺陷
-
-**文件**: `src/Url.php` 第137-148行
-
-`preg_match` 匹配捕获组的正则 `#\(\?\<(?<name>[^\>]*)\>[^\)]*\)#` 无法处理嵌套括号的场景（如 `(?<id>\d{1,3}(?:px)?)`），会导致死循环或错误替换。建议改用括号计数或 token 解析。
 
 ---
 
