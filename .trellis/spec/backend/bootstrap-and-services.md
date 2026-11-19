@@ -1,4 +1,4 @@
-# Bootstrap and Services
+# 启动流程与服务
 
 > `App` 是组合根。`Env` / `Config` / `Url` 是普通对象，由 `App` 持有并 `set` 进最小 PSR-11 容器。不要把它们写回类级 `static` 状态。
 
@@ -22,7 +22,7 @@ $app = new App([
 $app->run();
 ```
 
-## Env
+## Env 环境对象
 
 类：`src/Env.php`。
 
@@ -34,7 +34,7 @@ $app->run();
 
 测试：`tests/TestEnv.php`。
 
-## Config
+## Config 配置对象
 
 类：`src/Config.php`。
 
@@ -64,7 +64,7 @@ $app->run();
 
 测试：`tests/TestConfig.php`，夹具 `tests/fixtures/config/`。
 
-## Url
+## Url 路由对象
 
 类：`src/Url.php`。实例方法 `parse()` / `create()`。`parse()` 仍会写入 `$_GET`（当前路由语义，不要在未立项的情况下改掉）。
 

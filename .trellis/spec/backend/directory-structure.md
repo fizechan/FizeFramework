@@ -1,4 +1,4 @@
-# Directory Structure
+# 目录结构
 
 > 本仓库是框架本身，不是普通业务应用。框架代码、默认配置、demo、测试要分开放。
 
@@ -19,10 +19,10 @@ docs/                # 人类文档（todo、改造说明），不是运行时�
 
 | 路径 | 职责 |
 |------|------|
-| `src/App.php` | 组合根：构造 Env/Config/Url/Container，路由检查，`run()` |
-| `src/Env.php` `src/Config.php` `src/Url.php` `src/Container.php` | 核心服务，纯实例 |
-| `src/Controller.php` | 应用控制器基类 |
-| `src/Handler/` | Error / Exception / Shutdown 及对应 Interface |
+| `src/App.php` | 组合根：构造 Env / Config / Url / Container，检查路由并执行 `run()` |
+| `src/Env.php` `src/Config.php` `src/Url.php` `src/Container.php` | 核心服务，均为实例对象 |
+| `src/Controller.php` | 应用侧控制器基类 |
+| `src/Handler/` | 错误 / 异常 / 关闭处理器及对应接口 |
 | `src/Middleware/` | `MiddlewareInterface`、`MiddlewarePipeline` |
 | `src/Exception/` | 框架异常（模块/控制器/操作未找到、容器异常） |
 
@@ -61,7 +61,7 @@ demo 默认：`App\Index\Controller\Index` → `demo/app/Index/Controller/Index.
 
 `url.php` 必须在确定模块之前可用，只放顶层，不要放到 `config/{Module}/`。见 `app/config/url.php` 注释与 `App::init()`。
 
-## 测试
+## 测试代码
 
 | 路径 | 约定 |
 |------|------|
@@ -73,7 +73,7 @@ demo 默认：`App\Index\Controller\Index` → `demo/app/Index/Controller/Index.
 
 ## 命名
 
-- 类、方法、命名空间：PascalCase / camelCase，与现有 `App`、`checkModule` 一致
+- 类、方法、命名空间：使用 PascalCase / camelCase，与现有 `App`、`checkModule` 一致
 - 配置键、env 键：snake_case（`root_path`、`default_module`）
 - 注释与用户文档：中文；标识符英文
 - 不要引入与源码不符的目录名（例如把控制器目录写成小写 `controller`；Env 默认是 `Controller`）

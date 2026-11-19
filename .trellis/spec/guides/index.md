@@ -1,34 +1,34 @@
-# Thinking Guides
+# 思考指南
 
-> **Purpose**: Expand your thinking to catch things you might not have considered.
-
----
-
-## Why Thinking Guides?
-
-**Most bugs and tech debt come from "didn't think of that"**, not from lack of skill:
-
-- Didn't think about what happens at layer boundaries → cross-layer bugs
-- Didn't think about code patterns repeating → duplicated code everywhere
-- Didn't think about edge cases → runtime errors
-- Didn't think about future maintainers → unreadable code
-
-These guides help you **ask the right questions before coding**.
+> **目的**：拓展思路，发现容易遗漏的问题。
 
 ---
 
-## Available Guides
+## 为什么需要思考指南？
 
-| Guide | Purpose | When to Use |
+**大多数缺陷和技术债都源于「没有想到这一点」**，而非能力不足：
+
+- 没有考虑层与层之间的交界 → 跨层缺陷
+- 没有注意到重复出现的代码模式 → 重复代码到处蔓延
+- 没有考虑边界情况 → 运行时错误
+- 没有考虑后续维护者 → 代码难以理解
+
+这些指南帮助你在编写代码前**提出正确的问题**。
+
+---
+
+## 指南目录
+
+| 指南 | 用途 | 适用时机 |
 |-------|---------|-------------|
-| [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md) | Identify patterns and reduce duplication | When you notice repeated patterns |
-| [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md) | Think through data flow across layers | Features spanning multiple layers |
+| [代码复用思考指南](./code-reuse-thinking-guide.md) | 识别已有模式并减少重复 | 发现重复代码模式时 |
+| [跨层思考指南](./cross-layer-thinking-guide.md) | 梳理跨层数据流 | 功能涉及多个层时 |
 
 ---
 
-## Quick Reference: Thinking Triggers
+## 快速参考：何时需要额外思考
 
-### When to Think About Cross-Layer Issues
+### 何时检查跨层问题
 
 - [ ] 一次改动穿过 App 启动、Config、Controller、Handler 或 fize 组件
 - [ ] 配置占位符 / 模块切换会影响已缓存的 Config
@@ -37,61 +37,61 @@ These guides help you **ask the right questions before coding**.
 - [ ] 新增配置键、Handler 类名或中间件
 - [ ] 路由 `parse` 写入的 `$_GET` 被后续 Request 注入读到
 
-→ Read [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md)
+→ 阅读[跨层思考指南](./cross-layer-thinking-guide.md)
 
-### When to Think About Code Reuse
+### 何时检查代码复用
 
-- [ ] You're writing similar code to something that exists
-- [ ] You see the same pattern repeated 3+ times
-- [ ] You're adding a new field to multiple places
-- [ ] **You're modifying any constant or config**
-- [ ] **You're creating a new utility/helper function** ← Search first!
-- [ ] Two files read the same untyped payload field with local casts
-- [ ] Multiple branches update the same derived state from `kind` / `action`
+- [ ] 正在编写与现有代码相似的逻辑
+- [ ] 同一模式已重复出现 3 次或更多
+- [ ] 正在多个位置添加同一个字段
+- [ ] **正在修改任何常量或配置**
+- [ ] **正在创建新的工具 / 辅助函数** ← 先搜索！
+- [ ] 两个文件通过本地类型转换读取同一个未类型化载荷字段
+- [ ] 多个分支根据 `kind` / `action` 更新同一份派生状态
 
-→ Read [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md)
+→ 阅读[代码复用思考指南](./code-reuse-thinking-guide.md)
 
-### When Verifying AI Cross-Review Results
+### 核实 AI 交叉审查结果时
 
-- [ ] Reviewer claims "user input can be malicious" → Check the actual data source (internal manifest? user config? external API?)
-- [ ] Reviewer flags "missing validation" → Is the data from a trusted internal source?
-- [ ] Reviewer says "behavior change" → Read the code comments — is it intentional design?
-- [ ] Reviewer identifies a "bug" in test → Mentally delete the feature being tested — does the test still pass? If yes → tautological test
+- [ ] 审查者声称「用户输入可能有恶意」→ 检查实际数据来源（内部清单、用户配置还是外部 API？）
+- [ ] 审查者指出「缺少校验」→ 判断数据是否来自可信的内部来源
+- [ ] 审查者称存在「行为变化」→ 阅读代码注释，确认这是否是有意设计
+- [ ] 审查者指出测试中有「缺陷」→ 在脑中移除被测功能后再判断测试是否仍会通过；若仍通过，该测试可能只是同义反复
 
-**Common AI reviewer false-positive patterns**:
-1. **Trust boundary confusion**: Treating internal data (bundled JSON manifests) as untrusted external input
-2. **Ignoring design comments**: Flagging intentional behavior documented in code comments as bugs
-3. **Variable misreading**: Not tracing a variable to its actual definition (e.g., Map keyed by path vs name)
+**AI 审查常见误报**：
+1. **混淆信任边界**：把内部数据（如随程序分发的 JSON 清单）当成不可信的外部输入
+2. **忽略设计注释**：把代码注释已说明的有意行为误报为缺陷
+3. **误读变量含义**：没有追踪变量的实际定义（例如 Map 的键是路径还是名称）
 
-**Verification rule**: Every CRITICAL/WARNING finding must be verified against the actual code before prioritizing. Budget ~35% false-positive rate for AI reviews.
+**核实规则**：每一条 CRITICAL / WARNING 都必须对照实际代码核实后再决定优先级。评估 AI 审查时，应考虑约 35% 的误报率。
 
 ---
 
-## Pre-Modification Rule (CRITICAL)
+## 修改前规则（重要）
 
-> **Before changing ANY value, ALWAYS search first!**
+> **修改任何值之前，务必先搜索其所有用法！**
 
 ```bash
-# Search for the value you're about to change
+# 搜索即将修改的值
 grep -r "value_to_change" .
 ```
 
-This single habit prevents most "forgot to update X" bugs.
+只要养成这个习惯，就能避免大多数「忘记同步更新其他位置」的缺陷。
 
 ---
 
-## How to Use This Directory
+## 如何使用本目录
 
-1. **Before coding**: Skim the relevant thinking guide
-2. **During coding**: If something feels repetitive or complex, check the guides
-3. **After bugs**: Add new insights to the relevant guide (learn from mistakes)
-
----
-
-## Contributing
-
-Found a new "didn't think of that" moment? Add it to the relevant guide.
+1. **编写代码前**：快速阅读相关思考指南
+2. **编写代码时**：遇到重复或复杂的逻辑时，查阅相应指南
+3. **发现缺陷后**：将新经验补充到相关指南中，避免重蹈覆辙
 
 ---
 
-**Core Principle**: 30 minutes of thinking saves 3 hours of debugging.
+## 补充指南
+
+发现新的「原来还要考虑这一点」时，请将经验补充到相关指南中。
+
+---
+
+**核心原则**：多花 30 分钟思考，可以省下 3 小时调试。

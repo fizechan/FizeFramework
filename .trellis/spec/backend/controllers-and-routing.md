@@ -1,4 +1,4 @@
-# Controllers and Routing
+# 控制器与路由
 
 > 路由是「PATH_INFO 或 `_r` → `Url::parse` → 模块/控制器/操作」。控制器继承 `Fize\Framework\Controller`，经 `$this->app` 访问服务。
 
@@ -21,7 +21,7 @@
 
 控制器解析（`App::check()`）：剩余段按 0/1/多段变成 default controller、单控制器、或 `子目录\Controller` + action。先试带 `controller_postfix`（默认 `Controller`）的类名，再试无后缀。参考 `src/App.php` 的 `checkController()`。
 
-## URL 规则
+## URL 处理规则
 
 `config/url.php`：
 
@@ -67,7 +67,7 @@ $this->app->url->create($url, $params);
 
 不继承 `Controller` 的类（改造前 `demo/app/Admin/Controller/Test2.php` 曾如此）没有 `$this->app`。需要服务时让它 `extends Controller`，或用 `App::getInstance()`。
 
-## Action 参数注入
+## Action 方法参数注入
 
 `App::resolveParameters()`：
 

@@ -1,4 +1,4 @@
-# Quality Guidelines
+# 质量规范
 
 > PHP `>= 7.2`。能用 `void`、可空类型 `?T`、`object`；**不要**用属性类型、箭头函数、`match`、联合类型、`mixed` 返回（那是 7.4 / 8.0+）。`psr/container` 锁在 `^1.1`，不要升 `^2.0`。
 
@@ -30,7 +30,7 @@
 - `_r` 带前导 `/`
 - 不要 `var_dump` 充当断言（旧测试已清掉）
 
-## 代码风格（现状，不是新工具链）
+## 代码风格（描述现状，不代表新增工具链）
 
 仓库**没有** `phpcs.xml` / `phpstan.neon` / `.editorconfig`（`docs/todo.md` 8.2 待做）。当前对齐方式：
 

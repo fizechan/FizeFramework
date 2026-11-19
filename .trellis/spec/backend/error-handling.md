@@ -1,4 +1,4 @@
-# Error Handling
+# 错误处理
 
 > 框架用 PHP 原生 handler + 可替换的三类处理器。控制器里的「成功/失败/跳转」也是异常，但是正常响应，不是故障。
 
@@ -30,7 +30,7 @@
 
 Env：缺少 `root_path` 抛 PHP 自带 `InvalidArgumentException`。
 
-## ExceptionHandler 分支
+## ExceptionHandler 的处理分支
 
 `src/Handler/ExceptionHandler.php` 按类型分流，**不要把 HttpResponseException 当错误记日志**：
 
@@ -40,9 +40,9 @@ Env：缺少 `root_path` 抛 PHP 自带 `InvalidArgumentException`。
 
 `ErrorHandler` 记 `Log::error` 后渲染 `error_handler` 模板，HTTP 500。
 
-内置页目前**不按 `debug` 隐藏堆栈**（`docs/todo.md` 4.4 仍待做）。新增生产脱敏时走该条目，不要只改一处 handler 而漏掉视图。
+内置错误页目前**不会根据 `debug` 隐藏堆栈**（`docs/todo.md` 4.4 仍待处理）。新增生产环境脱敏逻辑时应按该条目实施，并同时检查相关视图，避免只修改某一个 Handler。
 
-## ShutdownHandler
+## ShutdownHandler（关闭处理器）
 
 `src/Handler/ShutdownHandler.php`：
 

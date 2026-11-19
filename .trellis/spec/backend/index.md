@@ -1,4 +1,4 @@
-# Backend Development Guidelines
+# 后端开发规范
 
 > FizeFramework（`fize/framework`）是 PHP MVC 框架源码仓库。本目录记录**当前代码里真实存在的写法**，供后续 AI 实现与检查时对齐。
 
@@ -6,21 +6,21 @@
 
 ---
 
-## Guidelines Index
+## 规范索引
 
-| Guide | 何时必读 |
+| 规范 | 何时必读 |
 |-------|----------|
-| [Directory Structure](./directory-structure.md) | 新增类、配置、应用控制器、测试 |
-| [Bootstrap and Services](./bootstrap-and-services.md) | 改 `App` / `Env` / `Config` / `Url` / `Container`，或从控制器/Handler 取服务 |
-| [Controllers and Routing](./controllers-and-routing.md) | 改路由、中间件、控制器基类或 action 注入 |
-| [Error Handling](./error-handling.md) | 改 Handler、框架异常、成功/失败响应 |
-| [Database Guidelines](./database-guidelines.md) | 改 `database` 配置、`App::db()`、Cache/Log/Session 的 DataBase 驱动 |
-| [Logging Guidelines](./logging-guidelines.md) | 打日志或改 `log` 配置 |
-| [Quality Guidelines](./quality-guidelines.md) | 写任何 PHP / 测试前 |
+| [目录结构](./directory-structure.md) | 新增类、配置、应用控制器或测试 |
+| [启动流程与服务](./bootstrap-and-services.md) | 修改 `App` / `Env` / `Config` / `Url` / `Container`，或从控制器 / Handler 获取服务 |
+| [控制器与路由](./controllers-and-routing.md) | 修改路由、中间件、控制器基类或 action 注入 |
+| [错误处理](./error-handling.md) | 修改 Handler、框架异常或成功 / 失败响应 |
+| [数据库规范](./database-guidelines.md) | 修改 `database` 配置、`App::db()` 或 Cache / Log / Session 的 DataBase 驱动 |
+| [日志规范](./logging-guidelines.md) | 记录日志或修改 `log` 配置 |
+| [质量规范](./quality-guidelines.md) | 编写任何 PHP 代码或测试前 |
 
 ---
 
-## Pre-Development Checklist
+## 开发前检查清单
 
 按改动范围阅读，不要只读本 index：
 
@@ -35,7 +35,7 @@
 
 ---
 
-## Quality Check
+## 质量检查
 
 实现后对照：
 
