@@ -1,13 +1,16 @@
+/.agent/
 /.agents/
 /.claude/
 /.codebuddy/
 /.codex/
 /.cursor/
+/.dsh/
 /.idea/
+/.kimi-code/
+/.opencode/
 /.qoder/
 /.trae/
 /demo/runtime/
-/temp/
 /vendor/
 /.phpunit.result.cache
 /AGENTS.md
