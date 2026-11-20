@@ -39,27 +39,27 @@ class App
     /**
      * @var App 当前应用实例
      */
-    protected static $instance;
+    protected static App $instance;
 
     /**
      * @var Boot
      */
-    public $boot;
+    public Boot $boot;
 
     /**
      * @var Env
      */
-    public $env;
+    public Env $env;
 
     /**
      * @var Config
      */
-    public $config;
+    public Config $config;
 
     /**
      * @var Container
      */
-    protected $container;
+    protected Container $container;
 
     /**
      * @var Url
@@ -74,27 +74,27 @@ class App
     /**
      * @var string 当前分组
      */
-    protected static $module;
+    protected static string $module;
 
     /**
      * @var string 当前控制器
      */
-    protected static $controller;
+    protected static string $controller;
 
     /**
      * @var string 当前操作
      */
-    protected static $action;
+    protected static string $action;
 
     /**
      * @var string 当前控制器类全限定名
      */
-    protected static $class;
+    protected static string $class;
 
     /**
      * @var float 程序启动时时间戳
      */
-    protected static $microtimeStart;
+    protected static float $microtimeStart;
 
     /**
      * 构造。
@@ -527,7 +527,7 @@ class App
      * 获取当前模块名
      * @return string|null 未启用模块时返回 null
      */
-    public static function module()
+    public static function module(): ?string
     {
         return self::$module;
     }
