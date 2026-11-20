@@ -25,6 +25,7 @@
     "fize/database": "*",
     "fize/exception": "*",
     "fize/io": "*",
+    "fize/http": "~5.5.2",
     "fize/log": "*",
     "fize/security": "*",
     "fize/session": "*",
